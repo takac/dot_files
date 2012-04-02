@@ -1,35 +1,12 @@
 EDITOR=vim
 alias ll='ls -l'
-HISTCONTROL=erasedups 
 alias hs='history | grep $1'
 
-function extract()      # Handy Extract Program.
-{
-	if [ -f $1 ] ; then
-		case $1 in
-			*.tar.bz2)   tar xvjf $1     ;;
-	*.tar.gz)    tar xvzf $1     ;;
-	*.bz2)       bunzip2 $1      ;;
-	*.rar)       unrar x $1      ;;
-	*.gz)        gunzip $1       ;;
-	*.tar)       tar xvf $1      ;;
-	*.tbz2)      tar xvjf $1     ;;
-	*.tgz)       tar xvzf $1     ;;
-	*.zip)       unzip $1        ;;
-	*.Z)         uncompress $1   ;;
-	*.7z)        7z x $1         ;;
-	*)           echo "'$1' cannot be extracted via >extract<" ;;
-	esac
-	else
-		echo "'$1' is not a valid file"
-			fi
-}
-
+#need to add to profile
 if [ -z "$RANPROFILE" ]; then
 	PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
 fi
 
-alias ll="ls -l"
 
 
 # Don't wait for job termination notification
@@ -59,11 +36,13 @@ case $- in
 # ###############
 
 # Don't put duplicate lines in the history.
-export HISTCONTROL="ignoredups"
+#export HISTCONTROL="ignoredups"
 
+export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}ignoredups
 # Ignore some controlling instructions
 export HISTIGNORE="[   ]*:&:bg:fg:exit"
-
+# Ignore some controlling instructions
+export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}erasedups 
 # Whenever displaying the prompt, write the previous line to disk
 export PROMPT_COMMAND="history -a"
 
@@ -71,16 +50,8 @@ export PROMPT_COMMAND="history -a"
 # Aliases
 # #######
 
-# Some example alias instructions
-# If these are enabled they will be used instead of any instructions
-# they may mask.  For example, alias rm='rm -i' will mask the rm
 # application.  To override the alias instruction use a \ before, ie
 # \rm will call the real rm not the alias.
-
-# Interactive operation...
-# alias rm='rm -i'
-# alias cp='cp -i'
-# alias mv='mv -i'
 
 # Default to human readable figures
 alias df='df -h'
@@ -101,8 +72,29 @@ alias l='ls -CF'                              #
 
 
 # Functions
-# #########
 
 # Some example functions
-# function settitle() { echo -ne "\e]2;$@\a\e]1;$@\a"; }
+function settitle() { echo -ne "\e]2;$@\a\e]1;$@\a"; }
 
+
+function extract()      # Handy Extract Program.
+{
+	if [ -f $1 ] ; then
+		case $1 in
+			*.tar.bz2)   tar xvjf $1     ;;
+	*.tar.gz)    tar xvzf $1     ;;
+	*.bz2)       bunzip2 $1      ;;
+	*.rar)       unrar x $1      ;;
+	*.gz)        gunzip $1       ;;
+	*.tar)       tar xvf $1      ;;
+	*.tbz2)      tar xvjf $1     ;;
+	*.tgz)       tar xvzf $1     ;;
+	*.zip)       unzip $1        ;;
+	*.Z)         uncompress $1   ;;
+	*.7z)        7z x $1         ;;
+	*)           echo "'$1' cannot be extracted via >extract<" ;;
+	esac
+	else
+		echo "'$1' is not a valid file"
+			fi
+}
