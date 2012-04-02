@@ -1,6 +1,4 @@
 EDITOR=vim
-alias ll='ls -l'
-alias hs='history | grep $1'
 
 #need to add to profile
 if [ -z "$RANPROFILE" ]; then
@@ -29,7 +27,7 @@ shopt -s cdspell
 # Any completions you add in ~/.bash_completion are sourced last.
 case $- in
    *i*) [[ -f /etc/bash_completion ]] && . /etc/bash_completion ;;
- esac
+esac
 
 
 # History Options
@@ -70,7 +68,7 @@ alias ll='ls -l'                              # long list
 alias la='ls -A'                              # all but . and ..
 alias l='ls -CF'                              #
 
-
+alias hs='history | grep $1'
 # Functions
 
 # Some example functions
