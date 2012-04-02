@@ -6,6 +6,8 @@ if [ -z "$RANPROFILE" ]; then
 fi
 
 
+#local computer enviroment variables in this file
+[[ -e ~/.local_vars ]] && source ~/.local_vars ;
 
 # Don't wait for job termination notification
 # set -o notify
@@ -26,7 +28,7 @@ shopt -s cdspell
 # If this shell is interactive, turn on programmable completion enhancements.
 # Any completions you add in ~/.bash_completion are sourced last.
 case $- in
-   *i*) [[ -f /etc/bash_completion ]] && . /etc/bash_completion ;;
+   *i*) [[ -e /etc/bash_completion ]] && . /etc/bash_completion ;;
 esac
 
 
