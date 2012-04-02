@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # To the extent possible under law, the author(s) have dedicated all 
 # copyright and related and neighboring rights to this software to the 
 # public domain worldwide. This software is distributed without any warranty. 
@@ -42,3 +43,21 @@ fi
 # if [ -d "${HOME}/info" ]; then
 #   INFOPATH="${HOME}/info:${INFOPATH}"
 # fi
+=======
+export BASH_PROF_SET="YES"
+if [ -e /usr/share/terminfo/x/xterm-256color ]; then
+	export TERM='xterm-256color'
+else
+	export TERM='xterm-color'
+fi
+
+
+# if running bash
+#if [ -n "$BASH_VERSION" ]; then
+if [ -z $BASH_RC_SET ]; then
+	# include .bashrc if it exists
+	if [ -e ~/.bashrc ]; then
+		source ~/.bashrc
+	fi
+fi
+>>>>>>> laptop
