@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-# To the extent possible under law, the author(s) have dedicated all 
-# copyright and related and neighboring rights to this software to the 
-# public domain worldwide. This software is distributed without any warranty. 
-# You should have received a copy of the CC0 Public Domain Dedication along 
-# with this software. 
-# If not, see <http://creativecommons.org/publicdomain/zero/1.0/>. 
-
-# base-files version 4.1-1
-
-# ~/.bash_profile: executed by bash(1) for login shells.
-
-# The latest version as installed by the Cygwin Setup program can
-# always be found at /etc/defaults/etc/skel/.bash_profile
-
-# Modifying /etc/skel/.bash_profile directly will prevent
-# setup from updating it.
-
 # The copy in your home directory (~/.bash_profile) is yours, please
 # feel free to customise it to create a shell
 # environment to your liking.  If you feel a change
@@ -43,8 +25,7 @@ fi
 # if [ -d "${HOME}/info" ]; then
 #   INFOPATH="${HOME}/info:${INFOPATH}"
 # fi
-=======
-export BASH_PROF_SET="YES"
+export BASH_PROF_RAN="YES"
 if [ -e /usr/share/terminfo/x/xterm-256color ]; then
 	export TERM='xterm-256color'
 else
@@ -54,10 +35,9 @@ fi
 
 # if running bash
 #if [ -n "$BASH_VERSION" ]; then
-if [ -z $BASH_RC_SET ]; then
+if [ -z $BASH_RC_RAN ]; then
 	# include .bashrc if it exists
 	if [ -e ~/.bashrc ]; then
 		source ~/.bashrc
 	fi
 fi
->>>>>>> laptop

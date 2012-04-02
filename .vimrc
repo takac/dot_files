@@ -1,8 +1,6 @@
-<<<<<<< HEAD
 set t_Co=256
-=======
-"color molokai
-set t_Co=256
+
+color molokai
 cmap W w
 cmap Q q
 set history=700
@@ -159,13 +157,7 @@ augroup resCur
 	autocmd BufWinEnter * call ResCur()
 augroup END
 
-<<<<<<< HEAD
 :cmap W w
 :cmap Q q 
-=======
-
 "x highlight current line
 set cul                                          
-" adjust color
-"hi CursorLine term=none cterm=none ctermbg=2      
->>>>>>> laptop
