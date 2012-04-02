@@ -1,11 +1,17 @@
-colorscheme molokai
+"color molokai
 set t_Co=256
-:cmap W w
-:cmap Q q
+cmap W w
+cmap Q q
 set history=700
+
+set wrap
+set linebreak
 
 filetype plugin on
 filetype indent on
+"LATEX
+let g:tex_flavor='latex'
+
 
 " Fast editing of the .vimrc
 map <leader>e :e! ~/.vim_runtime/vimrc<cr>
@@ -97,4 +103,4 @@ augroup END
 "x highlight current line
 set cul                                          
 " adjust color
-hi CursorLine term=none cterm=none ctermbg=2      
+"hi CursorLine term=none cterm=none ctermbg=2      

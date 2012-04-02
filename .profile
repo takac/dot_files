@@ -7,7 +7,7 @@
 # the default umask is set in /etc/profile; for setting the umask
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
-
+echo "RUnning profile!"
 if [ -e /usr/share/terminfo/x/xterm-256color ]; then
 	export TERM='xterm-256color'
 else
@@ -26,7 +26,6 @@ fi
 if [ -d "$HOME/bin" ] ; then
 	PATH="$HOME/bin:$PATH"
 fi
-. $(which byobu-launch)
 export LANGUAGE="en_GB:en"
 export LC_MESSAGES="en_GB.UTF-8"
 export LC_CTYPE="en_GB.UTF-8"
