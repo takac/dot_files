@@ -134,7 +134,6 @@ set guicursor+=n-v-c:blinkon0
 set guicursor+=i:blinkwait10
 
 set nu
-set linebreak
 set nowrap                     	" wrap long lines
 set autoindent                 	" indent at the same level of the previous line
 set shiftwidth=4               	" use indents of 4 spaces
@@ -158,6 +157,5 @@ augroup resCur
 augroup END
 
 :cmap W w
-:cmap Q q 
-"x highlight current line
+:cmap Q q x highlight current line
 set cul                                          

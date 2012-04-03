@@ -89,42 +89,10 @@ LS_COLORS="$LS_COLORS:di=01;37"
 # application.  To override the alias instruction use a \ before, ie
 # \rm will call the real rm not the alias.
 # enable color support of ls and also add handy aliases
-alias ls="ls --color"
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
-
-alias ss="ps -aux"
-alias dot='ls .[a-zA-Z0-9_]*'
-alias news="xterm -g 80x45 -e trn -e -S1 -N &"
-
-alias c="clear"
-alias m="more"
-alias j="jobs"
-
-# common misspellings
-alias mroe=more
-alias pdw=pwd
-
-
-# Default to human readable figures
-alias df='df -h'
-alias du='du -h'
-
-# Misc :)
-alias less='less -r'                          # raw control characters
-alias whence='type -a'                        # where, of a sort
-
-# Some shortcuts for different directory listings
-alias ll='ls -l'                              # long list
-alias la='ls -A'                              # all but . and ..
-alias l='ls -CF'                              #
-
-alias hs='history | grep $1'
 
 
 
-# Add an "alert" alias for long running commands.  Use like so:
+# add an "alert" alias for long running commands.  use like so:
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
