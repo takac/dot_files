@@ -1,5 +1,9 @@
 EDITOR=vim
 
+[[ ! -e $HOME/.vim/tmp ]] && mkdir $HOME/.vim/tmp
+
+[[ ! -e $HOME/.vim/backup ]] && mkdir $HOME/.vim/backup
+
 #need to add to profile
 if [ -z "$PROFILE_RAN" ]; then
 	PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
@@ -7,11 +11,11 @@ fi
 
 export BASH_RC_RAN="YES"
 
-if [ -z $BASH_PROFILE_RAN ]; then
-	if [ -e ~/.bash_profile ]; then
-		source ~/.bash_profile
-	fi
-fi
+#if [ -z $BASH_PROFILE_RAN ]; then
+#	if [ -e $HOME/.bash_profile ]; then
+#		#source $HOME/.bash_profile
+#	fi
+#fi
 
 
 PS1='\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$'
@@ -46,7 +50,7 @@ shopt -s checkwinsize
 # If this shell is interactive, turn on programmable completion enhancements.
 # Any completions you add in ~/.bash_completion are sourced last.
 case $- in
-   *i*) [[ -e /etc/bash_completion ]] && . /etc/bash_completion ;;
+	*i*) [[ -e /etc/bash_completion ]] && . /etc/bash_completion ;;
 esac
 
 
@@ -70,7 +74,6 @@ export HISTIGNORE="[   ]*:&:bg:fg:exit"
 # Ignore some controlling instructions
 export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}erasedups 
 # Whenever displaying the prompt, write the previous line to disk
-export PROMPT_COMMAND="history -a"
 
 
 # Aliases
@@ -78,9 +81,10 @@ export PROMPT_COMMAND="history -a"
 # Alias definitions.
 
 if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+	. ~/.bash_aliases
 fi
-
+eval $( dircolors -b )
+LS_COLORS="$LS_COLORS:di=01;37"
 
 # application.  To override the alias instruction use a \ before, ie
 # \rm will call the real rm not the alias.
@@ -110,10 +114,8 @@ alias du='du -h'
 # Misc :)
 alias less='less -r'                          # raw control characters
 alias whence='type -a'                        # where, of a sort
-alias grep='grep --color'                     # show differences in colour
 
 # Some shortcuts for different directory listings
-alias ls='ls -hF --color=tty'                 # classify files in colour
 alias ll='ls -l'                              # long list
 alias la='ls -A'                              # all but . and ..
 alias l='ls -CF'                              #
@@ -130,7 +132,7 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
-    . /etc/bash_completion
+	. /etc/bash_completion
 fi
 
 
@@ -152,8 +154,6 @@ fi
 
 # Some example functions
 function settitle() { echo -ne "\e]2;$@\a\e]1;$@\a"; }
-
-
 function extract()      # Handy Extract Program.
 {
 	if [ -f $1 ] ; then
@@ -171,6 +171,12 @@ function extract()      # Handy Extract Program.
 	*.7z)        7z x $1         ;;
 	*)           echo "'$1' cannot be extracted via >extract<" ;;
 	esac
+	else
+		echo "'$1' is not a valid file"
+			fi
+}
+
+
 #google chrome alias
 alias chrome='google-chrome &1>3 /dev/null'
 alias ecp='eclipse &1>3 /dev/null'
@@ -200,7 +206,7 @@ pskill()
 
 term()
 {
-        TERM=$1
+	TERM=$1
 	export TERM
 	tset
 }
@@ -215,29 +221,17 @@ bold()
 	tput smso
 }
 
-unbold()
+function unbold()
 {
 	tput rmso
 }
 
 if [ -f /unix ] ; then
-clear()
-{
-	tput clear
-}
+	function clear()
+	{
+		tput clear
+	}
 fi
-
-rot13()
-{
-	if [ $# = 0 ] ; then
-		tr "[a-m][n-z][A-M][N-Z]" "[n-z][a-m][N-Z][A-M]"
->>>>>>> laptop
-	else
-		echo "'$1' is not a valid file"
-			fi
-}
-<<<<<<< HEAD
-=======
 
 function chmog()
 {
