@@ -70,8 +70,9 @@ map <leader>tm :tabmove
 
 set backspace=indent,eol,start
 set backup
-set directory=~/.vim/tmp
-set backupdir=~/.vim/backup
+
+set directory=$HOME/.vim/tmp
+set backupdir=$HOME/.vim/backup
 set clipboard+=unnamed "
 set mouse=a " use mouse everywhere
 
@@ -80,7 +81,6 @@ set shiftwidth=4 " auto-indent amount when using cindent,
 set softtabstop=4 " when hitting tab or backspace, how many spaces 
 "should a tab be (see expandtab)
 set tabstop=4 " real tabs should be 8, and they will show with 
->>>>>>> laptop
 
 set cursorcolumn " highlight the current column
 set cursorline " highlight current line
@@ -134,6 +134,7 @@ set guicursor+=n-v-c:blinkon0
 set guicursor+=i:blinkwait10
 
 set nu
+set linebreak
 set nowrap                     	" wrap long lines
 set autoindent                 	" indent at the same level of the previous line
 set shiftwidth=4               	" use indents of 4 spaces
@@ -157,5 +158,6 @@ augroup resCur
 augroup END
 
 :cmap W w
-:cmap Q q x highlight current line
+:cmap Q q 
+"x highlight current line
 set cul                                          

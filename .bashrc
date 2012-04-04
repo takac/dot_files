@@ -215,7 +215,7 @@ function chmog()
 
 function add_remote_key()
 {
-	if [ $# -ne 2 ];
+	if [ $# -ne 2 ]; then
 		echo "useage: add_remote_key remote_user remote_host"
 		return 1
 	else
