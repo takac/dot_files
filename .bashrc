@@ -171,36 +171,6 @@ pskill()
 	kill -9 $pid
 	echo "slaughtered."
 }
-
-term()
-{
-	TERM=$1
-	export TERM
-	tset
-}
-
-xtitle () 
-{ 
-	echo -n -e "\033]0;$*\007"
-}
-
-bold()
-{
-	tput smso
-}
-
-function unbold()
-{
-	tput rmso
-}
-
-if [ -f /unix ] ; then
-	function clear()
-	{
-		tput clear
-	}
-fi
-
 function chmog()
 {
 	if [ $# -ne 4 ] ; then
@@ -222,3 +192,4 @@ function add_remote_key()
 		cat ~/.ssh/id_rsa.pub | ssh $1@$2 'cat >> .ssh/authorized_keys'
 	fi
 }
+alias hs='history | grep -i'

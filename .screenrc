@@ -4,12 +4,9 @@ startup_message off
 ## gyaresu's .screenrc 2008-03-25
 # http://delicious.com/search?p=screenrc
 
-# Don't display the copyright page
-startup_message off
 
 # tab-completion flash in heading bar
 vbell off
-
 
 # keep scrollback n lines
 defscrollback 1000
@@ -34,9 +31,9 @@ bind - command -c selectHighs   #bind the hyphen to
 screen -t python    3   python
 #screen -t rtorrent  0   rtorrent        
 #screen -t tunes        1       ncmpc --host=192.168.1.4 --port=6600 #was for connecting to MPD music server.
-screen -t  bash_1        1
+screen -t  bash_1        1 bash
 #screen -t irssi         2       irssi
-screen -t bash_0 0
+screen -t bash_0 0 bash
 #screen -t dancing   4       
 #screen -t giantfriend   6       these_are_ssh_to_server_scripts.sh
 #screen -t computerrescue    7   these_are_ssh_to_server_scripts.sh

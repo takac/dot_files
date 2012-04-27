@@ -26,8 +26,8 @@ alias less='less -r'                          # raw control characters
 alias whence='type -a'                        # where, of a sort
 
 # some shortcuts for different directory listings
-alias ll='ls -l'                              # long list
-alias la='ls -a'                              # all but . and ..
-alias l='ls -cf'                              #
+alias ll='ls --color -l'                              # long list
+alias la='ls --color -a'                              # all but . and ..
+alias l='ls --color -tl'                              #
 
 alias hs='history | grep $1'
