@@ -1,8 +1,8 @@
 
 alias ls="ls --color"
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
+alias grep='grep --color=always'
+alias fgrep='fgrep --color=always'
+alias egrep='egrep --color=always'
 
 alias ss="ps -aux"
 alias dot='ls .[a-za-z0-9_]*'

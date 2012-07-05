@@ -4,10 +4,7 @@ color Tomorrow-Night
 
 cmap W w
 cmap Q q
-set history=700
 
-set wrap
-set linebreak
 
 filetype plugin on
 filetype indent on
@@ -16,7 +13,7 @@ let g:tex_flavor='latex'
 
 
 " Fast editing of the .vimrc
-map <leader>e :e! ~/.vim_runtime/vimrc<cr>
+map <leader>e :e! ~/.vimrc<cr>
   
 " When vimrc is edited, reload it
 autocmd! bufwritepost vimrc source ~/.vimrc
@@ -30,21 +27,15 @@ set so=7
 
 set wildmenu "Turn on WiLd menu
 
-set ruler "Always show current position
-
 set cmdheight=2 "The commandbar height
 
 set hid "Change buffer - without saving
 
-set backspace=eol,start,indent
 set whichwrap+=<,>,h,l
 
 set ignorecase "Ignore case when searching
 set smartcase
 
-set hlsearch "Highlight search things
-
-set incsearch "Make search act like search in modern browsers
 set nolazyredraw "Don't redraw while executing macros 
 
 set magic "Set magic on, for regular expressions
@@ -69,11 +60,7 @@ map <leader>te :tabedit
 map <leader>tc :tabclose<cr>
 map <leader>tm :tabmove
 
-set backspace=indent,eol,start
-set backup
-
 set directory=$HOME/.vim/tmp
-set backupdir=$HOME/.vim/backup
 set clipboard+=unnamed "
 set mouse=a " use mouse everywhere
 
@@ -105,25 +92,12 @@ set cpoptions=aABceFsmq
 set nocompatible
 set backspace=indent,eol,start
 set backup
-set backupdir=~/.vim/backup " where to put backup files
-""set history=50""
-set ruler
+set backupdir=$HOME/.vim/backup
 set showcmd
-set incsearch
 syntax on
 set hlsearch
 
-
-filetype indent on
-
-
 set history=1000  
-set backup 						" backups are nice ...
-set undofile					" so is persistent undo ...
-set undolevels=1000 "maximum number of changes that can be undone
-set undoreload=10000 "maximum number lines to save for undo on a buffer reload
-
-set cursorline 
 
 highlight Cursor guifg=white guibg=black
 highlight iCursor guifg=white guibg=steelblue
@@ -136,9 +110,6 @@ set nu
 set linebreak
 set nowrap                     	" wrap long lines
 set autoindent                 	" indent at the same level of the previous line
-set shiftwidth=4               	" use indents of 4 spaces
-set tabstop=4 					" an indentation every four columns
-set softtabstop=4 				" let backspace delete indent
 "set matchpairs+=<:>            	" match, to be used with % 
 set pastetoggle=<F12>          	" pastetoggle (sane indentation on pastes)
 "set comments=sl:/*,mb:*,elx:*/  " auto format comment blocks
@@ -156,11 +127,8 @@ augroup resCur
 	autocmd BufWinEnter * call ResCur()
 augroup END
 
-:cmap W w
-:cmap Q q 
 "x highlight current line
 set cul                                          
-set pastetoggle=<F2>
 
 
 "" ABBREVATIONS ""
@@ -169,9 +137,8 @@ ab enviroment environment
 ab AL artificial life
 ab GPr genetic programming
 ab GAl genetic algorithm
-ab teh the
 ab adn and
-
+"
 """ CREAM ABBR """
 
 ab accesories accessories
@@ -186,7 +153,6 @@ ab acomodated accommodated
 ab adn and
 ab agian again
 ab ahppen happen
-ab ahve have
 ab ahve have
 ab allready already
 ab almsot almost

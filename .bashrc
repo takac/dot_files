@@ -183,13 +183,4 @@ function chmog()
 	fi
 }
 
-function add_remote_key()
-{
-	if [ $# -ne 2 ]; then
-		echo "useage: add_remote_key remote_user remote_host"
-		return 1
-	else
-		cat ~/.ssh/id_rsa.pub | ssh $1@$2 'cat >> .ssh/authorized_keys'
-	fi
-}
 alias hs='history | grep -i'
