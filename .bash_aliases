@@ -1,13 +1,18 @@
+#History search
+alias hs='history | grep -i'
 
+#Add color to things :D
 alias ls="ls --color"
 alias grep='grep --color=always'
 alias fgrep='fgrep --color=always'
 alias egrep='egrep --color=always'
 
 alias ss="ps -aux"
+#Show all the dot files
 alias dot='ls .[a-za-z0-9_]*'
 alias news="xterm -g 80x45 -e trn -e -s1 -n &"
 
+#Helpful quickies
 alias c="clear"
 alias m="more"
 alias j="jobs"
@@ -29,5 +34,3 @@ alias whence='type -a'                        # where, of a sort
 alias ll='ls --color -l'                              # long list
 alias la='ls --color -a'                              # all but . and ..
 alias l='ls --color -tl'                              #
-
-alias hs='history | grep $1'

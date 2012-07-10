@@ -1,7 +1,11 @@
 EDITOR=vim
 
-[[ ! -e $HOME/.vim/tmp ]] && mkdir $HOME/.vim/tmp
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
 
+#Make tmp dir for vim
+[[ ! -e $HOME/.vim/tmp ]] && mkdir $HOME/.vim/tmp
+#Make backup dir for vim
 [[ ! -e $HOME/.vim/backup ]] && mkdir $HOME/.vim/backup
 
 #need to add to profile
@@ -17,14 +21,14 @@ export BASH_RC_RAN="YES"
 #	fi
 #fi
 
-
+# Format:
+#   GREEN        YELLOW
+# user@comp-name pwd
+# $
 PS1='\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$'
 
 #local computer enviroment variables in this file
 [[ -e ~/.local_vars ]] && source ~/.local_vars ;
-
-# Don't wait for job termination notification
-# set -o notify
 
 # Don't use ^D to exit
 set -o ignoreeof
@@ -44,7 +48,7 @@ shopt -s cdspell
 shopt -s checkwinsize
 
 # make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+#[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 
 # If this shell is interactive, turn on programmable completion enhancements.
@@ -83,6 +87,8 @@ export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}erasedups
 if [ -f ~/.bash_aliases ]; then
 	. ~/.bash_aliases
 fi
+
+#Set ls colors, ie the colors when ls is run
 eval $( dircolors -b )
 LS_COLORS="$LS_COLORS:di=01;37"
 
@@ -122,7 +128,9 @@ fi
 
 # Some example functions
 function settitle() { echo -ne "\e]2;$@\a\e]1;$@\a"; }
-function extract()      # Handy Extract Program.
+
+# Handy Extract Program.
+function extract()
 {
 	if [ -f $1 ] ; then
 		case $1 in
@@ -143,15 +151,6 @@ function extract()      # Handy Extract Program.
 		echo "'$1' is not a valid file"
 			fi
 }
-
-
-#google chrome alias
-alias chrome='google-chrome &1>3 /dev/null'
-alias ecp='eclipse &1>3 /dev/null'
-
-# If not running interactively, don't do anything
-[ -z "$PS1" ] && return
-
 
 psgrep()
 {
@@ -183,4 +182,3 @@ function chmog()
 	fi
 }
 
-alias hs='history | grep -i'
