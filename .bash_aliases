@@ -6,6 +6,9 @@ alias ls="ls --color"
 alias grep='grep --color=always'
 alias fgrep='fgrep --color=always'
 alias egrep='egrep --color=always'
+alias ls='ls --color=always'
+alias tree='tree -C'
+
 
 alias ss="ps -aux"
 #Show all the dot files
@@ -31,6 +34,6 @@ alias less='less -r'                          # raw control characters
 alias whence='type -a'                        # where, of a sort
 
 # some shortcuts for different directory listings
-alias ll='ls --color -l'                              # long list
-alias la='ls --color -a'                              # all but . and ..
-alias l='ls --color -tl'                              #
+alias ll='ls -l'                              # long list
+alias la='ls -a'                              # all but . and ..
+alias l='ls -tl'                              #
