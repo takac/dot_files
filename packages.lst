@@ -12,3 +12,4 @@ flex
 bison
 make
 sed
+diff
