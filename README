@@ -3,6 +3,14 @@
 
 Contents:
 
+ubuntu_install.sh
+--------------------------------
+This is a setup file for configuring a clean ubuntu install.
+To launch it run:
+wget -q -O- https://raw.github.com/takac/dot_files/master/ubuntu_install.sh | sh
+
+The ~/.dots directory must be deleted to reinstall.
+
 .bashrc
 --------------------------------
 File run by bash at term start.

@@ -1,6 +1,11 @@
 #Do an refresh and update
-#sudo apt-get update
-#sudo apt-get upgrade
+sudo apt-get update
+sudo apt-get upgrade
+
+if [ -d ~/.dots ]; then
+	echo ".dots directory already installed, pleased remove this directory to reinstall"
+	exit 1
+fi
 
 #Check for git
 command git >/dev/null 2>&1
@@ -31,12 +36,17 @@ cp ~/.dots/vimrc ~/.vimrc
 cp ~/.dots/bash_aliases ~/.bash_aliases
 cp ~/.dots/screenrc ~/.screenrc
 
-wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
-
+if [ ! -d ~/.oh-my-zsh ]; then
+	echo "Installing oh-my-zsh"
+	wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
+else
+	echo "Oh-my-zsh already installed, remove .oh-my-zsh and retry to reinstall"
+fi
 git clone git://github.com/rupa/z.git ~/.dots/z
 
+echo "" >> ~/.zshrc
 echo "source ~/.bash_aliases" >> ~/.zshrc
-echo ". ~/.dots/z/z.sh" >> ~/.zshrc
+echo "source ~/.dots/z/z.sh" >> ~/.zshrc
 echo "function precmd () {" >> ~/.zshrc
 echo " _z --add \"\$(pwd -P)\"" >> ~/.zshrc
 echo "}" >> ~/.zshrc
@@ -44,3 +54,7 @@ echo "}" >> ~/.zshrc
 echo ". ~/.dots/z/z.sh" >> ~/.bashrc
 
 sed -i 's/robbyrussell/dstufft/g' ~/.zshrc
+USER=$( whoami )
+
+sudo chsh -s $(which zsh) $USER
+
