@@ -1,6 +1,6 @@
 #Do an refresh and update
 sudo apt-get update
-sudo apt-get upgrade
+sudo apt-get -y upgrade
 
 if [ -d ~/.dots ]; then
 	echo ".dots directory already installed, pleased remove this directory to reinstall"
@@ -11,7 +11,7 @@ fi
 command git >/dev/null 2>&1
 if [ $? != 1 ]; then
 	echo "Git not found, install git:"
-	sudo apt-get install git
+	sudo apt-get -y install git
 	command git >/dev/null 2>&1
 	if [ $? != 1 ]; then
 		echo "Git not found. Exiting."
@@ -23,7 +23,7 @@ fi
 git clone https://github.com/takac/dot_files.git ~/.dots
 
 #Install basic packages
-sudo apt-get install $( cat ~/.dots/packages.lst )
+sudo apt-get install -y $( cat ~/.dots/packages.lst )
 
 #Create vim dirs
 mkdir -p ~/.vim/tmp

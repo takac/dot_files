@@ -1,4 +1,4 @@
-git
+git-core
 zsh
 curl
 vim
@@ -6,10 +6,11 @@ screen
 zsh
 aptitude
 tree
-g++
-gcc
-flex
-bison
 make
 sed
 diff
+build-essentials
+flex
+bison
+automake
+checkinstall
