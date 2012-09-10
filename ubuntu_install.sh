@@ -36,6 +36,8 @@ cp ~/.dots/vimrc ~/.vimrc
 cp ~/.dots/bash_aliases ~/.bash_aliases
 cp ~/.dots/screenrc ~/.screenrc
 
+sudo cp ~/.dots/diff.py /usr/bin/diff.py
+
 if [ ! -d ~/.oh-my-zsh ]; then
 	echo "Installing oh-my-zsh"
 	wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh

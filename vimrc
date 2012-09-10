@@ -1,10 +1,17 @@
 set t_Co=256
 
-color Tomorrow-Night
+color Tomorrow-Night-Bright
 
 cmap W w
 cmap Q q
 
+"Ack-grep plugin
+let g:ackprg="ack-grep -H --nocolor --nogroup --column"
+"NerdTree shortcut
+map <leader>nt :NERDTreeToggle<CR>
+:noremap <F3> :NERDTreeToggle<CR>
+
+:noremap <F4> :set hlsearch! hlsearch?<CR>
 
 filetype plugin on
 filetype indent on
@@ -13,8 +20,7 @@ let g:tex_flavor='latex'
 
 
 " Fast editing of the .vimrc
-map <leader>e :e! ~/.vimrc<cr>
-  
+map <leader>e :tabe ~/.vimrc<cr>
 " When vimrc is edited, reload it
 autocmd! bufwritepost vimrc source ~/.vimrc
 

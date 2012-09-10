@@ -1,4 +1,9 @@
-#History search
+#!/bin/bash
+alias fau='sudo apt-get -y upgrade'
+alias fap='sudo apt-get install --force-yes -y'
+
+alias vim='vim -p'
+alias gs='git status'
 alias hs='history | grep -i'
 
 #Add color to things :D

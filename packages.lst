@@ -11,6 +11,8 @@ sed
 diff
 build-essentials
 flex
+ack-grep
+meld
 bison
 automake
 checkinstall
