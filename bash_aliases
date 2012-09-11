@@ -1,4 +1,7 @@
 #!/bin/bash
+alias open='nautilus'
+
+alias ack='ack-grep'
 alias fau='sudo apt-get -y upgrade'
 alias fap='sudo apt-get install --force-yes -y'
 

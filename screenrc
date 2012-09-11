@@ -26,14 +26,15 @@ bind -c selectHighs 5 select 15
 
 bind - command -c selectHighs   #bind the hyphen to 
                                 #command-class selectHighs 
+maptimeout 5
 
-
-screen -t python    3   python
+screen -t zsh_2 2 zsh
 #screen -t rtorrent  0   rtorrent        
+#screen -t python    3   python
 #screen -t tunes        1       ncmpc --host=192.168.1.4 --port=6600 #was for connecting to MPD music server.
-screen -t  bash_1        1 bash
+screen -t  zsh_1        1 zsh
 #screen -t irssi         2       irssi
-screen -t bash_0 0 bash
+screen -t zsh_0 0 zsh
 #screen -t dancing   4       
 #screen -t giantfriend   6       these_are_ssh_to_server_scripts.sh
 #screen -t computerrescue    7   these_are_ssh_to_server_scripts.sh
@@ -44,7 +45,7 @@ screen -t bash_0 0 bash
 #screen -t interactive.fiction  8
 #screen -t hellahella   8       paster serve --daemon  /home/gyaresu/downloads/hellahella/hella.ini     
 
-shelltitle "$ |bash"
+shelltitle "$ |zsh"
 # caption always           "%?%F%{= Kk}%:%{=u kR}%?  %h %-024=%{b+} %c %D %d %M %Y%{= db}"
 
 # THIS IS THE PRETTY BIT

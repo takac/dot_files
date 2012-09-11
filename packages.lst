@@ -1,5 +1,8 @@
 git-core
 zsh
+maven
+openjdk-6-jdk
+ctags
 curl
 vim
 screen
@@ -9,7 +12,6 @@ tree
 make
 sed
 diff
-build-essentials
 flex
 ack-grep
 meld

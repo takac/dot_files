@@ -1,6 +1,6 @@
 set t_Co=256
 
-color Tomorrow-Night-Bright
+color Tomorrow-Night
 
 cmap W w
 cmap Q q
