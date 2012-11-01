@@ -71,7 +71,8 @@ echo "}" >> ~/.zshrc
 echo ". ~/.dots/z/z.sh" >> ~/.bashrc
 
 #Set the zsh theme to dstufft
-sed -i 's/robbyrussell/dstufft/g' ~/.zshrc
+sed -i -e 's/^plugins=.*/plugins=(git mvn debian screen)/' -e 's/^ZSH_THEME=.*/ZSH_THEME=dstufft/' ~/.zshrc
+
 
 #Change default shell to zsh
 USER=$( whoami )
