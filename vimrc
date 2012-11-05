@@ -1,61 +1,106 @@
+"Basic colouring and encoding
 set t_Co=256
-
-set laststatus=2
 set encoding=utf-8
 
+"Powerline config
+set laststatus=2
+
+"Vundle config
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
-Bundle 'VimClojure'
-Bundle 'tpope/vim-surround'
-Bundle 'tpope/vim-fugitive'
-Bundle 'vundle'
-Bundle 'Tabular'
-Bundle 'Lokaltog/vim-powerline' 
 Bundle 'Lokaltog/vim-easymotion' 
-Bundle 'kana/vim-smartinput' 
-Bundle 'scrooloose/nerdtree'
+Bundle 'Lokaltog/vim-powerline' 
+Bundle 'Tabular'
+Bundle 'VimClojure'
 Bundle 'chriskempson/base16-vim'
 Bundle 'javacomplete'
+Bundle 'kana/vim-smartinput' 
+Bundle 'scrooloose/nerdtree'
 Bundle 'sukima/xmledit'
+Bundle 'tpope/vim-git'
+Bundle 'tpope/vim-fugitive'
+Bundle 'tpope/vim-surround'
+Bundle 'vundle'
 
+"Set colours
+if has("gui_running")
+	color base16-eighties
+	set background=dark
+else
+	color ron
+endif
+
+let g:fugitive_git_executable = 'git' 
+
+"Set fonts
+if has("gui_running")
+	if has("gui_macvim")
+		set guifont=Inconsolata:h17
+	endif
+endif
+
+:au FocusLost * :set number
+:au FocusGained * :set relativenumber
+autocmd InsertEnter * :set number
+autocmd InsertLeave * :set relativenumber
+
+"Easy motion config
 let g:EasyMotion_leader_key = '<Space>'
 
+"VimClojure config
 let g:vimclojure#HighlightBuiltins = 1
 let g:vimclojure#ParenRainbow = 1
 
-let g:Powerline_symbols = 'fancy'
+"Set cross system compatibility
+if has("unix")
+	let s:uname = system("uname")
+	if s:uname == "Darwin\n"
+		let g:Powerline_symbols = 'compatible'
+		let mapleader="`"
+	else 
+		let g:Powerline_symbols = 'fancy'
+	endif
+endif
 
+"Basic functionality
 filetype plugin on
 filetype indent on
+syntax on
 
-set listchars=tab:▸\ ,eol:¬,trail:●
-nmap <leader>l :set list!<CR>
-set nocompatible
+"Highlighting Options
+"highlight Cursor guifg=white guibg=black
+highlight iCursor guifg=white guibg=steelblue
 
-command! -nargs=? -complete=file WQ :wq (<q-args>) 
-command! -nargs=? -complete=file Wq :wq (<q-args>) 
-command! -nargs=0 -complete=file Q  :q
-command! -nargs=? -complete=file W  :w <q-args>
+"fix mistype :W and :Q
+command! -bang -range=% -complete=file -nargs=* WQ <line1>,<line2>wq<bang> <args>
+command! -bang -range=% -complete=file -nargs=* Wq <line1>,<line2>wq<bang> <args>
+command! -bang -range=% -complete=file -nargs=* W <line1>,<line2>w<bang> <args>
+command! -bang Q quit<bang>
+  
+" Tab configuration
+nnoremap <leader>tn :tabnew<cr>
+nnoremap <leader>tc :tabclose<cr>
+nnoremap <leader>te :tabedit 
+nnoremap <leader>tm :tabmove
 
-color slate
-"set background=dark
+"Show whitespace
+nnoremap <leader>l :set list!<CR>
+nnoremap <leader>w :w<CR>
+nnoremap <silent> <leader><CR> :set hlsearch!<CR>
+nnoremap <leader>e :tabe ~/.vimrc<CR>
+"
+" Visual mode pressing * or # searches for the current selection
+" Super useful! From an idea by Michael Naumann
+vnoremap <silent> * :call VisualSelection('f')<CR>
+vnoremap <silent> # :call VisualSelection('b')<CR>
 
-"Ack-grep plugin
-let g:ackprg="ack-grep -H --nocolor --nogroup --column"
-"NerdTree shortcut
-map <leader>nt :NERDTreeToggle<CR>
-:noremap <F3> :NERDTreeToggle<CR>
+"NerdTree Toggle
+nnoremap <leader>d :NERDTreeToggle<cr>
 
-:noremap <F4> :set hlsearch! hlsearch?<CR>
 
-filetype plugin on
-filetype indent on
-
-" Fast editing of the .vimrc
-map <leader>e :tabe ~/.vimrc<cr>
 " When vimrc is edited, reload it
-autocmd! bufwritepost .vimrc source ~/.vimrc
+autocmd! bufwritepost .*vimrc source ~/.vimrc
 
 autocmd FileType python set omnifunc=pythoncomplete#Complete
 autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
@@ -68,110 +113,73 @@ autocmd FileType c set omnifunc=ccomplete#Complete
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 " """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Set 7 lines to the curors - when moving vertical..
-set so=7
-
-set wildmenu "Turn on WiLd menu
-
-set cmdheight=2 "The commandbar height
-
-set hid "Change buffer - without saving
-
-set whichwrap+=<,>,h,l
-
-set ignorecase "Ignore case when searching
-set smartcase
-
-set nolazyredraw "Don't redraw while executing macros 
-
-set magic "Set magic on, for regular expressions
-
-set showmatch "Show matching bracets when text indicator is over them
-set mat=2 "How many tenths of a second to blink
-
-"No sound on errors
-set noerrorbells
-set novisualbell
-set t_vb=
-set tm=500
-
-set undofile                " Save undo's after file closes
-set undodir=$HOME/.vim/undo " where to save undo histories
-set undolevels=1000         " How many undos
-set undoreload=10000        " number of lines to save for undo
-
-" Tab configuration
-map <leader>tn :tabnew<cr>
-map <leader>te :tabedit
-map <leader>tc :tabclose<cr>
-map <leader>tm :tabmove
-
-"Source any working vim file
-au! BufWritePost *.vim :so %
-
-func! UseMaven()
-	"Assume pom in cwd
-	nmap <leader>m :make<CR>
-	set errorformat=\[ERROR]\ %f:[%l\\,%c]\ %m
-	set makeprg=mvn\ compile\ \\\|\ sed\ -n\ 's@\\\[ERROR\\\]\ \\\/.*@\\\0@p\'\
-endfunc
-"au! BufAdd src/**/*.java :call UseMaven()
-
-set directory=$HOME/.vim/tmp
-set clipboard+=unnamed "
 "set mouse=a " use mouse everywhere
+"set ttymouse=xterm2     " necessary for gnu screen & mouse
 
-set shiftwidth=4 " auto-indent amount when using cindent, 
-" >>, << and stuff like that
-set softtabstop=4 " when hitting tab or backspace, how many spaces 
-"should a tab be (see expandtab)
-set tabstop=4 " real tabs should be 8, and they will show with 
+set autoindent                      " indent at the same level of the previous line
+set backspace=eol,start,indent
+set backup                          " backups are nice ...
+set backupdir=~/.vim/backup
+set clipboard+=unnamed              "
+set cmdheight=2                     " The commandbar height
+set cpoptions=aABceFsmq
+"set cursorcolumn                    " highlight the current column
+set cursorline                      " highlight current line :set cul
+set directory=~/.vim/tmp
+set hid                             " Change buffer - without saving
+set history=1000
+set hlsearch                        " Highlight search things
+set ignorecase                      " Ignore case when searching
+set incsearch                       " Make search act like search in modern browsers
+set linebreak
+set listchars=tab:▸\ ,eol:¬,trail:●
+set magic                           " Set magic on, for regular expressions
+set mat=2                           " How many tenths of a second to blink
+set noerrorbells                    " No sound on errors
+set noexrc                          " don't use local version of .(g)vimrc, .exrc
+set nolazyredraw                    " Don't redraw while executing macros
+set novisualbell
+set nowrap                          " wrap long lines
+"set nu
+set numberwidth=5                   " We are good up to 99999 lines
+set pastetoggle=<F12>               " pastetoggle (sane indentation on pastes)
+set report=0                        " tell us when anything is changed via :...
+set ruler                           " Always show current positions along the bottom^
+set shiftwidth=4                    " auto-indent amount when using cindent,
+set showcmd
+set showmatch                       " Show matching bracets when text indicator is over them
+set smartcase                       " use smartcase searching
+set so=7                            " Minimal number of screen lines to keep above and below the cursor.
+set softtabstop=4                   " when hitting tab or backspace, how many spaces
+set t_vb=
+set tabstop=4                       " an indentation every four columns
+set tabstop=4                       " real tabs should be 8, and they will show with
+set tm=500
+set undodir=~/.vim/undo             " where to save undo histories
+set undofile                        " so is persistent undo ...
+set undolevels=1000                 " How many undos
+set undoreload=10000                " maximum number lines to save for undo on a buffer reload
+set viminfo='10,\"100,:20,%,n~/.viminfo
+set whichwrap+=<,>,h,l
+set wildmenu                        " Turn on WiLd menu
+"set matchpairs+=<:>            	" match, to be used with % 
+set guicursor+=i:blinkwait10
+set guicursor+=i:ver100-iCursor
+set guicursor+=n-v-c:blinkon0
+set guicursor=n-v-c:block-Cursor
 
-"set cursorcolumn " highlight the current column
-"set cursorline " highlight current line
-set incsearch " BUT do highlight as you type you ^
-set numberwidth=5 " We are good up to 99999 lines
-set report=0 " tell us when anything is changed via :...
-set ruler " Always show current positions along the bottom^
+"set comments=sl:/*,mb:*,elx:*/  " auto format comment blocks
+
 "set statusline=%F%m%r%h%w[%L][%{&ff}]%y[%p%%][%04l,%04v]
-" Tell vim to remember certain things when we exit
 "  '10  :  marks will be remembered for up to 10 previously edited files
 "  "100 :  will save up to 100 lines for each register
 "  :20  :  up to 20 lines of command-line history will be remembered
 "  %    :  saves and restores the buffer list
 "  n... :  where to save the viminfo files
-set viminfo='10,\"100,:20,%,n~/.viminfo
 
-set noexrc " don't use local version of .(g)vimrc, .exrc
-"set background=dark " we plan to use a dark background
-set cpoptions=aABceFsmq
-
-set backspace=indent,eol,start
-set backup
-set backupdir=$HOME/.vim/backup
-set showcmd
-syntax on
-set hlsearch
-
-set history=1000  
-
-highlight Cursor guifg=white guibg=black
-highlight iCursor guifg=white guibg=steelblue
-
-set guicursor=n-v-c:block-Cursor
-set guicursor+=i:ver100-iCursor
-set guicursor+=n-v-c:blinkon0
-set guicursor+=i:blinkwait10
-
-set nu
-set linebreak
-set nowrap                     	" wrap long lines
-set autoindent                 	" indent at the same level of the previous line
-"set matchpairs+=<:>            	" match, to be used with % 
-set pastetoggle=<F12>          	" pastetoggle (sane indentation on pastes)
-"set comments=sl:/*,mb:*,elx:*/  " auto format comment blocks
 " Remove trailing whitespaces and ^M chars
 autocmd FileType c,cpp,java,php,js,python,twig,xml,yml autocmd BufWritePre <buffer> :call setline(1,map(getline(1,"$"),'substitute(v:val,"\\s\\+$","","")'))
+" Tell vim to remember certain things when we exit
 function! ResCur()
 	if line("'\"") <= line("$")
 		normal! g`"
@@ -184,10 +192,6 @@ augroup resCur
 	autocmd BufWinEnter * call ResCur()
 augroup END
 
-"x highlight current line
-set cul                                          
-
-
 "" ABBREVATIONS ""
 iabbrev env environment
 iabbrev enviroment environment
@@ -195,7 +199,7 @@ iabbrev AL artificial life
 iabbrev GPr genetic programming
 iabbrev GAl genetic algorithm
 iabbrev adn and
-"
+
 """ CREAM ABBR """
 
 iabbrev accesories accessories
