@@ -123,15 +123,6 @@ vnoremap <silent> # :call VisualSelection('b')<CR>
 vnoremap <silent> <leader>a :<C-U>let @/=GetVisual()<CR> :set hls<CR>:Ack "<C-R>/"<CR>
 nnoremap <silent> <leader>a :let @/='<C-R>=expand("<cword>")<CR>'<CR>:Ack <cword><CR>:set hls<CR>
 
-" Put word under cursor into search register and highlight
-nnoremap <silent> * :let @/='\<<C-R>=expand("<cword>")<CR>\>'<CR>:set hls<CR>
-" magic stuff... to search using visual selection
-vnoremap <silent> * :<C-U>
-  \let old_reg=getreg('"')<Bar>let old_regtype=getregtype('"')<CR>
-  \gvy:let @/=substitute(
-  \escape(@", '/\.*$^~['), '\_s\+', '\\_s\\+', 'g')<CR>
-  \gV:call setreg('"', old_reg, old_regtype)<CR>:set hls<CR>
-
 " Useful location list search. Find current word in buffer and populate
 " location list and show location list. To close location list use :lcl[ose]
 nnoremap <silent> <leader>f :<C-U>call setloclist(".", [])<CR>
@@ -144,7 +135,8 @@ vnoremap <silent> <leader>f :normal *<CR>
 	\:g/<C-R>//laddexpr expand("%") .
 	\ ":" . line(".") .  ":" . getline(".")<CR>
 	\:lw<CR>
-    \:nnoremap <silent> <buffer> q :lcl<CR>
+    \:nnoremap <silent> <buffer> q :lcl
+<CR>
 
 " like normal % but for quote marks
 nnoremap <leader>% :call MatchQuote()<CR>
