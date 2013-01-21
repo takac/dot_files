@@ -21,6 +21,7 @@ fi
 
 #Clone setup files
 git clone https://github.com/takac/dot_files.git ~/.dots
+git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 
 #Install basic packages
 sudo apt-get install -y $( cat ~/.dots/packages.lst )

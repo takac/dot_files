@@ -9,7 +9,7 @@ set laststatus=2
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
-Bundle 'maksimr/vim-jsbeautify'
+Bundle 'Lokaltog/TagHighlight'
 Bundle 'Lokaltog/vim-easymotion'
 Bundle 'Lokaltog/vim-powerline'
 Bundle 'SirVer/ultisnips'
@@ -17,10 +17,11 @@ Bundle 'Tabular'
 Bundle 'VimClojure'
 Bundle 'ack.vim'
 Bundle 'chriskempson/base16-vim'
-"Bundle 'git://git.wincent.com/command-t.git'
 Bundle 'javacomplete'
 Bundle 'kana/vim-smartinput'
+Bundle 'kien/rainbow_parentheses.vim'
 Bundle 'majutsushi/tagbar'
+Bundle 'maksimr/vim-jsbeautify'
 Bundle 'peaksea'
 Bundle 'scrooloose/nerdcommenter'
 Bundle 'scrooloose/nerdtree'
@@ -57,6 +58,11 @@ else
 	set background=dark
 	color peaksea
 endif
+
+" Rainbow Parens!
+au VimEnter * RainbowParenthesesToggle 
+au Syntax * RainbowParenthesesLoadBraces
+au Syntax * RainbowParenthesesLoadRound
 
 set number
 "set relativenumber
@@ -118,11 +124,6 @@ vnoremap <silent> # :call VisualSelection('b')<CR>
 vnoremap <silent> <leader>a :<C-U>let @/=GetVisual()<CR> :set hls<CR>:Ack "<C-R>/"<CR>
 nnoremap <silent> <leader>a :let @/='<C-R>=expand("<cword>")<CR>'<CR>:Ack <cword><CR>:set hls<CR>
 
-" Windows/Mac like behaviour, delete whole word
-inoremap <C-Backspace> <C-O>cb
-" Don't like this mapping at all..
-nnoremap <C-Backspace> ldb
-
 " Put word under cursor into search register and highlight
 nnoremap <silent> * :let @/='\<<C-R>=expand("<cword>")<CR>\>'<CR>:set hls<CR>
 " magic stuff... to search using visual selection
@@ -169,7 +170,8 @@ nnoremap <leader>z :setlocal foldexpr=(getline(v:lnum)=~@/)?0:(getline(v:lnum-1)
 let g:syntastic_error_symbol='✗'
 let g:syntastic_warning_symbol='⚠'
 
-" Map q to close a quickfix buffer, no need for macros in qf anyway
+cnoremap <C-a> <Home>
+cnoremap <C-e> <End>
 
 function! GetVisual() range
         let reg_save = getreg('"')
@@ -228,6 +230,11 @@ fun! MatchQuote()
 		call setpos(".", first)
 	endif
 endf
+
+fun! ReplaceLic()
+	exec "norm! V}ygv\<ESC>p%di(jBCtrue;\<ESC>jwCnull;\<ESC>jBCnull;\<ESC>jBCtrue;\<ESC>jBC999;\<ESC>jBC\"0.9\";\<ESC>"
+endf
+"jllDjhDanull;\<ESC>kuanull;\<ESC>j
  
 " When vimrc is edited, reload it and fix powerline colorscheme
 autocmd! bufwritepost .vimrc call RestartVim()
@@ -258,6 +265,9 @@ function! s:RunShellCommand(cmdline)
   1
 endfunction
 
+" Quick new object
+inoremap <C-Q> <ESC>^yw$a = new <C-R>0()<LEFT>
+
 "Fugitive
 nnoremap <leader>gd :Gdiff<cr>
 nnoremap <leader>gs :Gstatus<cr>
@@ -268,15 +278,21 @@ noremap k gk
 noremap gj j
 noremap gk k
 
-" Don't move on *
-nnoremap * *<c-o>
-" Show the stack of syntax hilighting classes affecting whatever is under the
-" cursor.
+" Show the stack of syntax hilighting classes affecting whatever is under the cursor.
 function! SynStack()
   echo join(map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")'), " > ")
 endfunc
 
-nnoremap <leader>s :call SynStack()<CR>
+nnoremap <leader>sn :call SynStack()<CR>
+
+" Evaluate expression highlighted and replace 
+vnoremap Z s<C-R>=eval(substitute("<C-R>"", "\r", "", ""))<CR><ESC>
+
+" Swap arguments of function
+" func cursor-here>>(yargg, x, aol) 
+nnoremap <leader>sw %db%lvawp%%P%
+" func (yarg, xarg)<<cursor-here
+nnoremap <leader>ws db%lvawp%%P%%
 
 "magic capitilisation
 inoremap <C-U> <esc>mzg~iw`za
@@ -285,13 +301,13 @@ au VimResized * :wincmd =
 " When vimrc is edited, reload it
 autocmd! bufwritepost .*vimrc source ~/.vimrc
 
-autocmd FileType python set omnifunc=pythoncomplete#Complete
-autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
-autocmd FileType css set omnifunc=csscomplete#CompleteCSS
-autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
-autocmd FileType php set omnifunc=phpcomplete#CompletePHP
-autocmd FileType c set omnifunc=ccomplete#Complete
+" autocmd FileType python set omnifunc=pythoncomplete#Complete
+" autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
+" autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
+" autocmd FileType css set omnifunc=csscomplete#CompleteCSS
+" autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
+" autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+" autocmd FileType c set omnifunc=ccomplete#Complete
 
 "fix mistype :W and :Q
 command! -bang -range=% -complete=file -nargs=* WQ <line1>,<line2>wq<bang> <args>
@@ -305,9 +321,10 @@ let g:UltiSnipsEditSplit = 'vertical'
 
 let NERDSpaceDelims=1
 
-set path+=~/git/web_secure_connect/src/**
-set tags+=~/git/web_secure_connect/tags
+set path+=~/git/secure_connect/src/**
+set tags+=~/git/secure_connect/tags
 set tags+=~/.tags
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
@@ -359,7 +376,7 @@ set undodir=~/.vim/undo//             " where to save undo histories
 set undofile                        " so is persistent undo ...
 set undolevels=1000                 " How many undos
 set undoreload=10000                " maximum number lines to save for undo on a buffer reload
-set viminfo='10,\"100,:20,%,n~/.viminfo
+set viminfo='10,\"100,:200,%,n~/.viminfo
 set whichwrap+=<,>,h,l
 set wildmenu                        " Turn on WiLd menu
 set matchpairs+=<:>            	" match, to be used with %
@@ -372,6 +389,7 @@ set guicursor=n-c:block-Cursor-blinkon0
 set guicursor+=v:block-vCursor-blinkon0
 set guicursor+=i:ci-ver20-iCursor
 highlight iCursor guifg=white guibg=white
+
 " Make those folders automatically if they don't already exist.
 if !isdirectory(expand(&undodir))
     call mkdir(expand(&undodir), "p")
@@ -389,7 +407,7 @@ endif
 "set statusline=%F%m%r%h%w[%L][%{&ff}]%y[%p%%][%04l,%04v]
 "  '10  :  marks will be remembered for up to 10 previously edited files
 "  "100 :  will save up to 100 lines for each register
-"  :20  :  up to 20 lines of command-line history will be remembered
+"  :200  :  up to 200 lines of command-line history will be remembered
 "  %    :  saves and restores the buffer list
 "  n... :  where to save the viminfo files
 
@@ -433,17 +451,71 @@ function! VisualSelection(direction) range
     let @" = l:saved_reg
 endfunction
 
+noremap <F5> :call JavaInsertImport()<CR>
+function! JavaInsertImport()
+  exe "normal mz"
+  let cur_class = expand("<cword>")
+  try
+    if search('^\s*import\s.*\.' . cur_class . '\s*;') > 0
+      throw getline('.') . ": import already exist!"
+    endif
+    wincmd }
+    wincmd P
+    1
+    if search('^\s*public.*\s\%(class\|interface\)\s\+' . cur_class) > 0
+      1
+      if search('^\s*package\s') > 0
+        yank y
+      else
+        throw "Package definition not found!"
+      endif
+    else
+      throw cur_class . ": class not found!"
+    endif
+    wincmd p
+    normal! G
+    " insert after last import or in first line
+    if search('^\s*import\s', 'b') > 0
+      put y
+    else
+      1
+      put! y
+    endif
+    substitute/^\s*package/import/
+    substitute/\s\+/ /g
+    exe "normal! 2ER." . cur_class . ";"
+  catch /.*/
+    echoerr v:exception
+  finally
+    " wipe preview window (from buffer list)
+    silent! wincmd P
+    if &previewwindow
+      bwipeout
+    endif
+    exe "normal! `z"
+  endtry
+endfunction
+
 augroup resCur
 	autocmd!
 	autocmd BufWinEnter * call ResCur()
 augroup END
 
 "" ABBREVATIONS ""
-iabbrev env environment
+"Programming spelling mistakes
+iabbrev elsif elseif
+iabbrev elsef elseif
+iabbrev elseof elseif
+iabbrev elseof elseif
+iabbrev elsof elseif
+iabbrev elsiof elseif
+iabbrev endfi endif
+
+" My Abbrevs
 iabbrev enviroment environment
-iabbrev AL artificial life
-iabbrev GPr genetic programming
-iabbrev GAl genetic algorithm
+" iabbrev AL artificial life
+" iabbrev GPr genetic programming
+" iabbrev GAl genetic algorithm
 iabbrev adn and
 "
 """ CREAM ABBR """
@@ -630,6 +702,8 @@ iabbrev equippment equipment
 iabbrev Equippment Equipment
 iabbrev esle else
 iabbrev Esle Else
+iabbrev enviroment environment
+iabbrev Enviroment Environment
 iabbrev excitment excitement
 iabbrev Excitment Excitement
 iabbrev exmaple example
