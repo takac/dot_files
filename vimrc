@@ -9,106 +9,307 @@ set laststatus=2
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
-Bundle 'Lokaltog/vim-easymotion' 
-Bundle 'Lokaltog/vim-powerline' 
+Bundle 'Lokaltog/TagHighlight'
+Bundle 'Lokaltog/vim-easymotion'
+Bundle 'Lokaltog/vim-powerline'
+Bundle 'SirVer/ultisnips'
 Bundle 'Tabular'
 Bundle 'VimClojure'
+Bundle 'ack.vim'
 Bundle 'chriskempson/base16-vim'
 Bundle 'javacomplete'
-Bundle 'kana/vim-smartinput' 
+Bundle 'kana/vim-smartinput'
+Bundle 'kien/rainbow_parentheses.vim'
+Bundle 'majutsushi/tagbar'
+Bundle 'maksimr/vim-jsbeautify'
+Bundle 'peaksea'
+Bundle 'scrooloose/nerdcommenter'
 Bundle 'scrooloose/nerdtree'
+Bundle 'scrooloose/syntastic'
+Bundle 'skammer/vim-css-color'
+Bundle 'sudo.vim'
 Bundle 'sukima/xmledit'
-Bundle 'tpope/vim-git'
+Bundle 'thinca/vim-quickrun.git'
 Bundle 'tpope/vim-fugitive'
+Bundle 'tpope/vim-git'
+Bundle 'tpope/vim-repeat'
 Bundle 'tpope/vim-surround'
+Bundle 'tsaleh/vim-matchit'
+Bundle 'vim-scripts/scratch.vim'
 Bundle 'vundle'
-
-"Set colours
-if has("gui_running")
-	color base16-eighties
-	set background=dark
-else
-	color ron
-endif
-
-let g:fugitive_git_executable = 'git' 
-
-"Set fonts
-if has("gui_running")
-	if has("gui_macvim")
-		set guifont=Inconsolata:h17
-	endif
-endif
-
-:au FocusLost * :set number
-:au FocusGained * :set relativenumber
-autocmd InsertEnter * :set number
-autocmd InsertLeave * :set relativenumber
-
-"Easy motion config
-let g:EasyMotion_leader_key = '<Space>'
-
-"VimClojure config
-let g:vimclojure#HighlightBuiltins = 1
-let g:vimclojure#ParenRainbow = 1
-
-"Set cross system compatibility
-if has("unix")
-	let s:uname = system("uname")
-	if s:uname == "Darwin\n"
-		let g:Powerline_symbols = 'compatible'
-		let mapleader="`"
-	else 
-		let g:Powerline_symbols = 'fancy'
-	endif
-endif
 
 "Basic functionality
 filetype plugin on
 filetype indent on
 syntax on
 
-"Highlighting Options
-"highlight Cursor guifg=white guibg=black
-highlight iCursor guifg=white guibg=steelblue
+"Set colours and fonts
+if has("gui_running")
+	set background=dark
+	color base16-tomorrow
+	if has("gui_macvim")
+		set guifont=Inconsolata:h17
+	elseif has("gui_gtk2")
+		set guifont=Inconsolata\ 13
+	elseif has("gui_win32") || has("gui_win64")
+		set guifont=Consolas:h11:cANSI
+	endif
+else
+	set background=dark
+	color peaksea
+endif
 
-"fix mistype :W and :Q
+" Rainbow Parens!
+au VimEnter * RainbowParenthesesToggle 
+au Syntax * RainbowParenthesesLoadBraces
+au Syntax * RainbowParenthesesLoadRound
+
+"Easy motion config
+let g:EasyMotion_leader_key = '<Space>'
+hi EasyMotionTargetDefault cterm=bold ctermfg=196 gui=bold guifg=#ff0000
+
+set pastetoggle=<F12>               " pastetoggle (sane indentation on pastes)
+
+"VimClojure config
+let g:vimclojure#HighlightBuiltins = 1
+let g:vimclojure#ParenRainbow = 1
+"
+"Set cross system compatibility
+if has("unix")
+	let s:uname = system("uname")
+	if s:uname == "Darwin\n"
+		set pastetoggle=<leader>p          	" pastetoggle (sane indentation on pastes)
+		let g:Powerline_symbols = 'compatible'
+		let mapleader="§"
+	else
+		let g:Powerline_symbols = 'fancy'
+	endif
+endif
+
+
+"expand local path
+cabbr <expr> %% expand('%:p:h')
+
+" FIXME - make cross platform.
+" Ack-grep plugin
+let g:ackprg="ack-grep -H --nocolor --nogroup --column"
+
+" Syntastic Config
+let g:syntastic_error_symbol='✗'
+let g:syntastic_warning_symbol='⚠'
+
+nnoremap <leader>e :tabe ~/.vimrc<CR>
+nnoremap <leader>l :set list!<CR>
+nnoremap <leader>tc :tabclose<CR>
+nnoremap <leader>te :tabedit
+nnoremap <leader>tm :tabmove
+nnoremap <leader>tn :tabnew<CR>
+nnoremap <silent> <F1> :bn<CR>
+nnoremap <silent> <F2> :bp<CR>
+nnoremap <silent> <F3> :NERDTreeToggle<CR>
+nnoremap <silent> <leader>n :NERDTreeToggle<CR>
+nnoremap <silent> <F4> :set hlsearch!<CR>
+nnoremap <silent> <leader><CR> :set hlsearch!<CR>
+nnoremap <silent> <F7> :set spell!<CR>
+nnoremap <silent> <F8> :TagbarToggle<CR>
+nnoremap <leader>w :w<CR>
+
+" Searching with visual selections, taken from somewhere..
+" 'f' - forward and 'b' - backwards
+vnoremap <silent> * :call VisualSelection('f')<CR>
+vnoremap <silent> # :call VisualSelection('b')<CR>
+
+" Use current selection for Acking all files in cwd
+vnoremap <silent> <leader>a :<C-U>let @/=GetVisual()<CR> :set hls<CR>:Ack "<C-R>/"<CR>
+nnoremap <silent> <leader>a :let @/='<C-R>=expand("<cword>")<CR>'<CR>:Ack <cword><CR>:set hls<CR>
+
+" Useful location list search. Find current word in buffer and populate
+" location list and show location list. To close location list use :lcl[ose]
+nnoremap <silent> <leader>f :<C-U>call setloclist(".", [])<CR>
+	\:g/<C-R>=expand("<cword>")<CR>/laddexpr expand("%") .
+	\ ":" . line(".") .  ":" . getline(".")<CR>
+	\:lw<CR>
+    \:exec "nnoremap <silent> <buffer> q :lcl<CR>"
+" Use visual selection for search
+vnoremap <silent> <leader>f :normal *<CR>
+	\:g/<C-R>//laddexpr expand("%") .
+	\ ":" . line(".") .  ":" . getline(".")<CR>
+	\:lw<CR>
+    \:nnoremap <silent> <buffer> q :lcl
+<CR>
+
+" like normal % but for quote marks
+nnoremap <leader>% :call MatchQuote()<CR>
+
+set foldmethod=expr
+" Usually editing java.. so hide the imports
+set foldexpr=HideImportFold(v:lnum)
+
+function! HideImportFold(lnum)
+	if getline(a:lnum) =~ '^import'
+		return '1'
+	endif
+	if getline(a:lnum) =~ '\v^\s*$'
+		return '-1'
+	endif
+	return '0'
+endfunction
+
+" Hide searched for expression
+nnoremap <leader>Z :setlocal foldexpr=(getline(v:lnum)=~@/)?1:0 foldmethod=expr foldlevel=0 foldcolumn=2<CR>
+" Fold anything not matched! I should use this more!!
+nnoremap <leader>z :setlocal foldexpr=(getline(v:lnum)=~@/)?0:(getline(v:lnum-1)=~@/)\\|\\|(getline(v:lnum+1)=~@/)?1:2 foldmethod=expr foldlevel=0 foldcolumn=2<CR>
+
+" Emacs like movement in ex commands, <C-A> start of the line, <C-E> eol
+cnoremap <C-a> <Home>
+cnoremap <C-e> <End>
+
+function! GetVisual() range
+        let reg_save = getreg('"')
+        let regtype_save = getregtype('"')
+        let cb_save = &clipboard
+        set clipboard&
+        normal! ""gvy
+        let selection = getreg('"')
+        call setreg('"', reg_save, regtype_save)
+        let &clipboard = cb_save
+        return selection
+endfunction
+
+" A horrible experiment to help adding bundles
+autocmd! BufEnter .vimrc nnoremap <leader>b gg/Bundle<CR>OBundle '<C-R>+'<ESC>:let @/="<C-R>=escape(getline("."), '/\.*$^~[')<CR>"<CR>vip:sor<CR>:w<CR>:BundleInstall<CR>q
+
+" Move to matching " or ' a lot like %
+" Turns out not that useful..
+" Should probably use onoremap..
+fun! MatchQuote()
+	let cur_char = getline(".")[col('.')-1]
+	let begin = getpos(".")
+	if cur_char  != '"' && cur_char != "'"
+		"If quote not under cursor.. look forward for it
+		echo "no quote.." . cur_char
+		exec "norm f'"
+		let s_pos_1 = getpos(".")
+		call setpos(".", begin)
+		exec 'norm f"'
+		let s_pos_2 = getpos(".")
+		call setpos(".", begin)
+		" if quote not found forward.. look back
+		if s_pos_1 == begin && s_pos_2 == begin
+			exec "norm F'"
+			let s_pos_1 = getpos(".")
+			call setpos(".", begin)
+			exec 'norm F"'
+			let s_pos_2 = getpos(".")
+			call setpos(".", begin)
+			if s_pos_1 == begin && s_pos_2 == begin
+				echo "no quotes found"
+				return
+			endif
+		endif
+		if s_pos_1 == begin
+			call setpos(".", s_pos_2)
+			return
+		endif
+		call setpos(".", s_pos_1)
+		return
+	endif
+	exec "norm vi" . cur_char . "\<ESC>l"
+	let end = getpos(".")
+	exec "norm vi" . cur_char . "o\<ESC>h"
+	let first = getpos(".")
+	if begin == first
+		call setpos(".", end)
+	else
+		call setpos(".", first)
+	endif
+endf
+
+" When vimrc is edited, reload it and fix powerline colorscheme
+autocmd! bufwritepost .vimrc call RestartVim()
+if !exists("*RestartVim")
+	fun! RestartVim()
+		source ~/.vimrc
+		:PowerlineReloadColorscheme
+	endf
+endif
+
+" Occasionally useful to run shell command in vim split window
+command! -complete=shellcmd -nargs=+ Shell call s:RunShellCommand(<q-args>)
+function! s:RunShellCommand(cmdline)
+  echo a:cmdline
+  let expanded_cmdline = a:cmdline
+  for part in split(a:cmdline, ' ')
+     if part[0] =~ '\v[%#<]'
+        let expanded_part = fnameescape(expand(part))
+        let expanded_cmdline = substitute(expanded_cmdline, part, expanded_part, '')
+     endif
+  endfor
+  botright new
+  setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile nowrap
+  call setline(1, 'You entered:    ' . a:cmdline)
+  call setline(2, 'Expanded Form:  ' .expanded_cmdline)
+  call setline(3,substitute(getline(2),'.','=','g'))
+  execute '$read !'. expanded_cmdline
+  setlocal nomodifiable
+  1
+endfunction
+
+"Fugitive
+nnoremap <leader>gd :Gdiff<cr>
+nnoremap <leader>gs :Gstatus<cr>
+
+" Navigate through wrapped lines
+noremap j gj
+noremap k gk
+noremap gj j
+noremap gk k
+
+" Show the stack of syntax hilighting classes affecting whatever is under the cursor.
+function! SynStack()
+  echo join(map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")'), " > ")
+endfunc
+
+" TODO make a command and then map.
+nnoremap <leader>sn :call SynStack()<CR>
+
+" Evaluate calculation highlighted and replace with answer!
+" Try it now:
+" 2+88*3
+" 266
+vnoremap Z s<C-R>=eval(substitute("<C-R>"", "\r", "", ""))<CR><ESC>
+
+" Swap arguments of function
+" func cursor-here>>(yargg, xi, aol) 
+" goes to ->  >>(aol, xi, yargg)
+nnoremap <leader>sw %db%lvawp%%P%
+" func (yarg, xrg)<<cursor-here
+nnoremap <leader>ws db%lvawp%%P%%
+" TODO make into function, work out if on ( or ) 
+
+" magic capitilisation, not really very useful.
+" Inverts capitilisation for previous word
+inoremap <C-U> <esc>mzg~iw`za
+" Resize splits when the window is resized
+au VimResized * :wincmd =
+" When vimrc is edited, reload it
+autocmd! bufwritepost .*vimrc source ~/.vimrc
+
+" fix mistype :W and :Q
+" OH SO GOOD!
 command! -bang -range=% -complete=file -nargs=* WQ <line1>,<line2>wq<bang> <args>
 command! -bang -range=% -complete=file -nargs=* Wq <line1>,<line2>wq<bang> <args>
 command! -bang -range=% -complete=file -nargs=* W <line1>,<line2>w<bang> <args>
 command! -bang Q quit<bang>
-  
-" Tab configuration
-nnoremap <leader>tn :tabnew<cr>
-nnoremap <leader>tc :tabclose<cr>
-nnoremap <leader>te :tabedit 
-nnoremap <leader>tm :tabmove
 
-"Show whitespace
-nnoremap <leader>l :set list!<CR>
-nnoremap <leader>w :w<CR>
-nnoremap <silent> <leader><CR> :set hlsearch!<CR>
-nnoremap <leader>e :tabe ~/.vimrc<CR>
-"
-" Visual mode pressing * or # searches for the current selection
-" Super useful! From an idea by Michael Naumann
-vnoremap <silent> * :call VisualSelection('f')<CR>
-vnoremap <silent> # :call VisualSelection('b')<CR>
+let g:UltiSnipsSnippetsDir = '~/.vim/bundle/ultisnips/UltiSnips'
+set runtimepath+=~/.vim/bundle/ultisnips/UltiSnips
+let g:UltiSnipsEditSplit = 'vertical'
 
-"NerdTree Toggle
-nnoremap <leader>d :NERDTreeToggle<cr>
+let NERDSpaceDelims=1
 
+set tags+=~/.tags
 
-" When vimrc is edited, reload it
-autocmd! bufwritepost .*vimrc source ~/.vimrc
-
-autocmd FileType python set omnifunc=pythoncomplete#Complete
-autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
-autocmd FileType css set omnifunc=csscomplete#CompleteCSS
-autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
-autocmd FileType php set omnifunc=phpcomplete#CompletePHP
-autocmd FileType c set omnifunc=ccomplete#Complete
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
@@ -119,20 +320,19 @@ autocmd FileType c set omnifunc=ccomplete#Complete
 set autoindent                      " indent at the same level of the previous line
 set backspace=eol,start,indent
 set backup                          " backups are nice ...
-set backupdir=~/.vim/backup
+set backupdir=~/.vim/backup//
 set clipboard+=unnamed              "
 set cmdheight=2                     " The commandbar height
 set cpoptions=aABceFsmq
-"set cursorcolumn                    " highlight the current column
 set cursorline                      " highlight current line :set cul
-set directory=~/.vim/tmp
+set directory=~/.vim/tmp//
 set hid                             " Change buffer - without saving
 set history=1000
 set hlsearch                        " Highlight search things
 set ignorecase                      " Ignore case when searching
 set incsearch                       " Make search act like search in modern browsers
 set linebreak
-set listchars=tab:▸\ ,eol:¬,trail:●
+set listchars=tab:▸\ ,eol:¬,trail:●,extends:❯,precedes:❮
 set magic                           " Set magic on, for regular expressions
 set mat=2                           " How many tenths of a second to blink
 set noerrorbells                    " No sound on errors
@@ -140,40 +340,50 @@ set noexrc                          " don't use local version of .(g)vimrc, .exr
 set nolazyredraw                    " Don't redraw while executing macros
 set novisualbell
 set nowrap                          " wrap long lines
-"set nu
+set number
 set numberwidth=5                   " We are good up to 99999 lines
-set pastetoggle=<F12>               " pastetoggle (sane indentation on pastes)
 set report=0                        " tell us when anything is changed via :...
+"set vb
 set ruler                           " Always show current positions along the bottom^
 set shiftwidth=4                    " auto-indent amount when using cindent,
 set showcmd
 set showmatch                       " Show matching bracets when text indicator is over them
 set smartcase                       " use smartcase searching
-set so=7                            " Minimal number of screen lines to keep above and below the cursor.
+set scrolloff=7                            " Minimal number of screen lines to keep above and below the cursor.
 set softtabstop=4                   " when hitting tab or backspace, how many spaces
 set t_vb=
 set tabstop=4                       " an indentation every four columns
 set tabstop=4                       " real tabs should be 8, and they will show with
-set tm=500
-set undodir=~/.vim/undo             " where to save undo histories
+set tm=2500
+set undodir=~/.vim/undo//             " where to save undo histories
 set undofile                        " so is persistent undo ...
 set undolevels=1000                 " How many undos
 set undoreload=10000                " maximum number lines to save for undo on a buffer reload
-set viminfo='10,\"100,:20,%,n~/.viminfo
 set whichwrap+=<,>,h,l
 set wildmenu                        " Turn on WiLd menu
-"set matchpairs+=<:>            	" match, to be used with % 
-set guicursor+=i:blinkwait10
-set guicursor+=i:ver100-iCursor
-set guicursor+=n-v-c:blinkon0
-set guicursor=n-v-c:block-Cursor
+set matchpairs+=<:>            	" match, to be used with %
 
-"set comments=sl:/*,mb:*,elx:*/  " auto format comment blocks
+" Sexy cursors
+set guicursor=n-c:block-Cursor-blinkon0
+set guicursor+=v:block-vCursor-blinkon0
+set guicursor+=i:ci-ver20-iCursor
+highlight iCursor guifg=white guibg=white
 
-"set statusline=%F%m%r%h%w[%L][%{&ff}]%y[%p%%][%04l,%04v]
+" Make those folders automatically if they don't already exist.
+if !isdirectory(expand(&undodir))
+    call mkdir(expand(&undodir), "p")
+endif
+if !isdirectory(expand(&backupdir))
+    call mkdir(expand(&backupdir), "p")
+endif
+if !isdirectory(expand(&directory))
+    call mkdir(expand(&directory), "p")
+endif
+
+set viminfo='10,\"100,:200,%,n~/.viminfo
 "  '10  :  marks will be remembered for up to 10 previously edited files
 "  "100 :  will save up to 100 lines for each register
-"  :20  :  up to 20 lines of command-line history will be remembered
+"  :200  :  up to 200 lines of command-line history will be remembered
 "  %    :  saves and restores the buffer list
 "  n... :  where to save the viminfo files
 
@@ -187,21 +397,99 @@ function! ResCur()
 	endif
 endfunction
 
+function! s:DiffWithSaved()
+  let filetype=&ft
+  diffthis
+  vnew | r # | normal! 1Gdd
+  diffthis
+  exe "setlocal bt=nofile bh=wipe nobl noswf ro ft=" . filetype
+endfunction
+com! DiffSaved call s:DiffWithSaved()
+
+function! VisualSelection(direction) range
+    let l:saved_reg = @"
+    execute "normal! vgvy"
+
+    let l:pattern = escape(@", '\\/.*$^~[]')
+    let l:pattern = substitute(l:pattern, "\n$", "", "")
+
+    if a:direction == 'b'
+        execute "normal ?" . l:pattern . "^M"
+    elseif a:direction == 'gv'
+        call CmdLine("vimgrep " . '/'. l:pattern . '/' . ' **/*.')
+    elseif a:direction == 'replace'
+        call CmdLine("%s" . '/'. l:pattern . '/')
+    elseif a:direction == 'f'
+        execute "normal /" . l:pattern . "^M"
+    endif
+
+    let @/ = l:pattern
+    let @" = l:saved_reg
+endfunction
+
+" Taken from vimtips, doesn't always work...
+noremap <F5> :call JavaInsertImport()<CR>
+function! JavaInsertImport()
+  exe "normal mz"
+  let cur_class = expand("<cword>")
+  try
+    if search('^\s*import\s.*\.' . cur_class . '\s*;') > 0
+      throw getline('.') . ": import already exist!"
+    endif
+    wincmd }
+    wincmd P
+    1
+    if search('^\s*public.*\s\%(class\|interface\)\s\+' . cur_class) > 0
+      1
+      if search('^\s*package\s') > 0
+        yank y
+      else
+        throw "Package definition not found!"
+      endif
+    else
+      throw cur_class . ": class not found!"
+    endif
+    wincmd p
+    normal! G
+    " insert after last import or in first line
+    if search('^\s*import\s', 'b') > 0
+      put y
+    else
+      1
+      put! y
+    endif
+    substitute/^\s*package/import/
+    substitute/\s\+/ /g
+    exe "normal! 2ER." . cur_class . ";"
+  catch /.*/
+    echoerr v:exception
+  finally
+    " wipe preview window (from buffer list)
+    silent! wincmd P
+    if &previewwindow
+      bwipeout
+    endif
+    exe "normal! `z"
+  endtry
+endfunction
+
 augroup resCur
 	autocmd!
 	autocmd BufWinEnter * call ResCur()
 augroup END
 
-"" ABBREVATIONS ""
-iabbrev env environment
-iabbrev enviroment environment
-iabbrev AL artificial life
-iabbrev GPr genetic programming
-iabbrev GAl genetic algorithm
-iabbrev adn and
+"" Common Spelling mistakes ""
 
-""" CREAM ABBR """
+"Programming spelling mistakes
+iabbrev elsif elseif
+iabbrev elsef elseif
+iabbrev elseof elseif
+iabbrev elseof elseif
+iabbrev elsof elseif
+iabbrev elsiof elseif
+iabbrev endfi endif
 
+" My Abbrevs
 iabbrev accesories accessories
 iabbrev Accesories Accessories
 iabbrev accomodate accommodate
@@ -214,12 +502,14 @@ iabbrev acn can
 iabbrev Acn Can
 iabbrev acommodate accommodate
 iabbrev Acommodate Accommodate
-iabbrev acomodate accommodate
-iabbrev Acomodate Accommodate
 iabbrev acommodated accommodated
 iabbrev Acommodated Accommodated
+iabbrev acomodate accommodate
+iabbrev Acomodate Accommodate
 iabbrev acomodated accommodated
 iabbrev Acomodated Accommodated
+iabbrev adn and
+iabbrev Adn And
 iabbrev adn and
 iabbrev Adn And
 iabbrev agian again
@@ -246,10 +536,10 @@ iabbrev anbd and
 iabbrev Anbd And
 iabbrev andthe and the
 iabbrev Andthe And the
-iabbrev appeares appears
-iabbrev Appeares Appears
 iabbrev aplyed applied
 iabbrev Aplyed Applied
+iabbrev appeares appears
+iabbrev Appeares Appears
 iabbrev artical article
 iabbrev Artical Article
 iabbrev aslo also
@@ -284,10 +574,10 @@ iabbrev begining beginning
 iabbrev Begining Beginning
 iabbrev beleive believe
 iabbrev Beleive Believe
-iabbrev bianry binary
-iabbrev Bianry Binary
 iabbrev bianries binaries
 iabbrev Bianries Binaries
+iabbrev bianry binary
+iabbrev Bianry Binary
 iabbrev boxs boxes
 iabbrev Boxs Boxes
 iabbrev bve be
@@ -380,6 +670,10 @@ iabbrev ehr her
 iabbrev Ehr Her
 iabbrev embarass embarrass
 iabbrev Embarass Embarrass
+iabbrev enviroment environment
+iabbrev Enviroment Environment
+iabbrev enviroment environment
+iabbrev Enviroment Environment
 iabbrev equippment equipment
 iabbrev Equippment Equipment
 iabbrev esle else
@@ -408,8 +702,6 @@ iabbrev follwoing following
 iabbrev Follwoing Following
 iabbrev foriegn foreign
 iabbrev Foriegn Foreign
-iabbrev fro for
-iabbrev Fro For
 iabbrev foudn found
 iabbrev Foudn Found
 iabbrev foward forward
@@ -418,6 +710,8 @@ iabbrev freind friend
 iabbrev Freind Friend
 iabbrev frmo from
 iabbrev Frmo From
+iabbrev fro for
+iabbrev Fro For
 iabbrev fwe few
 iabbrev Fwe Few
 iabbrev gerat great
@@ -506,10 +800,10 @@ iabbrev libary library
 iabbrev Libary Library
 iabbrev librarry library
 iabbrev Librarry Library
-iabbrev librery library
-iabbrev Librery Library
 iabbrev librarry library
 iabbrev Librarry Library
+iabbrev librery library
+iabbrev Librery Library
 iabbrev liek like
 iabbrev Liek Like
 iabbrev liekd liked
@@ -572,12 +866,12 @@ iabbrev omre more
 iabbrev Omre More
 iabbrev onyl only
 iabbrev Onyl Only
+iabbrev opperation operation
+iabbrev Opperation Operation
 iabbrev optoin option
 iabbrev Optoin Option
 iabbrev optoins options
 iabbrev Optoins Options
-iabbrev opperation operation
-iabbrev Opperation Operation
 iabbrev orginized organized
 iabbrev Orginized Organized
 iabbrev otehr other
@@ -854,8 +1148,8 @@ iabbrev april April
 iabbrev April April
 iabbrev june June
 iabbrev June June
-iabbrev july July  
-iabbrev July July  
+iabbrev july July
+iabbrev July July
 iabbrev august August
 iabbrev August August
 iabbrev september September
