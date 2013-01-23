@@ -26,24 +26,14 @@ bind -c selectHighs 5 select 15
 
 bind - command -c selectHighs   #bind the hyphen to 
                                 #command-class selectHighs 
-maptimeout 5
 
-screen -t zsh_2 2 zsh
+
+screen -t    zsh_2   zsh
 #screen -t rtorrent  0   rtorrent        
-#screen -t python    3   python
 #screen -t tunes        1       ncmpc --host=192.168.1.4 --port=6600 #was for connecting to MPD music server.
 screen -t  zsh_1        1 zsh
 #screen -t irssi         2       irssi
 screen -t zsh_0 0 zsh
-#screen -t dancing   4       
-#screen -t giantfriend   6       these_are_ssh_to_server_scripts.sh
-#screen -t computerrescue    7   these_are_ssh_to_server_scripts.sh
-#screen -t BMon          8       bmon -p eth0
-#screen -t htop          9       htop
-#screen -t hellanzb  10  hellanzb
-#screen -t watching  3   
-#screen -t interactive.fiction  8
-#screen -t hellahella   8       paster serve --daemon  /home/gyaresu/downloads/hellahella/hella.ini     
 
 shelltitle "$ |zsh"
 # caption always           "%?%F%{= Kk}%:%{=u kR}%?  %h %-024=%{b+} %c %D %d %M %Y%{= db}"
@@ -53,4 +43,4 @@ shelltitle "$ |zsh"
 ##screen, with the time and date and with the current window highlighted                                                                            
 hardstatus alwayslastline                                                                                                                          
 #hardstatus string '%{= mK}%-Lw%{= KW}%50>%n%f* %t%{= mK}%+Lw%< %{= kG}%-=%D %d %M %Y %c:%s%{-}'
-hardstatus string '%{= kk}%{G}[ %{G}%H%{R} %h %{g}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][ %{B}%c%{W} %D %d %M %Y%{g} ]'
+hardstatus string '%{= .}%{G}[ %{G}%H%{R} %h %{g}][%= %{= .}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][ %{B}%c%{W} %D %d %M %Y%{g} ]'
