@@ -9,13 +9,14 @@ set laststatus=2
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
+Bundle 'stephenmckinney/vim-solarized-powerline'
 Bundle 'Lokaltog/TagHighlight'
 Bundle 'Lokaltog/vim-easymotion'
 Bundle 'Lokaltog/vim-powerline'
 Bundle 'SirVer/ultisnips'
 Bundle 'Tabular'
-Bundle 'VimClojure'
 Bundle 'ack.vim'
+Bundle 'altercation/vim-colors-solarized.git'
 Bundle 'chriskempson/base16-vim'
 Bundle 'javacomplete'
 Bundle 'kana/vim-smartinput'
@@ -59,6 +60,9 @@ else
 	color peaksea
 endif
 
+let g:Powerline_theme='short'
+let g:Powerline_colorscheme='solarized256'
+
 " Rainbow Parens!
 au VimEnter * RainbowParenthesesToggle 
 au Syntax * RainbowParenthesesLoadBraces
@@ -70,10 +74,6 @@ hi EasyMotionTargetDefault cterm=bold ctermfg=196 gui=bold guifg=#ff0000
 
 set pastetoggle=<F12>               " pastetoggle (sane indentation on pastes)
 
-"VimClojure config
-let g:vimclojure#HighlightBuiltins = 1
-let g:vimclojure#ParenRainbow = 1
-"
 "Set cross system compatibility
 if has("unix")
 	let s:uname = system("uname")
@@ -87,12 +87,14 @@ if has("unix")
 endif
 
 
-"expand local path
+" helpful expansions
+" expand to current dir of file
 cabbr <expr> %% expand('%:p:h')
-
-" FIXME - make cross platform.
-" Ack-grep plugin
-let g:ackprg="ack-grep -H --nocolor --nogroup --column"
+cabbr <expr> %d expand('%:p:h')
+" expand current file
+cabbr <expr> %f expand('%')
+" expand to home
+cabbr <expr> %h expand('%')
 
 " Syntastic Config
 let g:syntastic_error_symbol='✗'
@@ -123,6 +125,15 @@ vnoremap <silent> # :call VisualSelection('b')<CR>
 vnoremap <silent> <leader>a :<C-U>let @/=GetVisual()<CR> :set hls<CR>:Ack "<C-R>/"<CR>
 nnoremap <silent> <leader>a :let @/='<C-R>=expand("<cword>")<CR>'<CR>:Ack <cword><CR>:set hls<CR>
 
+" Put word under cursor into search register and highlight
+nnoremap <silent> * :let @/='\<<C-R>=expand("<cword>")<CR>\>'<CR>:set hls<CR>
+" magic stuff... to search using visual selection
+vnoremap <silent> * :<C-U>
+  \let old_reg=getreg('"')<Bar>let old_regtype=getregtype('"')<CR>
+  \gvy:let @/=substitute(
+  \escape(@", '/\.*$^~['), '\_s\+', '\\_s\\+', 'g')<CR>
+  \gV:call setreg('"', old_reg, old_regtype)<CR>:set hls<CR>
+
 " Useful location list search. Find current word in buffer and populate
 " location list and show location list. To close location list use :lcl[ose]
 nnoremap <silent> <leader>f :<C-U>call setloclist(".", [])<CR>
@@ -135,11 +146,11 @@ vnoremap <silent> <leader>f :normal *<CR>
 	\:g/<C-R>//laddexpr expand("%") .
 	\ ":" . line(".") .  ":" . getline(".")<CR>
 	\:lw<CR>
-    \:nnoremap <silent> <buffer> q :lcl
-<CR>
+    \:nnoremap <silent> <buffer> q :lcl<CR>
 
 " like normal % but for quote marks
-nnoremap <leader>% :call MatchQuote()<CR>
+command! MatchQuote call MatchQuote()
+nnoremap <leader>% :silent MatchQuote<CR>
 
 set foldmethod=expr
 " Usually editing java.. so hide the imports
@@ -161,8 +172,8 @@ nnoremap <leader>Z :setlocal foldexpr=(getline(v:lnum)=~@/)?1:0 foldmethod=expr 
 nnoremap <leader>z :setlocal foldexpr=(getline(v:lnum)=~@/)?0:(getline(v:lnum-1)=~@/)\\|\\|(getline(v:lnum+1)=~@/)?1:2 foldmethod=expr foldlevel=0 foldcolumn=2<CR>
 
 " Emacs like movement in ex commands, <C-A> start of the line, <C-E> eol
-cnoremap <C-a> <Home>
-cnoremap <C-e> <End>
+cnoremap <C-A> <Home>
+cnoremap <C-E> <End>
 
 function! GetVisual() range
         let reg_save = getreg('"')
@@ -295,8 +306,7 @@ au VimResized * :wincmd =
 " When vimrc is edited, reload it
 autocmd! bufwritepost .*vimrc source ~/.vimrc
 
-" fix mistype :W and :Q
-" OH SO GOOD!
+"fix mistype :W and :Q
 command! -bang -range=% -complete=file -nargs=* WQ <line1>,<line2>wq<bang> <args>
 command! -bang -range=% -complete=file -nargs=* Wq <line1>,<line2>wq<bang> <args>
 command! -bang -range=% -complete=file -nargs=* W <line1>,<line2>w<bang> <args>
@@ -380,7 +390,7 @@ if !isdirectory(expand(&directory))
     call mkdir(expand(&directory), "p")
 endif
 
-set viminfo='10,\"100,:200,%,n~/.viminfo
+set viminfo='10,\"100,:200,%,n~/.vim/viminfo
 "  '10  :  marks will be remembered for up to 10 previously edited files
 "  "100 :  will save up to 100 lines for each register
 "  :200  :  up to 200 lines of command-line history will be remembered
