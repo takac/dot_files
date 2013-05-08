@@ -7,6 +7,7 @@ alias fap='sudo apt-get install --force-yes -y'
 
 alias vim='vim -p'
 alias gs='git status'
+alias gco='git checkout'
 alias hs='history | grep -i'
 
 #Add color to things :D
@@ -18,15 +19,9 @@ alias ls='ls --color=always'
 alias tree='tree -C'
 
 
-alias ss="ps -aux"
-#Show all the dot files
+# Show all the dot files
 alias dot='ls .[a-za-z0-9_]*'
-alias news="xterm -g 80x45 -e trn -e -s1 -n &"
 
-#Helpful quickies
-alias c="clear"
-alias m="more"
-alias j="jobs"
 
 # common misspellings
 alias mroe=more

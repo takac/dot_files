@@ -8,6 +8,7 @@ set laststatus=2
 "Vundle config
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
+set ttyfast
 
 Bundle 'nathanaelkane/vim-indent-guides'
 " Bundle 'Valloric/YouCompleteMe'
@@ -70,6 +71,7 @@ else
 	color peaksea
 endif
 
+" If powerline is on...
 let g:Powerline_theme='short'
 let g:Powerline_colorscheme='solarized256'
 
@@ -110,11 +112,14 @@ cabbr <expr> %h expand('%')
 let g:syntastic_error_symbol='✗'
 let g:syntastic_warning_symbol='⚠'
 
+nnoremap Q <nop>
+
 nnoremap <leader>e :tabe ~/.vimrc<CR>
 nnoremap <leader>l :set list!<CR>
 nnoremap <leader>tc :tabclose<CR>
 nnoremap <leader>te :tabedit
 nnoremap <leader>tm :tabmove
+nnoremap <leader>tb :TagbarToggle<CR>
 nnoremap <leader>tn :tabnew<CR>
 nnoremap <silent> <F1> :bn<CR>
 nnoremap <silent> <F2> :bp<CR>
@@ -176,16 +181,12 @@ autocmd FileType c,cpp,java,php,js,python,twig,xml,yml autocmd BufWritePre <buff
 autocmd! BufEnter *.java :setlocal foldexpr=HideImportFold(v:lnum) foldmethod=expr foldlevel=0 
 
 function! HideImportFold(lnum)
-	if getline(v:lnum) =~ '^import.*'
+	if getline(a:lnum) =~ '^import'
 		return '1'
 	endif
-	if getline(v:lnum) =~ '^\s*$'
-		if getline(v:lnum+1) !~ '^import'
-			return '0'
-		endif
-		return '='
+	if getline(a:lnum) =~ '\v^\s*$'
+		return '-1'
 	endif
-	
 	return '0'
 endfunction
 
@@ -215,10 +216,6 @@ let g:ctrlp_custom_ignore = {
 \ 'file': '\v\.(exe|so|dll|class)$',
 \ }
 
-fun! ReplaceLic()
-	exec "norm! V}ygv\<ESC>p%di(jBCtrue;\<ESC>jwCnull;\<ESC>jBCnull;\<ESC>jBCtrue;\<ESC>jBC999;\<ESC>jBC\"0.9\";\<ESC>"
-endf
- 
 " When vimrc is edited, reload it and fix powerline colorscheme
 autocmd! bufwritepost .vimrc call RestartVim()
 if !exists("*RestartVim")
@@ -226,27 +223,6 @@ if !exists("*RestartVim")
 		source ~/.vimrc
 	endf
 endif
-
-" Occasionally useful to run shell command in vim split window
-command! -complete=shellcmd -nargs=+ Shell call s:RunShellCommand(<q-args>)
-function! s:RunShellCommand(cmdline)
-  echo a:cmdline
-  let expanded_cmdline = a:cmdline
-  for part in split(a:cmdline, ' ')
-     if part[0] =~ '\v[%#<]'
-        let expanded_part = fnameescape(expand(part))
-        let expanded_cmdline = substitute(expanded_cmdline, part, expanded_part, '')
-     endif
-  endfor
-  botright new
-  setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile nowrap
-  call setline(1, 'You entered:    ' . a:cmdline)
-  call setline(2, 'Expanded Form:  ' .expanded_cmdline)
-  call setline(3,substitute(getline(2),'.','=','g'))
-  execute '$read !'. expanded_cmdline
-  setlocal nomodifiable
-  1
-endfunction
 
 "Fugitive
 nnoremap <leader>gd :Gdiff<cr>
@@ -258,7 +234,14 @@ noremap k gk
 noremap gj j
 noremap gk k
 
-" Show the stack of syntax hilighting classes affecting whatever is under the cursor.
+" Useful normal mapping for arrow keys.
+" nnoremap <UP> ddkP
+" nnoremap <DOWN> ddp
+" vnoremap <DOWN> xp`[V`]
+" vnoremap <UP> xkP`[V`]
+
+" Show the stack of syntax hilighting classes affecting whatever is under the
+" cursor.
 function! SynStack()
   echo join(map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")'), " > ")
 endfunc
@@ -287,7 +270,7 @@ au VimResized * :wincmd =
 " When vimrc is edited, reload it
 autocmd! bufwritepost .*vimrc source ~/.vimrc
 
-"fix mistype :W and :Q
+" fix mistype :W and :Q
 command! -bang -range=% -complete=file -nargs=* WQ <line1>,<line2>wq<bang> <args>
 command! -bang -range=% -complete=file -nargs=* Wq <line1>,<line2>wq<bang> <args>
 command! -bang -range=% -complete=file -nargs=* W <line1>,<line2>w<bang> <args>
@@ -331,7 +314,7 @@ set nrformats-=octal
 set number
 set numberwidth=5                   " We are good up to 99999 lines
 set report=0                        " tell us when anything is changed via :...
-"set vb
+"set vb								" set to disable audible error bells
 set ruler                           " Always show current positions along the bottom^
 set shiftwidth=4                    " auto-indent amount when using cindent,
 set showcmd
@@ -339,7 +322,7 @@ set showmatch                       " Show matching bracets when text indicator 
 set smartcase                       " use smartcase searching
 set scrolloff=6                            " Minimal number of screen lines to keep above and below the cursor.
 set softtabstop=4                   " when hitting tab or backspace, how many spaces
-set t_vb=
+set t_vb=							" To stop audible error bells
 set tabstop=4                       " an indentation every four columns
 set tabstop=4                       " real tabs should be 8, and they will show with
 set tm=2500
@@ -386,14 +369,14 @@ function! ResCur()
 	endif
 endfunction
 
-function! DiffWithSaved()
-  let filetype=&ft
-  diffthis
-  vnew | r # | normal! 1Gdd
-  diffthis
-  exe "setlocal bt=nofile bh=wipe nobl noswf ro ft=" . filetype
-endfunction
-com! DiffSaved call s:DiffWithSaved()
+" function! s:DiffWithSaved()
+  " let filetype=&ft
+  " diffthis
+  " vnew | r # | normal! 1Gdd
+  " diffthis
+  " exe "setlocal bt=nofile bh=wipe nobl noswf ro ft=" . filetype
+" endfunction
+" com! DiffSaved call s:DiffWithSaved()
 
 function! VisualSelection(direction) range
     let l:saved_reg = @"
