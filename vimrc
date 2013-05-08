@@ -9,48 +9,59 @@ set laststatus=2
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
-Bundle 'Lokaltog/TagHighlight'
-Bundle 'Lokaltog/vim-easymotion'
-Bundle 'Lokaltog/vim-powerline'
-Bundle 'SirVer/ultisnips'
-Bundle 'Tabular'
-Bundle 'VimClojure'
+Bundle 'nathanaelkane/vim-indent-guides'
+" Bundle 'Valloric/YouCompleteMe'
+Bundle 'sjl/gundo.vim'
+Bundle 'airblade/vim-gitgutter'
 Bundle 'ack.vim'
+Bundle 'altercation/vim-colors-solarized.git'
 Bundle 'chriskempson/base16-vim'
+Bundle 'coderifous/textobj-word-column.vim'
+Bundle 'godlygeek/tabular'
 Bundle 'javacomplete'
-Bundle 'kana/vim-smartinput'
+Bundle 'kien/ctrlp.vim'
 Bundle 'kien/rainbow_parentheses.vim'
+Bundle 'lokaltog/vim-easymotion'
 Bundle 'majutsushi/tagbar'
 Bundle 'maksimr/vim-jsbeautify'
+Bundle 'mattn/zencoding-vim'
 Bundle 'peaksea'
+Bundle 'robmiller/vim-movar'
 Bundle 'scrooloose/nerdcommenter'
 Bundle 'scrooloose/nerdtree'
 Bundle 'scrooloose/syntastic'
 Bundle 'skammer/vim-css-color'
 Bundle 'sudo.vim'
 Bundle 'sukima/xmledit'
+Bundle 'takac/semi.vim'
+Bundle 'takac/ultisnips'
 Bundle 'thinca/vim-quickrun.git'
+Bundle 'tpope/vim-abolish'
 Bundle 'tpope/vim-fugitive'
 Bundle 'tpope/vim-git'
 Bundle 'tpope/vim-repeat'
 Bundle 'tpope/vim-surround'
 Bundle 'tsaleh/vim-matchit'
+Bundle 'vim-scripts/camelcasemotion'
 Bundle 'vim-scripts/scratch.vim'
 Bundle 'vundle'
+Bundle 'wikitopian/hardmode'
 
 "Basic functionality
 filetype plugin on
 filetype indent on
 syntax on
+set omnifunc=syntaxcomplete#Complete
 
+python from powerline.bindings.vim import source_plugin; source_plugin()
 "Set colours and fonts
 if has("gui_running")
 	set background=dark
-	color base16-tomorrow
+	color solarized
 	if has("gui_macvim")
 		set guifont=Inconsolata:h17
 	elseif has("gui_gtk2")
-		set guifont=Inconsolata\ 13
+		set guifont=Inconsolata\ for\ Powerline\ Medium\ 13
 	elseif has("gui_win32") || has("gui_win64")
 		set guifont=Consolas:h11:cANSI
 	endif
@@ -58,6 +69,9 @@ else
 	set background=dark
 	color peaksea
 endif
+
+let g:Powerline_theme='short'
+let g:Powerline_colorscheme='solarized256'
 
 " Rainbow Parens!
 au VimEnter * RainbowParenthesesToggle 
@@ -70,10 +84,6 @@ hi EasyMotionTargetDefault cterm=bold ctermfg=196 gui=bold guifg=#ff0000
 
 set pastetoggle=<F12>               " pastetoggle (sane indentation on pastes)
 
-"VimClojure config
-let g:vimclojure#HighlightBuiltins = 1
-let g:vimclojure#ParenRainbow = 1
-"
 "Set cross system compatibility
 if has("unix")
 	let s:uname = system("uname")
@@ -87,12 +97,14 @@ if has("unix")
 endif
 
 
-"expand local path
+" helpful expansions
+" expand to current dir of file
 cabbr <expr> %% expand('%:p:h')
-
-" FIXME - make cross platform.
-" Ack-grep plugin
-let g:ackprg="ack-grep -H --nocolor --nogroup --column"
+cabbr <expr> %d expand('%:p:h')
+" expand current file
+cabbr <expr> %f expand('%')
+" expand to home
+cabbr <expr> %h expand('%')
 
 " Syntastic Config
 let g:syntastic_error_symbol='✗'
@@ -123,6 +135,29 @@ vnoremap <silent> # :call VisualSelection('b')<CR>
 vnoremap <silent> <leader>a :<C-U>let @/=GetVisual()<CR> :set hls<CR>:Ack "<C-R>/"<CR>
 nnoremap <silent> <leader>a :let @/='<C-R>=expand("<cword>")<CR>'<CR>:Ack <cword><CR>:set hls<CR>
 
+" Put word under cursor into search register and highlight
+nnoremap <silent> * :let @/='\<<C-R>=expand("<cword>")<CR>\>'<CR>:set hls<CR>
+
+nnoremap <silent> gB :<C-W>call TopBottom()<CR>
+fun! TopBottom()
+	let pos = getpos(".")
+	let pos[1] = line("^")
+	call setpos(".", pos)
+endf
+
+nnoremap <silent> gb :<C-W>call MoveBottom()<CR>
+fun! MoveBottom()
+	let pos = getpos(".")
+	let pos[1] = line("$")
+	call setpos(".", pos)
+endf
+
+command! WS call WS()
+function! WS()
+	:w
+	:so %
+endfunction
+
 " Useful location list search. Find current word in buffer and populate
 " location list and show location list. To close location list use :lcl[ose]
 nnoremap <silent> <leader>f :<C-U>call setloclist(".", [])<CR>
@@ -135,23 +170,22 @@ vnoremap <silent> <leader>f :normal *<CR>
 	\:g/<C-R>//laddexpr expand("%") .
 	\ ":" . line(".") .  ":" . getline(".")<CR>
 	\:lw<CR>
-    \:nnoremap <silent> <buffer> q :lcl
-<CR>
+    \:nnoremap <silent> <buffer> q :lcl<CR>
 
-" like normal % but for quote marks
-nnoremap <leader>% :call MatchQuote()<CR>
-
-set foldmethod=expr
-" Usually editing java.. so hide the imports
-set foldexpr=HideImportFold(v:lnum)
+autocmd FileType c,cpp,java,php,js,python,twig,xml,yml autocmd BufWritePre <buffer> :call setline(1,map(getline(1,"$"),'substitute(v:val,"\\s\\+$","","")'))
+autocmd! BufEnter *.java :setlocal foldexpr=HideImportFold(v:lnum) foldmethod=expr foldlevel=0 
 
 function! HideImportFold(lnum)
-	if getline(a:lnum) =~ '^import'
+	if getline(v:lnum) =~ '^import.*'
 		return '1'
 	endif
-	if getline(a:lnum) =~ '\v^\s*$'
-		return '-1'
+	if getline(v:lnum) =~ '^\s*$'
+		if getline(v:lnum+1) !~ '^import'
+			return '0'
+		endif
+		return '='
 	endif
+	
 	return '0'
 endfunction
 
@@ -161,8 +195,8 @@ nnoremap <leader>Z :setlocal foldexpr=(getline(v:lnum)=~@/)?1:0 foldmethod=expr 
 nnoremap <leader>z :setlocal foldexpr=(getline(v:lnum)=~@/)?0:(getline(v:lnum-1)=~@/)\\|\\|(getline(v:lnum+1)=~@/)?1:2 foldmethod=expr foldlevel=0 foldcolumn=2<CR>
 
 " Emacs like movement in ex commands, <C-A> start of the line, <C-E> eol
-cnoremap <C-a> <Home>
-cnoremap <C-e> <End>
+cnoremap <C-A> <Home>
+cnoremap <C-E> <End>
 
 function! GetVisual() range
         let reg_save = getreg('"')
@@ -176,61 +210,20 @@ function! GetVisual() range
         return selection
 endfunction
 
-" A horrible experiment to help adding bundles
-autocmd! BufEnter .vimrc nnoremap <leader>b gg/Bundle<CR>OBundle '<C-R>+'<ESC>:let @/="<C-R>=escape(getline("."), '/\.*$^~[')<CR>"<CR>vip:sor<CR>:w<CR>:BundleInstall<CR>q
+let g:ctrlp_show_hidden = 1
+let g:ctrlp_custom_ignore = {
+\ 'file': '\v\.(exe|so|dll|class)$',
+\ }
 
-" Move to matching " or ' a lot like %
-" Turns out not that useful..
-" Should probably use onoremap..
-fun! MatchQuote()
-	let cur_char = getline(".")[col('.')-1]
-	let begin = getpos(".")
-	if cur_char  != '"' && cur_char != "'"
-		"If quote not under cursor.. look forward for it
-		echo "no quote.." . cur_char
-		exec "norm f'"
-		let s_pos_1 = getpos(".")
-		call setpos(".", begin)
-		exec 'norm f"'
-		let s_pos_2 = getpos(".")
-		call setpos(".", begin)
-		" if quote not found forward.. look back
-		if s_pos_1 == begin && s_pos_2 == begin
-			exec "norm F'"
-			let s_pos_1 = getpos(".")
-			call setpos(".", begin)
-			exec 'norm F"'
-			let s_pos_2 = getpos(".")
-			call setpos(".", begin)
-			if s_pos_1 == begin && s_pos_2 == begin
-				echo "no quotes found"
-				return
-			endif
-		endif
-		if s_pos_1 == begin
-			call setpos(".", s_pos_2)
-			return
-		endif
-		call setpos(".", s_pos_1)
-		return
-	endif
-	exec "norm vi" . cur_char . "\<ESC>l"
-	let end = getpos(".")
-	exec "norm vi" . cur_char . "o\<ESC>h"
-	let first = getpos(".")
-	if begin == first
-		call setpos(".", end)
-	else
-		call setpos(".", first)
-	endif
+fun! ReplaceLic()
+	exec "norm! V}ygv\<ESC>p%di(jBCtrue;\<ESC>jwCnull;\<ESC>jBCnull;\<ESC>jBCtrue;\<ESC>jBC999;\<ESC>jBC\"0.9\";\<ESC>"
 endf
-
+ 
 " When vimrc is edited, reload it and fix powerline colorscheme
 autocmd! bufwritepost .vimrc call RestartVim()
 if !exists("*RestartVim")
 	fun! RestartVim()
 		source ~/.vimrc
-		:PowerlineReloadColorscheme
 	endf
 endif
 
@@ -283,20 +276,18 @@ vnoremap Z s<C-R>=eval(substitute("<C-R>"", "\r", "", ""))<CR><ESC>
 " func cursor-here>>(yargg, xi, aol) 
 " goes to ->  >>(aol, xi, yargg)
 nnoremap <leader>sw %db%lvawp%%P%
-" func (yarg, xrg)<<cursor-here
+" func (yarg, xarg)<<cursor-here
 nnoremap <leader>ws db%lvawp%%P%%
-" TODO make into function, work out if on ( or ) 
 
 " magic capitilisation, not really very useful.
 " Inverts capitilisation for previous word
-inoremap <C-U> <esc>mzg~iw`za
+" inoremap <C-U> <esc>mzg~iw`za
 " Resize splits when the window is resized
 au VimResized * :wincmd =
 " When vimrc is edited, reload it
 autocmd! bufwritepost .*vimrc source ~/.vimrc
 
-" fix mistype :W and :Q
-" OH SO GOOD!
+"fix mistype :W and :Q
 command! -bang -range=% -complete=file -nargs=* WQ <line1>,<line2>wq<bang> <args>
 command! -bang -range=% -complete=file -nargs=* Wq <line1>,<line2>wq<bang> <args>
 command! -bang -range=% -complete=file -nargs=* W <line1>,<line2>w<bang> <args>
@@ -307,9 +298,6 @@ set runtimepath+=~/.vim/bundle/ultisnips/UltiSnips
 let g:UltiSnipsEditSplit = 'vertical'
 
 let NERDSpaceDelims=1
-
-set tags+=~/.tags
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
@@ -328,7 +316,6 @@ set cursorline                      " highlight current line :set cul
 set directory=~/.vim/tmp//
 set hid                             " Change buffer - without saving
 set history=1000
-set hlsearch                        " Highlight search things
 set ignorecase                      " Ignore case when searching
 set incsearch                       " Make search act like search in modern browsers
 set linebreak
@@ -340,6 +327,7 @@ set noexrc                          " don't use local version of .(g)vimrc, .exr
 set nolazyredraw                    " Don't redraw while executing macros
 set novisualbell
 set nowrap                          " wrap long lines
+set nrformats-=octal
 set number
 set numberwidth=5                   " We are good up to 99999 lines
 set report=0                        " tell us when anything is changed via :...
@@ -349,7 +337,7 @@ set shiftwidth=4                    " auto-indent amount when using cindent,
 set showcmd
 set showmatch                       " Show matching bracets when text indicator is over them
 set smartcase                       " use smartcase searching
-set scrolloff=7                            " Minimal number of screen lines to keep above and below the cursor.
+set scrolloff=6                            " Minimal number of screen lines to keep above and below the cursor.
 set softtabstop=4                   " when hitting tab or backspace, how many spaces
 set t_vb=
 set tabstop=4                       " an indentation every four columns
@@ -368,6 +356,7 @@ set guicursor=n-c:block-Cursor-blinkon0
 set guicursor+=v:block-vCursor-blinkon0
 set guicursor+=i:ci-ver20-iCursor
 highlight iCursor guifg=white guibg=white
+hi MatchParen guifg=lightblue guibg=darkblue
 
 " Make those folders automatically if they don't already exist.
 if !isdirectory(expand(&undodir))
@@ -380,7 +369,7 @@ if !isdirectory(expand(&directory))
     call mkdir(expand(&directory), "p")
 endif
 
-set viminfo='10,\"100,:200,%,n~/.viminfo
+set viminfo='10,\"100,:200,%,n~/.vim/viminfo
 "  '10  :  marks will be remembered for up to 10 previously edited files
 "  "100 :  will save up to 100 lines for each register
 "  :200  :  up to 200 lines of command-line history will be remembered
@@ -397,7 +386,7 @@ function! ResCur()
 	endif
 endfunction
 
-function! s:DiffWithSaved()
+function! DiffWithSaved()
   let filetype=&ft
   diffthis
   vnew | r # | normal! 1Gdd
@@ -427,52 +416,6 @@ function! VisualSelection(direction) range
     let @" = l:saved_reg
 endfunction
 
-" Taken from vimtips, doesn't always work...
-noremap <F5> :call JavaInsertImport()<CR>
-function! JavaInsertImport()
-  exe "normal mz"
-  let cur_class = expand("<cword>")
-  try
-    if search('^\s*import\s.*\.' . cur_class . '\s*;') > 0
-      throw getline('.') . ": import already exist!"
-    endif
-    wincmd }
-    wincmd P
-    1
-    if search('^\s*public.*\s\%(class\|interface\)\s\+' . cur_class) > 0
-      1
-      if search('^\s*package\s') > 0
-        yank y
-      else
-        throw "Package definition not found!"
-      endif
-    else
-      throw cur_class . ": class not found!"
-    endif
-    wincmd p
-    normal! G
-    " insert after last import or in first line
-    if search('^\s*import\s', 'b') > 0
-      put y
-    else
-      1
-      put! y
-    endif
-    substitute/^\s*package/import/
-    substitute/\s\+/ /g
-    exe "normal! 2ER." . cur_class . ";"
-  catch /.*/
-    echoerr v:exception
-  finally
-    " wipe preview window (from buffer list)
-    silent! wincmd P
-    if &previewwindow
-      bwipeout
-    endif
-    exe "normal! `z"
-  endtry
-endfunction
-
 augroup resCur
 	autocmd!
 	autocmd BufWinEnter * call ResCur()
@@ -481,13 +424,9 @@ augroup END
 "" Common Spelling mistakes ""
 
 "Programming spelling mistakes
-iabbrev elsif elseif
-iabbrev elsef elseif
-iabbrev elseof elseif
-iabbrev elseof elseif
-iabbrev elsof elseif
-iabbrev elsiof elseif
-iabbrev endfi endif
+" Abolish eles{,if} else{}
+" Abolish els{,e}{if,fi,of,fo} elseif
+" Abolish alse else
 
 " My Abbrevs
 iabbrev accesories accessories
@@ -1160,4 +1099,3 @@ iabbrev november November
 iabbrev November November
 iabbrev december December
 iabbrev December December
-
