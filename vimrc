@@ -10,14 +10,15 @@ set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 set ttyfast
 
-Bundle 'nathanaelkane/vim-indent-guides'
-" Bundle 'Valloric/YouCompleteMe'
+Bundle 'kana/vim-textobj-user'
+Bundle 'glts/vim-textobj-comment.git'
+" Bundle 'nathanaelkane/vim-indent-guides'
+Bundle 'paradigm/TextObjectify'
 Bundle 'sjl/gundo.vim'
 Bundle 'airblade/vim-gitgutter'
 Bundle 'ack.vim'
 Bundle 'altercation/vim-colors-solarized.git'
 Bundle 'chriskempson/base16-vim'
-Bundle 'coderifous/textobj-word-column.vim'
 Bundle 'godlygeek/tabular'
 Bundle 'javacomplete'
 Bundle 'kien/ctrlp.vim'
@@ -25,13 +26,12 @@ Bundle 'kien/rainbow_parentheses.vim'
 Bundle 'lokaltog/vim-easymotion'
 Bundle 'majutsushi/tagbar'
 Bundle 'maksimr/vim-jsbeautify'
-Bundle 'mattn/zencoding-vim'
+" Bundle 'mattn/zencoding-vim'
 Bundle 'peaksea'
-Bundle 'robmiller/vim-movar'
 Bundle 'scrooloose/nerdcommenter'
 Bundle 'scrooloose/nerdtree'
 Bundle 'scrooloose/syntastic'
-Bundle 'skammer/vim-css-color'
+" Bundle 'skammer/vim-css-color'
 Bundle 'sudo.vim'
 Bundle 'sukima/xmledit'
 Bundle 'takac/semi.vim'
@@ -106,7 +106,7 @@ cabbr <expr> %d expand('%:p:h')
 " expand current file
 cabbr <expr> %f expand('%')
 " expand to home
-cabbr <expr> %h expand('%')
+cabbr <expr> %h expand('$HOME')
 
 " Syntastic Config
 let g:syntastic_error_symbol='✗'
@@ -311,10 +311,10 @@ set nolazyredraw                    " Don't redraw while executing macros
 set novisualbell
 set nowrap                          " wrap long lines
 set nrformats-=octal
-set number
-set numberwidth=5                   " We are good up to 99999 lines
+set number							" Set line numbers
+set numberwidth=5                   " Show line numbers up to size 99999
 set report=0                        " tell us when anything is changed via :...
-"set vb								" set to disable audible error bells
+"set vb								" set to enable visual bells
 set ruler                           " Always show current positions along the bottom^
 set shiftwidth=4                    " auto-indent amount when using cindent,
 set showcmd
@@ -324,7 +324,7 @@ set scrolloff=6                            " Minimal number of screen lines to k
 set softtabstop=4                   " when hitting tab or backspace, how many spaces
 set t_vb=							" To stop audible error bells
 set tabstop=4                       " an indentation every four columns
-set tabstop=4                       " real tabs should be 8, and they will show with
+set tabstop=4                       " real tabs should be 4, and they will show with
 set tm=2500
 set undodir=~/.vim/undo//             " where to save undo histories
 set undofile                        " so is persistent undo ...

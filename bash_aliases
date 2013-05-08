@@ -1,11 +1,16 @@
 #!/bin/bash
-alias open='nautilus'
+
+myip()
+{
+	echo "Int: $( ip a | awk '/inet / {sub(/\/.*/,""); if(!match ($2, /127\.0\.0/)){ print $2 }}')"
+	echo "Ext: $(curl -s ip.appspot.com)"
+}
+alias open='gnome-open'
 
 alias ack='ack-grep'
 alias fau='sudo apt-get -y upgrade'
 alias fap='sudo apt-get install --force-yes -y'
 
-alias vim='vim -p'
 alias gs='git status'
 alias gco='git checkout'
 alias hs='history | grep -i'
@@ -21,7 +26,6 @@ alias tree='tree -C'
 
 # Show all the dot files
 alias dot='ls .[a-za-z0-9_]*'
-
 
 # common misspellings
 alias mroe=more

@@ -1,4 +1,4 @@
-git-core
+git
 zsh
 maven
 openjdk-6-jdk
@@ -8,6 +8,7 @@ vim
 screen
 zsh
 aptitude
+cowsay
 tree
 make
 sed
