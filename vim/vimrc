@@ -10,32 +10,33 @@ set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 set ttyfast
 
-Bundle 'kana/vim-textobj-user'
-Bundle 'glts/vim-textobj-comment.git'
-" Bundle 'nathanaelkane/vim-indent-guides'
-Bundle 'paradigm/TextObjectify'
-Bundle 'sjl/gundo.vim'
-Bundle 'airblade/vim-gitgutter'
+" Bundle 'mattn/zencoding-vim'
+" Bundle 'skammer/vim-css-color'
+
 Bundle 'ack.vim'
+Bundle 'airblade/vim-gitgutter'
 Bundle 'altercation/vim-colors-solarized.git'
+Bundle 'bling/vim-airline'
 Bundle 'chriskempson/base16-vim'
+Bundle 'glts/vim-textobj-comment.git'
 Bundle 'godlygeek/tabular'
-Bundle 'javacomplete'
+Bundle 'kana/vim-textobj-user'
 Bundle 'kien/ctrlp.vim'
 Bundle 'kien/rainbow_parentheses.vim'
-Bundle 'lokaltog/vim-easymotion'
 Bundle 'majutsushi/tagbar'
-Bundle 'maksimr/vim-jsbeautify'
-" Bundle 'mattn/zencoding-vim'
+Bundle 'paradigm/TextObjectify'
 Bundle 'peaksea'
 Bundle 'scrooloose/nerdcommenter'
 Bundle 'scrooloose/nerdtree'
 Bundle 'scrooloose/syntastic'
-" Bundle 'skammer/vim-css-color'
+Bundle 'sjl/gundo.vim'
 Bundle 'sudo.vim'
 Bundle 'sukima/xmledit'
 Bundle 'takac/semi.vim'
 Bundle 'takac/ultisnips'
+Bundle 'takac/vim-commandcaps'
+Bundle 'takac/vim-easymotion'
+Bundle 'takac/vim-hardtime'
 Bundle 'thinca/vim-quickrun.git'
 Bundle 'tpope/vim-abolish'
 Bundle 'tpope/vim-fugitive'
@@ -46,7 +47,6 @@ Bundle 'tsaleh/vim-matchit'
 Bundle 'vim-scripts/camelcasemotion'
 Bundle 'vim-scripts/scratch.vim'
 Bundle 'vundle'
-Bundle 'wikitopian/hardmode'
 
 "Basic functionality
 filetype plugin on
@@ -54,7 +54,6 @@ filetype indent on
 syntax on
 set omnifunc=syntaxcomplete#Complete
 
-python from powerline.bindings.vim import source_plugin; source_plugin()
 "Set colours and fonts
 if has("gui_running")
 	set background=dark
@@ -68,21 +67,20 @@ if has("gui_running")
 	endif
 else
 	set background=dark
-	color peaksea
+	silent! color peaksea
 endif
 
-" If powerline is on...
-let g:Powerline_theme='short'
-let g:Powerline_colorscheme='solarized256'
-
 " Rainbow Parens!
-au VimEnter * RainbowParenthesesToggle 
-au Syntax * RainbowParenthesesLoadBraces
-au Syntax * RainbowParenthesesLoadRound
+au VimEnter * if exists(":RainbowParenthesesToggle") | :RainbowParenthesesToggle  | endf
+au Syntax * if exists(":RainbowParenthesesLoadBraces") | :RainbowParenthesesLoadBraces | endf
+au Syntax * if exists(":RainbowParenthesesLoadRound") | :RainbowParenthesesLoadRound | endf
+
+" airline fancy fonts
+let g:airline_powerline_fonts=1
 
 "Easy motion config
 let g:EasyMotion_leader_key = '<Space>'
-hi EasyMotionTargetDefault cterm=bold ctermfg=196 gui=bold guifg=#ff0000
+" hi EasyMotionTargetDefault cterm=bold ctermfg=196 gui=bold guifg=#ff0000
 
 set pastetoggle=<F12>               " pastetoggle (sane indentation on pastes)
 
@@ -91,10 +89,8 @@ if has("unix")
 	let s:uname = system("uname")
 	if s:uname == "Darwin\n"
 		set pastetoggle=<leader>p          	" pastetoggle (sane indentation on pastes)
-		let g:Powerline_symbols = 'compatible'
 		let mapleader="§"
 	else
-		let g:Powerline_symbols = 'fancy'
 	endif
 endif
 
@@ -149,19 +145,6 @@ fun! TopBottom()
 	let pos[1] = line("^")
 	call setpos(".", pos)
 endf
-
-nnoremap <silent> gb :<C-W>call MoveBottom()<CR>
-fun! MoveBottom()
-	let pos = getpos(".")
-	let pos[1] = line("$")
-	call setpos(".", pos)
-endf
-
-command! WS call WS()
-function! WS()
-	:w
-	:so %
-endfunction
 
 " Useful location list search. Find current word in buffer and populate
 " location list and show location list. To close location list use :lcl[ose]
@@ -224,10 +207,6 @@ if !exists("*RestartVim")
 	endf
 endif
 
-"Fugitive
-nnoremap <leader>gd :Gdiff<cr>
-nnoremap <leader>gs :Gstatus<cr>
-
 " Navigate through wrapped lines
 noremap j gj
 noremap k gk
@@ -269,12 +248,6 @@ nnoremap <leader>ws db%lvawp%%P%%
 au VimResized * :wincmd =
 " When vimrc is edited, reload it
 autocmd! bufwritepost .*vimrc source ~/.vimrc
-
-" fix mistype :W and :Q
-command! -bang -range=% -complete=file -nargs=* WQ <line1>,<line2>wq<bang> <args>
-command! -bang -range=% -complete=file -nargs=* Wq <line1>,<line2>wq<bang> <args>
-command! -bang -range=% -complete=file -nargs=* W <line1>,<line2>w<bang> <args>
-command! -bang Q quit<bang>
 
 let g:UltiSnipsSnippetsDir = '~/.vim/bundle/ultisnips/UltiSnips'
 set runtimepath+=~/.vim/bundle/ultisnips/UltiSnips

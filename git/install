@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Copy meld diff script
+sudo cp ${DOT_DIR}/git/meld-git-diff.py /usr/bin/meld-git-diff.py
+
+# Configure git to use meld diff
+git config --global diff.external /usr/bin/meld-git-diff.py
+# Configure git to use color
+git config --global color.ui true
+# Configure git to use vim!
+git config --global core.editor "vim"
+
+git config --global user.name "Tom Cammann"
+git config --global user.email "cammann.tom@gmail.com"

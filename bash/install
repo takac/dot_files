@@ -1,0 +1,6 @@
+# Copy bash files
+cp ${DOT_DIR}/bash/bash_aliases ~/.bash_aliases
+
+# Copy rc
+cp ${DOT_DIR}/bash/bashrc ~/.bashrc
+

@@ -3,12 +3,7 @@ EDITOR=vim
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
-#Make tmp dir for vim
-[[ ! -e $HOME/.vim/tmp ]] && mkdir $HOME/.vim/tmp
-#Make backup dir for vim
-[[ ! -e $HOME/.vim/backup ]] && mkdir $HOME/.vim/backup
-
-#need to add to profile
+# need to add to profile
 if [ -z "$PROFILE_RAN" ]; then
 	PATH="/usr/local/bin:/usr/bin:/bin:$PATH"
 fi
@@ -113,8 +108,6 @@ fi
 if [ -z "$HOST" ] ; then
 	export HOST=${HOSTNAME}
 fi
-
-
 
 [[ -e ~/.git-completion.bash ]] && source ~/.git-completion.bash
 

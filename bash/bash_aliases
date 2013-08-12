@@ -5,6 +5,7 @@ myip()
 	echo "Int: $( ip a | awk '/inet / {sub(/\/.*/,""); if(!match ($2, /127\.0\.0/)){ print $2 }}')"
 	echo "Ext: $(curl -s ip.appspot.com)"
 }
+
 alias open='gnome-open'
 
 alias ack='ack-grep'
@@ -17,12 +18,11 @@ alias hs='history | grep -i'
 
 #Add color to things :D
 alias ls="ls --color"
-alias grep='grep --color=always'
-alias fgrep='fgrep --color=always'
-alias egrep='egrep --color=always'
-alias ls='ls --color=always'
+alias grep='grep --color'
+alias fgrep='fgrep --color'
+alias egrep='egrep --color'
 alias tree='tree -C'
-
+alias tmux='tmux -2'
 
 # Show all the dot files
 alias dot='ls .[a-za-z0-9_]*'
@@ -30,6 +30,7 @@ alias dot='ls .[a-za-z0-9_]*'
 # common misspellings
 alias mroe=more
 alias pdw=pwd
+alias ivm=vim 
 
 
 # default to human readable figures

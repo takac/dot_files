@@ -1,0 +1,13 @@
+# Requires: git, zsh
+
+# Install Z, (directory history program)
+git clone git://github.com/rupa/z.git ~/.z
+
+# Configure Z with zsh
+echo "source ~/.z/z.sh" >> ~/.zshrc
+echo "function precmd () {" >> ~/.zshrc
+echo " _z --add \"\$(pwd -P)\"" >> ~/.zshrc
+echo "}" >> ~/.zshrc
+
+# Configure Z with bash
+echo ". ~/.z/z.sh" >> ~/.bashrc
