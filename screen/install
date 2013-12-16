@@ -1,0 +1,3 @@
+#! /bin/bash
+# Requires: screen
+cp ${DOT_DIR}/screen/screenrc ~/.screenrc

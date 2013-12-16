@@ -27,10 +27,6 @@ bind -c selectHighs 5 select 15
 bind - command -c selectHighs #bind the hyphen to #command-class selectHighs
 
 
-screen -t one 0 zsh
-screen -t two 1 zsh
-screen -t three 2 zsh
-
 shelltitle "$ |zsh"
 # caption always           "%?%F%{= Kk}%:%{=u kR}%?  %h %-024=%{b+} %c %D %d %M %Y%{= db}"
 
