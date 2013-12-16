@@ -6,9 +6,17 @@ if [ -d ~/.oh-my-zsh ]; then
 	echo "Oh-my-zsh already installed, remove .oh-my-zsh and retry to reinstall"
 else
 	echo "Installing oh-my-zsh"
-	wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
+	wget --no-check-certificate http://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
+	if [ "$!" != "0" ]; then
+		echo "Failed to download with wget"
+		git clone git://github.com/robbyrussell/oh-my-zsh ~/.oh-my-zsh
+		sed -ne '17,$p' ~/.oh-my-zsh/tools/install.sh > /tmp/zsh-install.sh
+		chmod +x /tmp/zsh-install.sh
+		. /tmp/zsh-install.sh
+	fi
 fi
 
+echo "Adding setting OH_MY_ZSH plugin configuration"
 # Set the zsh theme to dstufft
 sed -i -e 's/^plugins=.*/plugins=(git mvn debian screen)/' -e 's/^ZSH_THEME=.*/ZSH_THEME=darkblood/' ~/.zshrc
 

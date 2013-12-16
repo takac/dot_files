@@ -6,6 +6,7 @@ set encoding=utf-8
 set laststatus=2
 
 "Vundle config
+let g:vundle_default_git_proto = 'git'
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 set ttyfast
