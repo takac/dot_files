@@ -2,52 +2,59 @@
 set t_Co=256
 set encoding=utf-8
 
-"Powerline config
-set laststatus=2
+" Echo startup time on start {{{
+if has('vim_starting') && has('reltime')
+  " Shell: vim --startuptime {filename} -q; vim {filename}
+  " vim --cmd 'profile start profile.txt' --cmd 'profile file $HOME/.vimrc' +q && vim profile.txt
+  let s:startuptime = reltime()
+    autocmd VimEnter * let s:startuptime = reltime(s:startuptime) | redraw
+    \ | echomsg 'startuptime: ' . reltimestr(s:startuptime)
+endif
 
-"Vundle config
-let g:vundle_default_git_proto = 'git'
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
+if has('vim_starting')
+   set runtimepath+=~/.vim/bundle/neobundle.vim/
+endif
+call neobundle#rc(expand('~/.vim/bundle/'))
+
 set ttyfast
+NeoBundleFetch 'Shougo/neobundle.vim'
 
+" Maybe useful
 " Bundle 'mattn/zencoding-vim'
 " Bundle 'skammer/vim-css-color'
+" NeoBundle 'takac/semi.vim'
+" NeoBundle 'takac/vim-hardtime'
 
-Bundle 'ack.vim'
-Bundle 'airblade/vim-gitgutter'
-Bundle 'altercation/vim-colors-solarized.git'
-Bundle 'bling/vim-airline'
-Bundle 'chriskempson/base16-vim'
-Bundle 'glts/vim-textobj-comment.git'
-Bundle 'godlygeek/tabular'
-Bundle 'kana/vim-textobj-user'
-Bundle 'kien/ctrlp.vim'
-Bundle 'kien/rainbow_parentheses.vim'
-Bundle 'majutsushi/tagbar'
-Bundle 'paradigm/TextObjectify'
-Bundle 'peaksea'
-Bundle 'scrooloose/nerdcommenter'
-Bundle 'scrooloose/nerdtree'
-Bundle 'scrooloose/syntastic'
-Bundle 'sjl/gundo.vim'
-Bundle 'sudo.vim'
-Bundle 'sukima/xmledit'
-Bundle 'takac/semi.vim'
-Bundle 'takac/ultisnips'
-Bundle 'takac/vim-commandcaps'
-Bundle 'takac/vim-easymotion'
-Bundle 'takac/vim-hardtime'
-Bundle 'thinca/vim-quickrun.git'
-Bundle 'tpope/vim-abolish'
-Bundle 'tpope/vim-fugitive'
-Bundle 'tpope/vim-git'
-Bundle 'tpope/vim-repeat'
-Bundle 'tpope/vim-surround'
-Bundle 'tsaleh/vim-matchit'
-Bundle 'vim-scripts/camelcasemotion'
-Bundle 'vim-scripts/scratch.vim'
-Bundle 'vundle'
+" Pretty Colors
+NeoBundle 'altercation/vim-colors-solarized.git'
+NeoBundle 'chriskempson/base16-vim'
+NeoBundle 'peaksea'
+
+" Plugins
+NeoBundle 'bling/vim-airline'
+NeoBundle 'godlygeek/tabular'
+NeoBundle 'haya14busa/vim-easymotion'
+NeoBundle 'kien/ctrlp.vim'
+NeoBundle 'kien/rainbow_parentheses.vim'
+NeoBundle 'majutsushi/tagbar'
+NeoBundle 'maksimr/vim-jsbeautify'
+NeoBundle 'mhinz/vim-signify'
+NeoBundle 'scrooloose/nerdcommenter'
+NeoBundle 'scrooloose/nerdtree'
+NeoBundle 'scrooloose/syntastic'
+NeoBundle 'sjl/gundo.vim'
+NeoBundle 'sudo.vim'
+NeoBundle 'takac/ultisnips'
+NeoBundle 'takac/vim-commandcaps'
+NeoBundle 'takac/vim-fontmanager'
+NeoBundle 'takac/vim-spotifysearch'
+NeoBundle 'thinca/vim-quickrun'
+NeoBundle 'tpope/vim-fugitive'
+NeoBundle 'tpope/vim-repeat'
+NeoBundle 'tpope/vim-surround'
+NeoBundle 'tsaleh/vim-matchit'
+NeoBundle 'vim-scripts/camelcasemotion'
+NeoBundle 'vim-scripts/scratch.vim'
 
 "Basic functionality
 filetype plugin on
@@ -55,46 +62,53 @@ filetype indent on
 syntax on
 set omnifunc=syntaxcomplete#Complete
 
+" Syntastic Config
+let g:syntastic_javascript_checkers = ['jslint']
+let g:syntastic_error_symbol='✗'
+let g:syntastic_warning_symbol='⚠'
+
 "Set colours and fonts
 if has("gui_running")
-	set background=dark
-	color solarized
-	if has("gui_macvim")
-		set guifont=Inconsolata:h17
-	elseif has("gui_gtk2")
-		set guifont=Inconsolata\ for\ Powerline\ Medium\ 13
-	elseif has("gui_win32") || has("gui_win64")
-		set guifont=Consolas:h11:cANSI
-	endif
+    set background=dark
+    color solarized
+    if has("gui_macvim")
+        set guifont=Inconsolata:h17
+    elseif has("gui_gtk2")
+        set guifont=Inconsolata\ for\ Powerline\ Medium\ 13
+    elseif has("gui_win32") || has("gui_win64")
+        set guifont=Consolas:h11:cANSI
+    endif
 else
-	set background=dark
-	silent! color peaksea
+    set background=dark
+    silent! color peaksea
 endif
 
 " Rainbow Parens!
-au VimEnter * if exists(":RainbowParenthesesToggle") | :RainbowParenthesesToggle  | endf
-au Syntax * if exists(":RainbowParenthesesLoadBraces") | :RainbowParenthesesLoadBraces | endf
-au Syntax * if exists(":RainbowParenthesesLoadRound") | :RainbowParenthesesLoadRound | endf
+au VimEnter * RainbowParenthesesToggle
+au Syntax * RainbowParenthesesLoadBraces
+au Syntax * RainbowParenthesesLoadRound
 
-" airline fancy fonts
+" Airline conf
+set laststatus=2
 let g:airline_powerline_fonts=1
+let g:airline_theme="dark"
 
 "Easy motion config
 let g:EasyMotion_leader_key = '<Space>'
-" hi EasyMotionTargetDefault cterm=bold ctermfg=196 gui=bold guifg=#ff0000
+map <Space>J <Plug>(easymotion-eol-j)
+map <Space>K <Plug>(easymotion-eol-k)
 
 set pastetoggle=<F12>               " pastetoggle (sane indentation on pastes)
 
 "Set cross system compatibility
 if has("unix")
-	let s:uname = system("uname")
-	if s:uname == "Darwin\n"
-		set pastetoggle=<leader>p          	" pastetoggle (sane indentation on pastes)
-		let mapleader="§"
-	else
-	endif
+    let s:uname = system("uname")
+    if s:uname == "Darwin\n"
+        set pastetoggle=<leader>p           " pastetoggle (sane indentation on pastes)
+        let mapleader="§"
+    else
+    endif
 endif
-
 
 " helpful expansions
 " expand to current dir of file
@@ -105,83 +119,72 @@ cabbr <expr> %f expand('%')
 " expand to home
 cabbr <expr> %h expand('$HOME')
 
-" Syntastic Config
-let g:syntastic_error_symbol='✗'
-let g:syntastic_warning_symbol='⚠'
 
 nnoremap Q <nop>
-
-nnoremap <leader>e :tabe ~/.vimrc<CR>
+nnoremap K <nop>
+nnoremap <leader>e :e ~/.vimrc<CR>
 nnoremap <leader>l :set list!<CR>
-nnoremap <leader>tc :tabclose<CR>
-nnoremap <leader>te :tabedit
-nnoremap <leader>tm :tabmove
-nnoremap <leader>tb :TagbarToggle<CR>
 nnoremap <leader>tn :tabnew<CR>
-nnoremap <silent> <F1> :bn<CR>
-nnoremap <silent> <F2> :bp<CR>
 nnoremap <silent> <F3> :NERDTreeToggle<CR>
-nnoremap <silent> <leader>n :NERDTreeToggle<CR>
 nnoremap <silent> <F4> :set hlsearch!<CR>
 nnoremap <silent> <leader><CR> :set hlsearch!<CR>
 nnoremap <silent> <F7> :set spell!<CR>
 nnoremap <silent> <F8> :TagbarToggle<CR>
-nnoremap <leader>w :w<CR>
+
+" Use current selection for Acking all files in cwd
+vnoremap <silent> <leader>a :<C-U>let @/=GetVisual()<CR> :set hls<CR>:Ag "<C-R>/"<CR>
+nnoremap <silent> <leader>a :let @/='<C-R>=expand("<cword>")<CR>'<CR>:Ag <cword><CR>:set hls<CR>
 
 " Searching with visual selections, taken from somewhere..
 " 'f' - forward and 'b' - backwards
 vnoremap <silent> * :call VisualSelection('f')<CR>
 vnoremap <silent> # :call VisualSelection('b')<CR>
 
-" Use current selection for Acking all files in cwd
-vnoremap <silent> <leader>a :<C-U>let @/=GetVisual()<CR> :set hls<CR>:Ack "<C-R>/"<CR>
-nnoremap <silent> <leader>a :let @/='<C-R>=expand("<cword>")<CR>'<CR>:Ack <cword><CR>:set hls<CR>
-
 " Put word under cursor into search register and highlight
-nnoremap <silent> * :let @/='\<<C-R>=expand("<cword>")<CR>\>'<CR>:set hls<CR>
+nnoremap <silent> * :call StarSearch()<CR>
+nnoremap <silent> # :call StarSearch()<CR>
 
-nnoremap <silent> gB :<C-W>call TopBottom()<CR>
-fun! TopBottom()
-	let pos = getpos(".")
-	let pos[1] = line("^")
-	call setpos(".", pos)
-endf
+function! StarSearch()
+    let l:pattern = expand("<cword>")
+    let l:pattern = escape(l:pattern, '\\/.*$^~[]')
+
+    execute "normal ?\\<" . l:pattern . "\\>"
+    let @/ = "\\<" . l:pattern . "\\>"
+    set hls
+endfunction
 
 " Useful location list search. Find current word in buffer and populate
 " location list and show location list. To close location list use :lcl[ose]
 nnoremap <silent> <leader>f :<C-U>call setloclist(".", [])<CR>
-	\:g/<C-R>=expand("<cword>")<CR>/laddexpr expand("%") .
-	\ ":" . line(".") .  ":" . getline(".")<CR>
-	\:lw<CR>
+    \:g/<C-R>=expand("<cword>")<CR>/laddexpr expand("%") .
+    \ ":" . line(".") .  ":" . getline(".")<CR>
+    \:lw<CR>
     \:exec "nnoremap <silent> <buffer> q :lcl<CR>"
+
 " Use visual selection for search
 vnoremap <silent> <leader>f :normal *<CR>
-	\:g/<C-R>//laddexpr expand("%") .
-	\ ":" . line(".") .  ":" . getline(".")<CR>
-	\:lw<CR>
+    \:g/<C-R>//laddexpr expand("%") .
+    \ ":" . line(".") .  ":" . getline(".")<CR>
+    \:lw<CR>
     \:nnoremap <silent> <buffer> q :lcl<CR>
 
-autocmd FileType c,cpp,java,php,js,python,twig,xml,yml autocmd BufWritePre <buffer> :call setline(1,map(getline(1,"$"),'substitute(v:val,"\\s\\+$","","")'))
-autocmd! BufEnter *.java :setlocal foldexpr=HideImportFold(v:lnum) foldmethod=expr foldlevel=0 
+" autocmd FileType c,cpp,java,php,js,python,twig,xml,yml autocmd BufWritePre <buffer> :call setline(1,map(getline(1,"$"),'substitute(v:val,"\\s\\+$","","")'))
+autocmd! BufEnter *.java :setlocal foldexpr=HideImportFold(v:lnum) foldmethod=expr foldlevel=0
 
 function! HideImportFold(lnum)
-	if getline(a:lnum) =~ '^import'
-		return '1'
-	endif
-	if getline(a:lnum) =~ '\v^\s*$'
-		return '-1'
-	endif
-	return '0'
+    if getline(a:lnum) =~ '^import'
+        return '1'
+    endif
+    if getline(a:lnum) =~ '\v^\s*$'
+        return '-1'
+    endif
+    return '0'
 endfunction
-
-" Hide searched for expression
-nnoremap <leader>Z :setlocal foldexpr=(getline(v:lnum)=~@/)?1:0 foldmethod=expr foldlevel=0 foldcolumn=2<CR>
-" Fold anything not matched! I should use this more!!
-nnoremap <leader>z :setlocal foldexpr=(getline(v:lnum)=~@/)?0:(getline(v:lnum-1)=~@/)\\|\\|(getline(v:lnum+1)=~@/)?1:2 foldmethod=expr foldlevel=0 foldcolumn=2<CR>
 
 " Emacs like movement in ex commands, <C-A> start of the line, <C-E> eol
 cnoremap <C-A> <Home>
 cnoremap <C-E> <End>
+cnoremap <C-LEFT> <S-LEFT>
 
 function! GetVisual() range
         let reg_save = getreg('"')
@@ -195,18 +198,13 @@ function! GetVisual() range
         return selection
 endfunction
 
-let g:ctrlp_show_hidden = 1
+
+let g:ctrlp_extensions=['line']
+let g:ctrlp_clear_cache_on_exit = 0
 let g:ctrlp_custom_ignore = {
 \ 'file': '\v\.(exe|so|dll|class)$',
+\ 'dir':  '\v<(\.git|\.hg|\.svn|\.vim|\.config)[\/]'
 \ }
-
-" When vimrc is edited, reload it and fix powerline colorscheme
-autocmd! bufwritepost .vimrc call RestartVim()
-if !exists("*RestartVim")
-	fun! RestartVim()
-		source ~/.vimrc
-	endf
-endif
 
 " Navigate through wrapped lines
 noremap j gj
@@ -215,10 +213,43 @@ noremap gj j
 noremap gk k
 
 " Useful normal mapping for arrow keys.
-" nnoremap <UP> ddkP
-" nnoremap <DOWN> ddp
-" vnoremap <DOWN> xp`[V`]
-" vnoremap <UP> xkP`[V`]
+function! BubbleKeysOff()
+    nnoremap <UP> <UP>
+    nnoremap <RIGHT> <RIGHT>
+    nnoremap <LEFT> <LEFT>
+    nnoremap <DOWN> <DOWN>
+    vnoremap <DOWN> <DOWN>
+    vnoremap <RIGHT> <RIGHT>
+    vnoremap <LEFT> <LEFT>
+    vnoremap <UP> <UP>
+endfunction
+
+" Useful normal mapping for arrow keys.
+function! BubbleKeysOn()
+    nnoremap <UP> ddkP
+    nnoremap <RIGHT> >>
+    nnoremap <LEFT> <<
+    nnoremap <DOWN> ddp
+    vnoremap <RIGHT> >gv
+    vnoremap <DOWN> xp`[V`]
+    vnoremap <LEFT> <gv
+    vnoremap <UP> xkP`[V`]
+endfunction
+
+command! -nargs=0 BubbleKeyOn call BubbleKeyOn()
+command! -nargs=0 BubbleKeyOff call BubbleKeyOff()
+
+" Remove whitespace, keep position
+function! RemoveTrailingWhiteSpace() range
+    normal mzHmy
+    let l:range = a:firstline . "," . a:lastline
+    if a:firstline == a:lastline
+        let l:range = "%"
+    endif
+    silent! exec l:range . 's/\s\+$//g'
+    normal 'yz<CR>
+    normal `z
+endfunction
 
 " Show the stack of syntax hilighting classes affecting whatever is under the
 " cursor.
@@ -236,19 +267,14 @@ nnoremap <leader>sn :call SynStack()<CR>
 vnoremap Z s<C-R>=eval(substitute("<C-R>"", "\r", "", ""))<CR><ESC>
 
 " Swap arguments of function
-" func cursor-here>>(yargg, xi, aol) 
+" func cursor-here>>(yargg, xi, aol)
 " goes to ->  >>(aol, xi, yargg)
 nnoremap <leader>sw %db%lvawp%%P%
 " func (yarg, xarg)<<cursor-here
 nnoremap <leader>ws db%lvawp%%P%%
 
-" magic capitilisation, not really very useful.
-" Inverts capitilisation for previous word
-" inoremap <C-U> <esc>mzg~iw`za
-" Resize splits when the window is resized
-au VimResized * :wincmd =
 " When vimrc is edited, reload it
-autocmd! bufwritepost .*vimrc source ~/.vimrc
+autocmd! bufwritepost .vimrc source ~/.vimrc
 
 let g:UltiSnipsSnippetsDir = '~/.vim/bundle/ultisnips/UltiSnips'
 set runtimepath+=~/.vim/bundle/ultisnips/UltiSnips
@@ -279,16 +305,20 @@ set linebreak
 set listchars=tab:▸\ ,eol:¬,trail:●,extends:❯,precedes:❮
 set magic                           " Set magic on, for regular expressions
 set mat=2                           " How many tenths of a second to blink
-set noerrorbells                    " No sound on errors
+set wildignore+=*/target/*
+
+set noerrorbells visualbell t_vb=
+if has('autocmd')
+  autocmd GUIEnter * set visualbell t_vb=
+endif
+
 set noexrc                          " don't use local version of .(g)vimrc, .exrc
 set nolazyredraw                    " Don't redraw while executing macros
-set novisualbell
 set nowrap                          " wrap long lines
 set nrformats-=octal
-set number							" Set line numbers
+set number                          " Set line numbers
 set numberwidth=5                   " Show line numbers up to size 99999
 set report=0                        " tell us when anything is changed via :...
-"set vb								" set to enable visual bells
 set ruler                           " Always show current positions along the bottom^
 set shiftwidth=4                    " auto-indent amount when using cindent,
 set showcmd
@@ -296,7 +326,7 @@ set showmatch                       " Show matching bracets when text indicator 
 set smartcase                       " use smartcase searching
 set scrolloff=6                            " Minimal number of screen lines to keep above and below the cursor.
 set softtabstop=4                   " when hitting tab or backspace, how many spaces
-set t_vb=							" To stop audible error bells
+set expandtab
 set tabstop=4                       " an indentation every four columns
 set tabstop=4                       " real tabs should be 4, and they will show with
 set tm=2500
@@ -306,7 +336,7 @@ set undolevels=1000                 " How many undos
 set undoreload=10000                " maximum number lines to save for undo on a buffer reload
 set whichwrap+=<,>,h,l
 set wildmenu                        " Turn on WiLd menu
-set matchpairs+=<:>            	" match, to be used with %
+set matchpairs+=<:>             " match, to be used with %
 
 " Sexy cursors
 set guicursor=n-c:block-Cursor-blinkon0
@@ -334,13 +364,13 @@ set viminfo='10,\"100,:200,%,n~/.vim/viminfo
 "  n... :  where to save the viminfo files
 
 " Remove trailing whitespaces and ^M chars
-autocmd FileType c,cpp,java,php,js,python,twig,xml,yml autocmd BufWritePre <buffer> :call setline(1,map(getline(1,"$"),'substitute(v:val,"\\s\\+$","","")'))
+" autocmd FileType c,cpp,java,php,js,python,twig,xml,yml autocmd BufWritePre <buffer> :call setline(1,map(getline(1,"$"),'substitute(v:val,"\\s\\+$","","")'))
 " Tell vim to remember certain things when we exit
 function! ResCur()
-	if line("'\"") <= line("$")
-		normal! g`"
-		return 1
-	endif
+    if line("'\"") <= line("$")
+        normal! g`"
+        return 1
+    endif
 endfunction
 
 " function! s:DiffWithSaved()
@@ -360,13 +390,13 @@ function! VisualSelection(direction) range
     let l:pattern = substitute(l:pattern, "\n$", "", "")
 
     if a:direction == 'b'
-        execute "normal ?" . l:pattern . "^M"
+        execute "normal ?" . l:pattern
     elseif a:direction == 'gv'
         call CmdLine("vimgrep " . '/'. l:pattern . '/' . ' **/*.')
     elseif a:direction == 'replace'
         call CmdLine("%s" . '/'. l:pattern . '/')
     elseif a:direction == 'f'
-        execute "normal /" . l:pattern . "^M"
+        execute "normal /" . l:pattern
     endif
 
     let @/ = l:pattern
@@ -374,8 +404,8 @@ function! VisualSelection(direction) range
 endfunction
 
 augroup resCur
-	autocmd!
-	autocmd BufWinEnter * call ResCur()
+    autocmd!
+    autocmd BufWinEnter * call ResCur()
 augroup END
 
 "" Common Spelling mistakes ""

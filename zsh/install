@@ -18,7 +18,7 @@ fi
 
 echo "Adding setting OH_MY_ZSH plugin configuration"
 # Set the zsh theme to dstufft
-sed -i -e 's/^plugins=.*/plugins=(git mvn debian screen)/' -e 's/^ZSH_THEME=.*/ZSH_THEME=darkblood/' ~/.zshrc
+sed -i -e 's/^plugins=.*/plugins=(git mvn tmux screen)/' -e 's/^ZSH_THEME=.*/ZSH_THEME=darkblood/' ~/.zshrc
 
 echo "" >> ~/.zshrc
 echo "source ~/.bash_aliases" >> ~/.zshrc
