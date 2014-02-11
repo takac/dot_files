@@ -4,7 +4,7 @@
 sudo cp ${DOT_DIR}/git/meld-git-diff.py /usr/bin/meld-git-diff.py
 
 # Configure git to use meld diff
-git config --global diff.external /usr/bin/meld-git-diff.py
+git config --global difftool.external /usr/bin/meld-git-diff.py
 # Configure git to use color
 git config --global color.ui true
 # Configure git to use vim!

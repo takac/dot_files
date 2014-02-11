@@ -1,8 +1,8 @@
 # Install vundle
-if [ -d ~/.vim/bundle/vundle ]; then
+if [ -d ~/.vim/bundle/neobundle.vim ]; then
 	echo "Vundle appears to be installed"
 else
-	git clone git://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+    git clone git://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle.vim
 fi
 
 # Create vim dirs
@@ -13,4 +13,4 @@ mkdir -p ~/.vim/undo
 # Copy vim files
 cp ${DOT_DIR}/vim/vimrc ~/.vimrc
 
-vim +BundleInstall +qa
+vim +NeoBundleInstall +qa
