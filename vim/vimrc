@@ -23,7 +23,6 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 " Bundle 'mattn/zencoding-vim'
 " Bundle 'skammer/vim-css-color'
 " NeoBundle 'takac/semi.vim'
-" NeoBundle 'takac/vim-hardtime'
 
 " Pretty Colors
 NeoBundle 'altercation/vim-colors-solarized.git'
@@ -33,28 +32,27 @@ NeoBundle 'peaksea'
 " Plugins
 NeoBundle 'bling/vim-airline'
 NeoBundle 'godlygeek/tabular'
+NeoBundle 'guns/vim-clojure-static'
 NeoBundle 'haya14busa/vim-easymotion'
 NeoBundle 'kien/ctrlp.vim'
 NeoBundle 'kien/rainbow_parentheses.vim'
 NeoBundle 'majutsushi/tagbar'
-NeoBundle 'maksimr/vim-jsbeautify'
 NeoBundle 'mhinz/vim-signify'
 NeoBundle 'scrooloose/nerdcommenter'
-NeoBundle 'scrooloose/nerdtree'
 NeoBundle 'scrooloose/syntastic'
 NeoBundle 'sjl/gundo.vim'
 NeoBundle 'sudo.vim'
 NeoBundle 'takac/ultisnips'
 NeoBundle 'takac/vim-commandcaps'
 NeoBundle 'takac/vim-fontmanager'
+NeoBundle 'takac/vim-hardtime'
 NeoBundle 'takac/vim-spotifysearch'
 NeoBundle 'thinca/vim-quickrun'
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'tpope/vim-repeat'
 NeoBundle 'tpope/vim-surround'
-NeoBundle 'tsaleh/vim-matchit'
-NeoBundle 'vim-scripts/camelcasemotion'
 NeoBundle 'vim-scripts/scratch.vim'
+NeoBundle 'wellle/targets.vim'
 
 "Basic functionality
 filetype plugin on
@@ -62,10 +60,16 @@ filetype indent on
 syntax on
 set omnifunc=syntaxcomplete#Complete
 
+let g:commandcaps_override = 1
+
 " Syntastic Config
 let g:syntastic_javascript_checkers = ['jslint']
 let g:syntastic_error_symbol='✗'
 let g:syntastic_warning_symbol='⚠'
+
+" Hardtime config
+let g:hardtime_ignore_buffer_patterns = [ "N[EeA]RD.*", ".*git/index" ]
+let g:hardtime_default_on = 0
 
 "Set colours and fonts
 if has("gui_running")
@@ -93,7 +97,7 @@ set laststatus=2
 let g:airline_powerline_fonts=1
 let g:airline_theme="dark"
 
-"Easy motion config
+" Easy motion config
 let g:EasyMotion_leader_key = '<Space>'
 map <Space>J <Plug>(easymotion-eol-j)
 map <Space>K <Plug>(easymotion-eol-k)
@@ -135,22 +139,32 @@ nnoremap <silent> <F8> :TagbarToggle<CR>
 vnoremap <silent> <leader>a :<C-U>let @/=GetVisual()<CR> :set hls<CR>:Ag "<C-R>/"<CR>
 nnoremap <silent> <leader>a :let @/='<C-R>=expand("<cword>")<CR>'<CR>:Ag <cword><CR>:set hls<CR>
 
-" Searching with visual selections, taken from somewhere..
-" 'f' - forward and 'b' - backwards
-vnoremap <silent> * :call VisualSelection('f')<CR>
-vnoremap <silent> # :call VisualSelection('b')<CR>
+" Searching with visual selections
+vnoremap <silent> * :call VisualSelectionSearch()<CR>
+vnoremap <silent> # :call VisualSelectionSearch()<CR>
 
 " Put word under cursor into search register and highlight
-nnoremap <silent> * :call StarSearch()<CR>
-nnoremap <silent> # :call StarSearch()<CR>
+nnoremap <silent> * :call DoSearch(expand("<cword>"))<CR>
+nnoremap <silent> # :call NormalSearch(expand("<cword>"))<CR>
 
-function! StarSearch()
-    let l:pattern = expand("<cword>")
-    let l:pattern = escape(l:pattern, '\\/.*$^~[]')
+function! DoSearch(pattern)
+    let l:escaped_pattern = escape(a:pattern, '\\/.*$^~[]')
+    let l:escaped_pattern = substitute(l:escaped_pattern, "\n$", "", "")
 
-    execute "normal ?\\<" . l:pattern . "\\>"
-    let @/ = "\\<" . l:pattern . "\\>"
+    " Don't use default behaviour for matching boundaries
+    " execute "normal ?\\<" . l:pattern . "\\>"
+    " let @/ = "\\<" . l:pattern . "\\>"
+
+    execute "normal ?" . l:escaped_pattern
+    let @/ = l:escaped_pattern
     set hls
+endfunction
+
+function! VisualSelectionSearch() range
+    let l:saved_reg = @"
+    execute "normal! vgvy"
+    call DoSearch(@")
+    let @" = l:saved_reg
 endfunction
 
 " Useful location list search. Find current word in buffer and populate
@@ -168,8 +182,13 @@ vnoremap <silent> <leader>f :normal *<CR>
     \:lw<CR>
     \:nnoremap <silent> <buffer> q :lcl<CR>
 
-" autocmd FileType c,cpp,java,php,js,python,twig,xml,yml autocmd BufWritePre <buffer> :call setline(1,map(getline(1,"$"),'substitute(v:val,"\\s\\+$","","")'))
 autocmd! BufEnter *.java :setlocal foldexpr=HideImportFold(v:lnum) foldmethod=expr foldlevel=0
+
+" check my english
+autocmd FileType md :set spell
+autocmd FileType md :set spelllang=en
+autocmd FileType markdown :set spell
+autocmd FileType markdown :set spelllang=en
 
 function! HideImportFold(lnum)
     if getline(a:lnum) =~ '^import'
@@ -295,7 +314,7 @@ set backupdir=~/.vim/backup//
 set clipboard+=unnamed              "
 set cmdheight=2                     " The commandbar height
 set cpoptions=aABceFsmq
-set cursorline                      " highlight current line :set cul
+" set cursorline                      " highlight current line :set cul
 set directory=~/.vim/tmp//
 set hid                             " Change buffer - without saving
 set history=1000
@@ -371,36 +390,6 @@ function! ResCur()
         normal! g`"
         return 1
     endif
-endfunction
-
-" function! s:DiffWithSaved()
-  " let filetype=&ft
-  " diffthis
-  " vnew | r # | normal! 1Gdd
-  " diffthis
-  " exe "setlocal bt=nofile bh=wipe nobl noswf ro ft=" . filetype
-" endfunction
-" com! DiffSaved call s:DiffWithSaved()
-
-function! VisualSelection(direction) range
-    let l:saved_reg = @"
-    execute "normal! vgvy"
-
-    let l:pattern = escape(@", '\\/.*$^~[]')
-    let l:pattern = substitute(l:pattern, "\n$", "", "")
-
-    if a:direction == 'b'
-        execute "normal ?" . l:pattern
-    elseif a:direction == 'gv'
-        call CmdLine("vimgrep " . '/'. l:pattern . '/' . ' **/*.')
-    elseif a:direction == 'replace'
-        call CmdLine("%s" . '/'. l:pattern . '/')
-    elseif a:direction == 'f'
-        execute "normal /" . l:pattern
-    endif
-
-    let @/ = l:pattern
-    let @" = l:saved_reg
 endfunction
 
 augroup resCur
