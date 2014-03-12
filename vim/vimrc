@@ -1,6 +1,3 @@
-"Basic colouring and encoding
-set t_Co=256
-set encoding=utf-8
 
 " Echo startup time on start {{{
 if has('vim_starting') && has('reltime')
@@ -14,9 +11,15 @@ endif
 if has('vim_starting')
    set runtimepath+=~/.vim/bundle/neobundle.vim/
 endif
+
 call neobundle#rc(expand('~/.vim/bundle/'))
 
 set ttyfast
+
+" =========================================================================== "
+"                                   Plugins                                   " 
+" =========================================================================== "
+
 NeoBundleFetch 'Shougo/neobundle.vim'
 
 " Maybe useful
@@ -25,51 +28,43 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 " NeoBundle 'takac/semi.vim'
 
 " Pretty Colors
-NeoBundle 'altercation/vim-colors-solarized.git'
-NeoBundle 'chriskempson/base16-vim'
-NeoBundle 'peaksea'
+NeoBundle 'chriskempson/base16-vim'      " base-16 color scheme
+NeoBundle 'peaksea'                      " peaksea, good for console
+NeoBundle 'altercation/vim-colors-solarized.git' " solarized color scheme
 
-" Plugins
-NeoBundle 'bling/vim-airline'
-NeoBundle 'godlygeek/tabular'
-NeoBundle 'guns/vim-clojure-static'
-NeoBundle 'haya14busa/vim-easymotion'
-NeoBundle 'kien/ctrlp.vim'
-NeoBundle 'kien/rainbow_parentheses.vim'
-NeoBundle 'majutsushi/tagbar'
-NeoBundle 'mhinz/vim-signify'
-NeoBundle 'scrooloose/nerdcommenter'
-NeoBundle 'scrooloose/syntastic'
-NeoBundle 'sjl/gundo.vim'
-NeoBundle 'sudo.vim'
-NeoBundle 'takac/ultisnips'
-NeoBundle 'takac/vim-commandcaps'
-NeoBundle 'takac/vim-fontmanager'
-NeoBundle 'takac/vim-hardtime'
-NeoBundle 'takac/vim-spotifysearch'
-NeoBundle 'thinca/vim-quickrun'
-NeoBundle 'tpope/vim-fugitive'
-NeoBundle 'tpope/vim-repeat'
-NeoBundle 'tpope/vim-surround'
-NeoBundle 'vim-scripts/scratch.vim'
-NeoBundle 'wellle/targets.vim'
+NeoBundle 'bling/vim-airline'            " better status line
+NeoBundle 'godlygeek/tabular'            " formatter
+NeoBundle 'guns/vim-clojure-static'      " add clojure syntax highlight
+NeoBundle 'haya14busa/vim-easymotion'    " movement plugin
+NeoBundle 'kien/ctrlp.vim'               " fuzzy file finder
+NeoBundle 'kien/rainbow_parentheses.vim' " make my brackets pretty colors
+NeoBundle 'majutsushi/tagbar'            " outline objects etc
+NeoBundle 'mhinz/vim-signify'            " gutter showing git changes
+NeoBundle 'rking/ag.vim'                 " search with ag in vim
+NeoBundle 'scrooloose/nerdcommenter'     " quick comments mappings
+NeoBundle 'scrooloose/syntastic'         " syntax checker
+NeoBundle 'sjl/gundo.vim'                " visual undo tree
+NeoBundle 'sudo.vim'                     " do sudo write and read in vim
+NeoBundle 'takac/ultisnips'              " tab completions and snippets
+NeoBundle 'takac/vim-commandcaps'        " correct mistyped commands like :Wq
+NeoBundle 'takac/vim-fontmanager'        " manage fonts easily
+NeoBundle 'takac/vim-hardtime'           " deter using repeative keys
+NeoBundle 'thinca/vim-quickrun'          " quickly run scripts in vim
+NeoBundle 'tpope/vim-fugitive'           " git integration
+NeoBundle 'tpope/vim-repeat'             " repeat more commands
+NeoBundle 'tpope/vim-surround'           " mappings for wrapping objects 
+NeoBundle 'vim-scripts/scratch.vim'      " Easy tmp buffer
+NeoBundle 'wellle/targets.vim'           " jump to more objects
 
-"Basic functionality
+" =========================================================================== "
+"                                 System Setup                                "
+" =========================================================================== "
+
+" Basic functionality
 filetype plugin on
 filetype indent on
 syntax on
 set omnifunc=syntaxcomplete#Complete
-
-let g:commandcaps_override = 1
-
-" Syntastic Config
-let g:syntastic_javascript_checkers = ['jslint']
-let g:syntastic_error_symbol='✗'
-let g:syntastic_warning_symbol='⚠'
-
-" Hardtime config
-let g:hardtime_ignore_buffer_patterns = [ "N[EeA]RD.*", ".*git/index" ]
-let g:hardtime_default_on = 0
 
 "Set colours and fonts
 if has("gui_running")
@@ -87,10 +82,39 @@ else
     silent! color peaksea
 endif
 
+set pastetoggle=<F12>                " pastetoggle (sane indentation on pastes)
+
+" Set cross system compatibility
+if has("unix")
+    let s:uname = system("uname")
+    if s:uname == "Darwin\n"
+        " remap as F12 is hard to press on mac
+        set pastetoggle=<leader>p
+        let mapleader="§"
+    else
+    endif
+endif
+
+" =========================================================================== "
+"                                 Plugin Config                               "
+" =========================================================================== "
+
+let g:commandcaps_override = 1
+
+" Syntastic Config
+let g:syntastic_javascript_checkers = ['jslint']
+let g:syntastic_error_symbol='✗'
+let g:syntastic_warning_symbol='⚠'
+
+" Hardtime config
+let g:hardtime_ignore_buffer_patterns = [ "N[EeA]RD.*", ".*git/index" ]
+let g:hardtime_default_on = 0
+
+
 " Rainbow Parens!
-au VimEnter * RainbowParenthesesToggle
-au Syntax * RainbowParenthesesLoadBraces
-au Syntax * RainbowParenthesesLoadRound
+au VimEnter * call TryCommand("RainbowParenthesesToggle")
+au Syntax * call TryCommand("RainbowParenthesesLoadBraces")
+au Syntax * call TryCommand("RainbowParenthesesLoadRound")
 
 " Airline conf
 set laststatus=2
@@ -102,19 +126,23 @@ let g:EasyMotion_leader_key = '<Space>'
 map <Space>J <Plug>(easymotion-eol-j)
 map <Space>K <Plug>(easymotion-eol-k)
 
-set pastetoggle=<F12>               " pastetoggle (sane indentation on pastes)
+" Ctrl p config
+let g:ctrlp_extensions=['line']
+let g:ctrlp_clear_cache_on_exit = 0
+let g:ctrlp_custom_ignore = {
+\ 'file': '\v\.(exe|so|dll|class)$',
+\ 'dir':  '\v<(\.git|\.hg|\.svn|\.vim|\.config)[\/]'
+\ }
 
-"Set cross system compatibility
-if has("unix")
-    let s:uname = system("uname")
-    if s:uname == "Darwin\n"
-        set pastetoggle=<leader>p           " pastetoggle (sane indentation on pastes)
-        let mapleader="§"
-    else
-    endif
-endif
+" Ultisnips
+let g:UltiSnipsSnippetsDir = '~/.vim/bundle/ultisnips/UltiSnips'
+set runtimepath+=~/.vim/bundle/ultisnips/UltiSnips
+let g:UltiSnipsEditSplit = 'vertical'
 
-" helpful expansions
+" Add spacing in front of comment symbols
+let NERDSpaceDelims=1
+
+" Helpful Expansions
 " expand to current dir of file
 cabbr <expr> %% expand('%:p:h')
 cabbr <expr> %d expand('%:p:h')
@@ -123,6 +151,15 @@ cabbr <expr> %f expand('%')
 " expand to home
 cabbr <expr> %h expand('$HOME')
 
+ 
+" =========================================================================== "
+"                                 Remappings                                  "
+" =========================================================================== "
+
+" Emacs like movement in ex commands, <C-A> start of the line, <C-E> eol
+cnoremap <C-A> <Home>
+cnoremap <C-E> <End>
+cnoremap <C-LEFT> <S-LEFT>
 
 nnoremap Q <nop>
 nnoremap K <nop>
@@ -147,25 +184,22 @@ vnoremap <silent> # :call VisualSelectionSearch()<CR>
 nnoremap <silent> * :call DoSearch(expand("<cword>"))<CR>
 nnoremap <silent> # :call NormalSearch(expand("<cword>"))<CR>
 
-function! DoSearch(pattern)
-    let l:escaped_pattern = escape(a:pattern, '\\/.*$^~[]')
-    let l:escaped_pattern = substitute(l:escaped_pattern, "\n$", "", "")
+" Navigate through wrapped lines
+noremap j gj
+noremap k gk
+noremap gj j
+noremap gk k
 
-    " Don't use default behaviour for matching boundaries
-    " execute "normal ?\\<" . l:pattern . "\\>"
-    " let @/ = "\\<" . l:pattern . "\\>"
+" Show the stack of syntax hilighting classes affecting whatever is under the
+" cursor.
+nnoremap <leader>sn :SyntaxHighlighting<CR>
 
-    execute "normal ?" . l:escaped_pattern
-    let @/ = l:escaped_pattern
-    set hls
-endfunction
+" Evaluate calculation highlighted and replace with answer!
+" Try it now:
+" 2+88*3
+" 266
+vnoremap Z s<C-R>=eval(substitute("<C-R>"", "\r", "", ""))<CR><ESC>
 
-function! VisualSelectionSearch() range
-    let l:saved_reg = @"
-    execute "normal! vgvy"
-    call DoSearch(@")
-    let @" = l:saved_reg
-endfunction
 
 " Useful location list search. Find current word in buffer and populate
 " location list and show location list. To close location list use :lcl[ose]
@@ -182,6 +216,14 @@ vnoremap <silent> <leader>f :normal *<CR>
     \:lw<CR>
     \:nnoremap <silent> <buffer> q :lcl<CR>
 
+" =========================================================================== "
+"                                   Autocmds                                  "
+" =========================================================================== "
+
+" When vimrc is edited, reload it
+autocmd! bufwritepost .vimrc source ~/.vimrc
+
+" Hide imports for java files
 autocmd! BufEnter *.java :setlocal foldexpr=HideImportFold(v:lnum) foldmethod=expr foldlevel=0
 
 " check my english
@@ -189,6 +231,50 @@ autocmd FileType md :set spell
 autocmd FileType md :set spelllang=en
 autocmd FileType markdown :set spell
 autocmd FileType markdown :set spelllang=en
+
+" Restore cursor on load file
+augroup resCur
+    autocmd!
+    autocmd BufWinEnter * call ResCur()
+augroup END
+
+" =========================================================================== "
+"                                   Commands                                  "
+" =========================================================================== "
+
+
+" Synonym for Remove.. I can't always remember which one!
+command! -nargs=0 -range DeleteTrailingWhiteSpace <line1>,<line2>call RemoveTrailingWhiteSpace()
+command! -nargs=0 -range RemoveTrailingWhiteSpace <line1>,<line2>call RemoveTrailingWhiteSpace()
+
+command! -nargs=0 SyntaxHighlighting call SynStack()
+
+
+" =========================================================================== "
+"                                   Functions                                 "
+" =========================================================================== "
+
+" Execute search with pattern
+function! DoSearch(pattern)
+    let l:escaped_pattern = escape(a:pattern, '\\/.*$^~[]')
+    let l:escaped_pattern = substitute(l:escaped_pattern, "\n$", "", "")
+
+    " Don't use default behaviour for matching boundaries
+    " execute "normal ?\\<" . l:pattern . "\\>"
+    " let @/ = "\\<" . l:pattern . "\\>"
+
+    execute "normal ?" . l:escaped_pattern
+    let @/ = l:escaped_pattern
+    set hls
+endfunction
+
+" From visual selection execute search
+function! VisualSelectionSearch() range
+    let l:saved_reg = @"
+    execute "normal! vgvy"
+    call DoSearch(@")
+    let @" = l:saved_reg
+endfunction
 
 function! HideImportFold(lnum)
     if getline(a:lnum) =~ '^import'
@@ -200,10 +286,11 @@ function! HideImportFold(lnum)
     return '0'
 endfunction
 
-" Emacs like movement in ex commands, <C-A> start of the line, <C-E> eol
-cnoremap <C-A> <Home>
-cnoremap <C-E> <End>
-cnoremap <C-LEFT> <S-LEFT>
+function! TryCommand(command_name)
+    if exists(":" . a:command_name)
+        execute ":" . a:command_name
+    endif
+endfunction
 
 function! GetVisual() range
         let reg_save = getreg('"')
@@ -217,46 +304,6 @@ function! GetVisual() range
         return selection
 endfunction
 
-
-let g:ctrlp_extensions=['line']
-let g:ctrlp_clear_cache_on_exit = 0
-let g:ctrlp_custom_ignore = {
-\ 'file': '\v\.(exe|so|dll|class)$',
-\ 'dir':  '\v<(\.git|\.hg|\.svn|\.vim|\.config)[\/]'
-\ }
-
-" Navigate through wrapped lines
-noremap j gj
-noremap k gk
-noremap gj j
-noremap gk k
-
-" Useful normal mapping for arrow keys.
-function! BubbleKeysOff()
-    nnoremap <UP> <UP>
-    nnoremap <RIGHT> <RIGHT>
-    nnoremap <LEFT> <LEFT>
-    nnoremap <DOWN> <DOWN>
-    vnoremap <DOWN> <DOWN>
-    vnoremap <RIGHT> <RIGHT>
-    vnoremap <LEFT> <LEFT>
-    vnoremap <UP> <UP>
-endfunction
-
-" Useful normal mapping for arrow keys.
-function! BubbleKeysOn()
-    nnoremap <UP> ddkP
-    nnoremap <RIGHT> >>
-    nnoremap <LEFT> <<
-    nnoremap <DOWN> ddp
-    vnoremap <RIGHT> >gv
-    vnoremap <DOWN> xp`[V`]
-    vnoremap <LEFT> <gv
-    vnoremap <UP> xkP`[V`]
-endfunction
-
-command! -nargs=0 BubbleKeyOn call BubbleKeyOn()
-command! -nargs=0 BubbleKeyOff call BubbleKeyOff()
 
 " Remove whitespace, keep position
 function! RemoveTrailingWhiteSpace() range
@@ -276,36 +323,20 @@ function! SynStack()
   echo join(map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")'), " > ")
 endfunc
 
-" TODO make a command and then map.
-nnoremap <leader>sn :call SynStack()<CR>
+" Tell vim to remember certain things when we exit
+function! ResCur()
+    if line("'\"") <= line("$")
+        normal! g`"
+        return 1
+    endif
+endfunction
 
-" Evaluate calculation highlighted and replace with answer!
-" Try it now:
-" 2+88*3
-" 266
-vnoremap Z s<C-R>=eval(substitute("<C-R>"", "\r", "", ""))<CR><ESC>
+" =========================================================================== "
+"                                Vim Switches                                 "
+" =========================================================================== "
 
-" Swap arguments of function
-" func cursor-here>>(yargg, xi, aol)
-" goes to ->  >>(aol, xi, yargg)
-nnoremap <leader>sw %db%lvawp%%P%
-" func (yarg, xarg)<<cursor-here
-nnoremap <leader>ws db%lvawp%%P%%
-
-" When vimrc is edited, reload it
-autocmd! bufwritepost .vimrc source ~/.vimrc
-
-let g:UltiSnipsSnippetsDir = '~/.vim/bundle/ultisnips/UltiSnips'
-set runtimepath+=~/.vim/bundle/ultisnips/UltiSnips
-let g:UltiSnipsEditSplit = 'vertical'
-
-let NERDSpaceDelims=1
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => VIM user interface
-" """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"set mouse=a " use mouse everywhere
-"set ttymouse=xterm2     " necessary for gnu screen & mouse
+" set mouse=a " use mouse everywhere
+" set ttymouse=xterm2     " necessary for gnu screen & mouse
 
 set autoindent                      " indent at the same level of the previous line
 set backspace=eol,start,indent
@@ -330,32 +361,36 @@ set noerrorbells visualbell t_vb=
 if has('autocmd')
   autocmd GUIEnter * set visualbell t_vb=
 endif
+"
+" Basic colouring and encoding
+set t_Co=256
+set encoding=utf-8
 
-set noexrc                          " don't use local version of .(g)vimrc, .exrc
+set noexrc                          " Don't use local version of .(g)vimrc, .exrc
 set nolazyredraw                    " Don't redraw while executing macros
-set nowrap                          " wrap long lines
-set nrformats-=octal
+set nowrap                          " Wrap long lines
+set nrformats-=octal                " Don't treat numbers starting with 0 as octal
 set number                          " Set line numbers
 set numberwidth=5                   " Show line numbers up to size 99999
-set report=0                        " tell us when anything is changed via :...
+set report=0                        " Tell us when anything is changed via status line
 set ruler                           " Always show current positions along the bottom^
-set shiftwidth=4                    " auto-indent amount when using cindent,
+set shiftwidth=4                    " Auto-indent amount when using cindent,
 set showcmd
 set showmatch                       " Show matching bracets when text indicator is over them
-set smartcase                       " use smartcase searching
-set scrolloff=6                            " Minimal number of screen lines to keep above and below the cursor.
-set softtabstop=4                   " when hitting tab or backspace, how many spaces
+set smartcase                       " Use smartcase searching
+set scrolloff=6                     " Minimal number of screen lines to keep above and below the cursor.
+set softtabstop=4                   " When hitting tab or backspace, how many spaces
 set expandtab
-set tabstop=4                       " an indentation every four columns
-set tabstop=4                       " real tabs should be 4, and they will show with
+set tabstop=4                       " An indentation every four columns
+set tabstop=4                       " Real tabs should be 4, and they will show with
 set tm=2500
-set undodir=~/.vim/undo//             " where to save undo histories
-set undofile                        " so is persistent undo ...
+set undodir=~/.vim/undo//           " Where to save undo histories
+set undofile                        " So is persistent undo ...
 set undolevels=1000                 " How many undos
-set undoreload=10000                " maximum number lines to save for undo on a buffer reload
+set undoreload=10000                " Maximum number lines to save for undo on a buffer reload
 set whichwrap+=<,>,h,l
 set wildmenu                        " Turn on WiLd menu
-set matchpairs+=<:>             " match, to be used with %
+set matchpairs+=<:>                 " match, to be used with %
 
 " Sexy cursors
 set guicursor=n-c:block-Cursor-blinkon0
@@ -382,29 +417,10 @@ set viminfo='10,\"100,:200,%,n~/.vim/viminfo
 "  %    :  saves and restores the buffer list
 "  n... :  where to save the viminfo files
 
-" Remove trailing whitespaces and ^M chars
-" autocmd FileType c,cpp,java,php,js,python,twig,xml,yml autocmd BufWritePre <buffer> :call setline(1,map(getline(1,"$"),'substitute(v:val,"\\s\\+$","","")'))
-" Tell vim to remember certain things when we exit
-function! ResCur()
-    if line("'\"") <= line("$")
-        normal! g`"
-        return 1
-    endif
-endfunction
+" =========================================================================== "
+"                            Common Spelling mistakes                         "
+" =========================================================================== "
 
-augroup resCur
-    autocmd!
-    autocmd BufWinEnter * call ResCur()
-augroup END
-
-"" Common Spelling mistakes ""
-
-"Programming spelling mistakes
-" Abolish eles{,if} else{}
-" Abolish els{,e}{if,fi,of,fo} elseif
-" Abolish alse else
-
-" My Abbrevs
 iabbrev accesories accessories
 iabbrev Accesories Accessories
 iabbrev accomodate accommodate
