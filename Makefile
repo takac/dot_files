@@ -12,9 +12,12 @@ FONTS_DIR=~/.fonts
 FONT_CONF_DIR=~/.config/fontconfig/conf.d
 NEOBUNDLE=~/.vim/bundle/neobundle.vim
 VIM_RC=~/.vimrc
+Z_DIR=~/.z-dir
+FZF_DIR=~/.fzf
+
 .PHONY=fonts clean_tmux clean_vim
 
-all: bash zsh git tmux screen
+all: bash zsh git tmux screen vim z fzf
 
 bash: /bin/bash $(BASH_ALIASES) $(BASH_RC)
 
@@ -26,7 +29,26 @@ screen: /usr/bin/screen $(SCREEN_RC)
 
 tmux: /usr/bin/tmux $(POWERLINE) $(POWERLINE_FONTS) fonts $(TMUX_CONF)
 
-vim: ~/.vim/tmp ~/.vim/backup ~/.vim/undo $(VIM_RC) $(NEOBUNDLE)
+vim: /usr/bin/vim ~/.vim/tmp ~/.vim/backup ~/.vim/undo $(VIM_RC) $(NEOBUNDLE)
+
+fzf: /usr/bin/ruby $(FZF_DIR)
+
+$(FZF_DIR):
+	git clone git://github.com/junegunn/fzf $(FZF_DIR)
+	sed -i '/^read /d' $(FZF_DIR)/install
+	$(FZF_DIR)/install
+
+z: $(Z_DIR)
+
+$(Z_DIR):
+	git clone git://github.com/rupa/z.git $(Z_DIR)
+	# Configure Z with zsh
+	echo "source $(Z_DIR)/z.sh" >> ~/.zshrc
+	echo "function precmd () {" >> ~/.zshrc
+	echo " _z --add \"\$$(pwd -P)\"" >> ~/.zshrc
+	echo "}" >> ~/.zshrc
+	# Configure Z with bash
+	echo ". ~/.z/z.sh" >> ~/.bashrc
 
 $(NEOBUNDLE):
 	git clone git://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle.vim
