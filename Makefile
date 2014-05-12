@@ -4,12 +4,15 @@ OH_MY_ZSH=~/.oh-my-zsh
 BASH_ALIASES=~/.bash_aliases
 BASH_RC=~/.bashrc
 GIT_CONF=~/.gitconfig
-POWERLINE=~/.powerline
+POWERLINE=$(HOME)/.powerline
 POWERLINE_FONTS=~/.powerline-fonts
+POWERLINE_CONF_DIR=~/.config/powerline
 TMUX_CONF=~/.tmux.conf
 FONTS_DIR=~/.fonts
 FONT_CONF_DIR=~/.config/fontconfig/conf.d
-.PHONY=fonts clean_tmux
+NEOBUNDLE=~/.vim/bundle/neobundle.vim
+VIM_RC=~/.vimrc
+.PHONY=fonts clean_tmux clean_vim
 
 all: bash zsh git tmux screen
 
@@ -22,6 +25,28 @@ git: /usr/bin/git $(GIT_CONF)
 screen: /usr/bin/screen $(SCREEN_RC)
 
 tmux: /usr/bin/tmux $(POWERLINE) $(POWERLINE_FONTS) fonts $(TMUX_CONF)
+
+vim: ~/.vim/tmp ~/.vim/backup ~/.vim/undo $(VIM_RC) $(NEOBUNDLE)
+
+$(NEOBUNDLE):
+	git clone git://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle.vim
+	vim +NeoBundleInstall +qa
+
+$(VIM_RC):
+	cp $(DOT_DIR)/vim/vimrc $(VIM_RC)
+
+
+~/.vim/backup:
+	mkdir -p ~/.vim/backup
+
+~/.vim/undo:
+	mkdir -p ~/.vim/undo
+
+~/.vim/tmp:
+	mkdir -p ~/.vim/tmp
+
+clean_vim:
+	rm -rf ~/.vim ~/.vimrc
 
 $(POWERLINE):
 	git clone git://github.com/Lokaltog/powerline $(POWERLINE)
@@ -49,17 +74,25 @@ $(FONTS_DIR)/PowerlineSymbols.otf: $(FONTS_DIR)
 $(FONTS_DIR)/Inconsolata\ for\ Powerline.otf: $(FONTS_DIR)
 	cp $(POWERLINE_FONTS)/Inconsolata/Inconsolata\ for\ Powerline.otf $(FONTS_DIR)/Inconsolata\ for\ Powerline.otf
 
-$(TMUX_CONF):
+$(TMUX_CONF): $(POWERLINE_CONF_DIR) ~/.config/powerline/themes/tmux/default.json
 	cp $(DOT_DIR)/tmux/tmux.conf $(TMUX_CONF)
 	echo 'export PATH=$$PATH:$(POWERLINE)/scripts' >> $(BASH_RC)
 	echo 'export PATH=$$PATH:$(POWERLINE)/scripts' >> $(ZSH_RC)
+	echo "source-file '$(POWERLINE)/powerline/bindings/tmux/powerline.conf'" >> ~/.tmux.conf
+
+~/.config/powerline/themes/tmux/default.json:
+	cp $(DOT_DIR)/tmux/powerline.json ~/.config/powerline/themes/tmux/default.json
+ 
+$(POWERLINE_CONF_DIR):
+	cp -r ~/.powerline/powerline/config_files/ ~/.config/powerline
 
 $(SCREEN_RC):
 	cp $(DOT_DIR)/screen/screenrc $(SCREEN_RC)
 
 $(GIT_CONF):
 	# Configure git to use meld diff
-	git config --global difftool.external $(DOT_DIR)/git/meld-git-diff.py
+	git config --global diff.tool meld
+	git config --global difftool.prompt false
 	# Configure git to use color
 	git config --global color.ui true
 	# Configure git to use vim!
@@ -67,11 +100,11 @@ $(GIT_CONF):
 	git config --global user.name "Tom Cammann"
 	git config --global user.email "cammann.tom@gmail.com"
 
-clean: clean_tmux
-	rm -rf $(ZSH_RC) $(OH_MY_ZSH) $(BASH_RC) $(BASH_ALIASES) $(SCREEN_RC) $(GIT_CONF) 
+clean: clean_tmux clean_vim
+	rm -rf $(ZSH_RC) $(OH_MY_ZSH) $(BASH_RC) $(BASH_ALIASES) $(SCREEN_RC) $(GIT_CONF)
 
 clean_tmux:
-	rm -rf $(FONT_DIR) $(FONT_CONF_DIR) $(TMUX_CONF) $(POWERLINE) $(POWERLINE_FONTS)
+	rm -rf $(FONT_DIR) $(FONT_CONF_DIR) $(TMUX_CONF) $(POWERLINE) $(POWERLINE_FONTS) $(POWERLINE_CONF_DIR)
 
 $(BASH_RC):
 	cp $(DOT_DIR)/bash/bashrc ~/.bashrc
