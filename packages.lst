@@ -1,5 +1,3 @@
-ack-grep
-aptitude
 automake
 bison
 checkinstall
@@ -11,9 +9,7 @@ diffutils
 flex
 git
 make
-maven
 meld
-openjdk-7-jdk
 screen
 tmux
 sed
@@ -22,3 +18,6 @@ vim
 vim-gnome
 zsh
 wget
+python
+ruby
+fontconfig
