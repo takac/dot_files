@@ -3,17 +3,18 @@ DOT FILES
 
 Install process:
 
-    ./install package_name
+    make
 
 Config for:
 
 - bash
 - git
+- fzf
 - screen
-- tmux
-- vim
+- tmux   (with powerline)
+- vim    (with additional plugins)
 - z
-- zsh
+- zsh    (with oh-my-zsh)
 
 
 Extras:
