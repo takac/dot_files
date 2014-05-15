@@ -1,4 +1,6 @@
+# SHould be dir we are running make from
 DOT_DIR=~/.dots
+
 ZSH_RC=~/.zshrc
 OH_MY_ZSH=~/.oh-my-zsh
 BASH_ALIASES=~/.bash_aliases
@@ -7,6 +9,7 @@ GIT_CONF=~/.gitconfig
 POWERLINE=$(HOME)/.powerline
 POWERLINE_FONTS=~/.powerline-fonts
 POWERLINE_CONF_DIR=~/.config/powerline
+SCREEN_RC=~/.screenrc
 TMUX_CONF=~/.tmux.conf
 FONTS_DIR=~/.fonts
 FONT_CONF_DIR=~/.config/fontconfig/conf.d
@@ -35,6 +38,7 @@ fzf: /usr/bin/ruby $(FZF_DIR)
 
 $(FZF_DIR):
 	git clone git://github.com/junegunn/fzf $(FZF_DIR)
+	# remove lines that ask for input and use defaults
 	sed -i '/^read /d' $(FZF_DIR)/install
 	$(FZF_DIR)/install
 
@@ -70,7 +74,7 @@ $(VIM_RC):
 clean_vim:
 	rm -rf ~/.vim ~/.vimrc
 
-$(POWERLINE):
+$(POWERLINE): /usr/bin/python
 	git clone git://github.com/Lokaltog/powerline $(POWERLINE)
 
 $(POWERLINE_FONTS):
@@ -82,7 +86,7 @@ $(FONTS_DIR):
 $(FONT_CONF_DIR):
 	mkdir -p $(FONT_CONF_DIR)
 
-fonts: $(FONT_CONF_DIR)/10-powerline-symbols.conf \
+fonts: /usr/bin/fc-cache $(FONT_CONF_DIR)/10-powerline-symbols.conf \
 	$(FONTS_DIR)/Inconsolata\ for\ Powerline.otf \
 	$(FONTS_DIR)/PowerlineSymbols.otf
 	fc-cache -vf $(FONTS_DIR)
