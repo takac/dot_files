@@ -1,6 +1,8 @@
 # SHould be dir we are running make from
 DOT_DIR=~/.dots
 
+GIT_PROTOCOL=https
+
 ZSH_RC=~/.zshrc
 OH_MY_ZSH=~/.oh-my-zsh
 BASH_ALIASES=~/.bash_aliases
@@ -17,6 +19,8 @@ NEOBUNDLE=~/.vim/bundle/neobundle.vim
 VIM_RC=~/.vimrc
 Z_DIR=~/.z-dir
 FZF_DIR=~/.fzf
+
+
 
 .PHONY=fonts clean_tmux clean_vim
 
@@ -37,7 +41,7 @@ vim: /usr/bin/vim ~/.vim/tmp ~/.vim/backup ~/.vim/undo $(VIM_RC) $(NEOBUNDLE)
 fzf: /usr/bin/ruby $(FZF_DIR)
 
 $(FZF_DIR):
-	git clone git://github.com/junegunn/fzf $(FZF_DIR)
+	git clone $(GIT_PROTOCOL)://github.com/junegunn/fzf $(FZF_DIR)
 	# remove lines that ask for input and use defaults
 	sed -i '/^read /d' $(FZF_DIR)/install
 	$(FZF_DIR)/install
@@ -45,17 +49,17 @@ $(FZF_DIR):
 z: $(Z_DIR)
 
 $(Z_DIR):
-	git clone git://github.com/rupa/z.git $(Z_DIR)
+	git clone $(GIT_PROTOCOL)://github.com/rupa/z.git $(Z_DIR)
 	# Configure Z with zsh
 	echo "source $(Z_DIR)/z.sh" >> ~/.zshrc
 	echo "function precmd () {" >> ~/.zshrc
 	echo " _z --add \"\$$(pwd -P)\"" >> ~/.zshrc
 	echo "}" >> ~/.zshrc
 	# Configure Z with bash
-	echo ". ~/.z/z.sh" >> ~/.bashrc
+	echo "source $(Z_DIR)/z.sh" >> ~/.bashrc
 
 $(NEOBUNDLE):
-	git clone git://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle.vim
+	git clone $(GIT_PROTOCOL)://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle.vim
 	vim +NeoBundleInstall +qa
 
 $(VIM_RC):
@@ -75,10 +79,10 @@ clean_vim:
 	rm -rf ~/.vim ~/.vimrc
 
 $(POWERLINE): /usr/bin/python
-	git clone git://github.com/Lokaltog/powerline $(POWERLINE)
+	git clone $(GIT_PROTOCOL)://github.com/Lokaltog/powerline $(POWERLINE)
 
 $(POWERLINE_FONTS):
-	git clone git://github.com/Lokaltog/powerline-fonts $(POWERLINE_FONTS)
+	git clone $(GIT_PROTOCOL)://github.com/Lokaltog/powerline-fonts $(POWERLINE_FONTS)
 
 $(FONTS_DIR):
 	mkdir -p $(FONTS_DIR)
@@ -139,7 +143,7 @@ $(BASH_ALIASES):
 	cp $(DOT_DIR)/bash/bash_aliases ~/.bash_aliases
 
 $(OH_MY_ZSH):
-	git clone git://github.com/robbyrussell/oh-my-zsh $(OH_MY_ZSH)
+	git clone $(GIT_PROTOCOL)://github.com/robbyrussell/oh-my-zsh $(OH_MY_ZSH)
 
 $(ZSH_RC):
 	cp $(OH_MY_ZSH)/templates/zshrc.zsh-template $(ZSH_RC)
