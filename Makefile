@@ -1,4 +1,4 @@
-# SHould be dir we are running make from
+# Should be dir we are running make from
 DOT_DIR=~/.dots
 
 GIT_PROTOCOL=https
@@ -19,12 +19,12 @@ NEOBUNDLE=~/.vim/bundle/neobundle.vim
 VIM_RC=~/.vimrc
 Z_DIR=~/.z-dir
 FZF_DIR=~/.fzf
-
-
+IPYTHON_CONFIG_DIR=~/.ipython/profile_default
+IPYTHON_CONFIG=$(IPYTHON_CONFIG_DIR)/ipython_config.py
 
 .PHONY=fonts clean_tmux clean_vim
 
-all: bash zsh git tmux screen vim z fzf
+all: bash zsh git tmux screen vim z fzf ipython
 
 bash: /bin/bash $(BASH_ALIASES) $(BASH_RC)
 
@@ -39,6 +39,14 @@ tmux: /usr/bin/tmux $(POWERLINE) $(POWERLINE_FONTS) fonts $(TMUX_CONF)
 vim: /usr/bin/vim ~/.vim/tmp ~/.vim/backup ~/.vim/undo $(VIM_RC) $(NEOBUNDLE)
 
 fzf: /usr/bin/ruby $(FZF_DIR)
+
+ipython: $(IPYTHON_CONFIG)
+
+$(IPYTHON_CONFIG): $(IPYTHON_CONFIG_DIR)
+	cp $(DOT_DIR)/ipython/ipython_config.py $(IPYTHON_CONFIG)
+
+$(IPYTHON_CONFIG_DIR):
+	mkdir -p $(IPYTHON_CONFIG_DIR)
 
 $(FZF_DIR):
 	git clone $(GIT_PROTOCOL)://github.com/junegunn/fzf $(FZF_DIR)
@@ -131,7 +139,7 @@ $(GIT_CONF):
 	git config --global user.email "cammann.tom@gmail.com"
 
 clean: clean_tmux clean_vim
-	rm -rf $(ZSH_RC) $(OH_MY_ZSH) $(BASH_RC) $(BASH_ALIASES) $(SCREEN_RC) $(GIT_CONF)
+	rm -rf $(ZSH_RC) $(OH_MY_ZSH) $(BASH_RC) $(BASH_ALIASES) $(SCREEN_RC) $(GIT_CONF) $(IPYTHON_CONFIG) $(FZF_DIR)
 
 clean_tmux:
 	rm -rf $(FONT_DIR) $(FONT_CONF_DIR) $(TMUX_CONF) $(POWERLINE) $(POWERLINE_FONTS) $(POWERLINE_CONF_DIR)
