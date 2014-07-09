@@ -40,8 +40,8 @@ NeoBundle 'kien/ctrlp.vim'               " fuzzy file finder
 NeoBundle 'kien/rainbow_parentheses.vim' " make my brackets pretty colors
 NeoBundle 'majutsushi/tagbar'            " outline objects etc
 NeoBundle 'mhinz/vim-signify'            " gutter showing git changes
+NeoBundle 'nvie/vim-flake8'
 NeoBundle 'rking/ag.vim'                 " search with ag in vim
-NeoBundle 'scrooloose/nerdcommenter'     " quick comments mappings
 NeoBundle 'scrooloose/syntastic'         " syntax checker
 NeoBundle 'sjl/gundo.vim'                " visual undo tree
 NeoBundle 'sudo.vim'                     " do sudo write and read in vim
@@ -50,6 +50,7 @@ NeoBundle 'takac/vim-commandcaps'        " correct mistyped commands like :Wq
 NeoBundle 'takac/vim-fontmanager'        " manage fonts easily
 NeoBundle 'takac/vim-hardtime'           " deter using repeative keys
 NeoBundle 'thinca/vim-quickrun'          " quickly run scripts in vim
+NeoBundle 'tpope/vim-commentary'
 NeoBundle 'tpope/vim-fugitive'           " git integration
 NeoBundle 'tpope/vim-repeat'             " repeat more commands
 NeoBundle 'tpope/vim-surround'           " mappings for wrapping objects 
@@ -94,6 +95,9 @@ if has("unix")
     else
     endif
 endif
+
+highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+\%#\@<!$/
 
 " =========================================================================== "
 "                                 Plugin Config                               "
@@ -215,6 +219,8 @@ vnoremap <silent> <leader>f :normal *<CR>
     \ ":" . line(".") .  ":" . getline(".")<CR>
     \:lw<CR>
     \:nnoremap <silent> <buffer> q :lcl<CR>
+
+nnoremap <leader>i /<<<<<<<\\|=======\\|>>>>>>><CR>
 
 " =========================================================================== "
 "                                   Autocmds                                  "

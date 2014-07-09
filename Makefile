@@ -21,14 +21,17 @@ Z_DIR=~/.z-dir
 FZF_DIR=~/.fzf
 IPYTHON_CONFIG_DIR=~/.ipython/profile_default
 IPYTHON_CONFIG=$(IPYTHON_CONFIG_DIR)/ipython_config.py
+ZSH_SYNTAX_HIGH=$(OH_MY_ZSH)/custom/plugins/zsh-syntax-highlighting
+VIRTUAL_ENV_WRAPPER=/usr/local/lib/python2.7/dist-packages/virtualenvwrapper
+XDEFAULTS=~/.Xdefaults
 
 .PHONY=fonts clean_tmux clean_vim
 
-all: bash zsh git tmux screen vim z fzf ipython
+all: bash zsh git tmux screen vim z fzf ipython urxvt
 
 bash: /bin/bash $(BASH_ALIASES) $(BASH_RC)
 
-zsh: /usr/bin/zsh $(OH_MY_ZSH) $(ZSH_RC)
+zsh: /usr/bin/zsh $(OH_MY_ZSH) $(ZSH_SYNTAX_HIGH) $(VIRTUAL_ENV_WRAPPER) $(ZSH_RC)
 
 git: /usr/bin/git $(GIT_CONF)
 
@@ -39,6 +42,8 @@ tmux: /usr/bin/tmux $(POWERLINE) $(POWERLINE_FONTS) fonts $(TMUX_CONF)
 vim: /usr/bin/vim ~/.vim/tmp ~/.vim/backup ~/.vim/undo $(VIM_RC) $(NEOBUNDLE)
 
 fzf: /usr/bin/ruby $(FZF_DIR)
+
+urxvt: /usr/bin/urxvt $(XDEFAULTS)
 
 ipython: $(IPYTHON_CONFIG)
 
@@ -59,12 +64,7 @@ z: $(Z_DIR)
 $(Z_DIR):
 	git clone $(GIT_PROTOCOL)://github.com/rupa/z.git $(Z_DIR)
 	# Configure Z with zsh
-	echo "source $(Z_DIR)/z.sh" >> ~/.zshrc
-	echo "function precmd () {" >> ~/.zshrc
-	echo " _z --add \"\$$(pwd -P)\"" >> ~/.zshrc
-	echo "}" >> ~/.zshrc
-	# Configure Z with bash
-	echo "source $(Z_DIR)/z.sh" >> ~/.bashrc
+	# echo "source $(Z_DIR)/z.sh" >> ~/.bashrc
 
 $(NEOBUNDLE):
 	git clone $(GIT_PROTOCOL)://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle.vim
@@ -120,7 +120,7 @@ $(TMUX_CONF): $(POWERLINE_CONF_DIR) ~/.config/powerline/themes/tmux/default.json
 
 ~/.config/powerline/themes/tmux/default.json:
 	cp $(DOT_DIR)/tmux/powerline.json ~/.config/powerline/themes/tmux/default.json
- 
+
 $(POWERLINE_CONF_DIR):
 	cp -r ~/.powerline/powerline/config_files/ ~/.config/powerline
 
@@ -155,9 +155,16 @@ $(OH_MY_ZSH):
 
 $(ZSH_RC):
 	cp $(OH_MY_ZSH)/templates/zshrc.zsh-template $(ZSH_RC)
-	sed -i -e 's/^plugins=.*/plugins=(git mvn tmux screen)/' $(ZSH_RC)
+	sed -i -e 's/^plugins=.*/plugins=(git mvn tmux screen virtualenvwrapper history-substring-search zsh-syntax-highlighting)/' $(ZSH_RC)
 	sed -i -e 's/^ZSH_THEME=.*/ZSH_THEME=darkblood/' $(ZSH_RC)
-	echo "" >> $(ZSH_RC)
-	echo "source ~/.bash_aliases" >> $(ZSH_RC)
-	echo "source ${DOT_DIR}/till.sh" >> $(ZSH_RC)
+	cat >> $(ZSH_RC) < $(DOT_DIR)/zsh/extras.zsh
 
+$(ZSH_SYNTAX_HIGH):
+	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git syntax-highlighting
+
+$(VIRTUAL_ENV_WRAPPER):
+	sudo pip install virtualenvwrapper
+
+$(XDEFAULTS):
+	cp $(DOT_DIR)/urxvt/Xdefaults $(XDEFAULTS)
+	xrdb $(XDEFAULTS)
