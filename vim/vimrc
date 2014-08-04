@@ -17,45 +17,47 @@ call neobundle#rc(expand('~/.vim/bundle/'))
 set ttyfast
 
 " =========================================================================== "
-"                                   Plugins                                   " 
+"                                   Plugins                                   "
 " =========================================================================== "
 
 NeoBundleFetch 'Shougo/neobundle.vim'
 
 " Maybe useful
-" Bundle 'mattn/zencoding-vim'
-" Bundle 'skammer/vim-css-color'
+" NeoBundle 'mattn/zencoding-vim'
+" NeoBundle 'skammer/vim-css-color'
 " NeoBundle 'takac/semi.vim'
+" NeoBundle 'majutsushi/tagbar'                  " outline objects etc
 
 " Pretty Colors
-NeoBundle 'chriskempson/base16-vim'      " base-16 color scheme
-NeoBundle 'peaksea'                      " peaksea, good for console
+NeoBundle 'chriskempson/base16-vim'              " base-16 color scheme
+NeoBundle 'peaksea'                              " peaksea, good for console
 NeoBundle 'altercation/vim-colors-solarized.git' " solarized color scheme
+NeoBundle 'kien/rainbow_parentheses.vim'         " make my brackets pretty colors
 
-NeoBundle 'bling/vim-airline'            " better status line
-NeoBundle 'godlygeek/tabular'            " formatter
-NeoBundle 'guns/vim-clojure-static'      " add clojure syntax highlight
-NeoBundle 'haya14busa/vim-easymotion'    " movement plugin
-NeoBundle 'kien/ctrlp.vim'               " fuzzy file finder
-NeoBundle 'kien/rainbow_parentheses.vim' " make my brackets pretty colors
-NeoBundle 'majutsushi/tagbar'            " outline objects etc
-NeoBundle 'mhinz/vim-signify'            " gutter showing git changes
-NeoBundle 'nvie/vim-flake8'
-NeoBundle 'rking/ag.vim'                 " search with ag in vim
-NeoBundle 'scrooloose/syntastic'         " syntax checker
-NeoBundle 'sjl/gundo.vim'                " visual undo tree
-NeoBundle 'sudo.vim'                     " do sudo write and read in vim
-NeoBundle 'takac/ultisnips'              " tab completions and snippets
-NeoBundle 'takac/vim-commandcaps'        " correct mistyped commands like :Wq
-NeoBundle 'takac/vim-fontmanager'        " manage fonts easily
-NeoBundle 'takac/vim-hardtime'           " deter using repeative keys
-NeoBundle 'thinca/vim-quickrun'          " quickly run scripts in vim
-NeoBundle 'tpope/vim-commentary'
-NeoBundle 'tpope/vim-fugitive'           " git integration
-NeoBundle 'tpope/vim-repeat'             " repeat more commands
-NeoBundle 'tpope/vim-surround'           " mappings for wrapping objects 
-NeoBundle 'vim-scripts/scratch.vim'      " Easy tmp buffer
-NeoBundle 'wellle/targets.vim'           " jump to more objects
+NeoBundle 'bling/vim-airline'                    " better status line
+NeoBundle 'conradirwin/vim-bracketed-paste'      " Sane pasting in insert mode
+NeoBundle 'godlygeek/tabular'                    " formatter
+NeoBundle 'guns/vim-clojure-static'              " add clojure syntax highlight
+NeoBundle 'Lokaltog/vim-easymotion'              " movement plugin
+NeoBundle 'kien/ctrlp.vim'                       " fuzzy file finder
+NeoBundle 'mhinz/vim-signify'                    " gutter showing git changes
+NeoBundle 'nvie/vim-flake8'                      " PEP8 Checks
+NeoBundle 'rking/ag.vim'                         " search with ag in vim
+NeoBundle 'scrooloose/syntastic'                 " syntax checker
+NeoBundle 'sjl/gundo.vim'                        " visual undo tree
+NeoBundle 'sudo.vim'                             " do sudo write and read in vim
+NeoBundle 'takac/ultisnips'                      " tab completions and snippets
+NeoBundle 'takac/vim-commandcaps'                " correct mistyped commands like :Wq
+NeoBundle 'takac/vim-fontmanager'                " manage fonts easily
+NeoBundle 'takac/vim-hardtime'                   " deter using repeative keys
+NeoBundle 'thinca/vim-quickrun'                  " Quickly run scripts in vim
+NeoBundle 'tpope/vim-commentary'                 " Add operator for adding comments
+NeoBundle 'tpope/vim-fugitive'                   " Git integration
+NeoBundle 'tpope/vim-repeat'                     " Repeat more commands
+NeoBundle 'tpope/vim-rsi'                        " Readline mappings for insert and command mode
+NeoBundle 'tpope/vim-surround'                   " mappings for wrapping objects
+NeoBundle 'vim-scripts/scratch.vim'              " Easy tmp buffer
+NeoBundle 'wellle/targets.vim'                   " jump to more objects
 
 " =========================================================================== "
 "                                 System Setup                                "
@@ -114,7 +116,6 @@ let g:syntastic_warning_symbol='⚠'
 let g:hardtime_ignore_buffer_patterns = [ "N[EeA]RD.*", ".*git/index" ]
 let g:hardtime_default_on = 0
 
-
 " Rainbow Parens!
 au VimEnter * call TryCommand("RainbowParenthesesToggle")
 au Syntax * call TryCommand("RainbowParenthesesLoadBraces")
@@ -127,8 +128,12 @@ let g:airline_theme="dark"
 
 " Easy motion config
 let g:EasyMotion_leader_key = '<Space>'
+let g:EasyMotion_smartcase = 1
 map <Space>J <Plug>(easymotion-eol-j)
 map <Space>K <Plug>(easymotion-eol-k)
+map <Space>l <Plug>(easymotion-lineforward)
+map <Space>h <Plug>(easymotion-linebackward)
+map <Space><Space> <Plug>(easymotion-bd-jk)
 
 " Ctrl p config
 let g:ctrlp_extensions=['line']
@@ -155,14 +160,12 @@ cabbr <expr> %f expand('%')
 " expand to home
 cabbr <expr> %h expand('$HOME')
 
- 
+set tags+=.git/ctags
+
 " =========================================================================== "
 "                                 Remappings                                  "
 " =========================================================================== "
 
-" Emacs like movement in ex commands, <C-A> start of the line, <C-E> eol
-cnoremap <C-A> <Home>
-cnoremap <C-E> <End>
 cnoremap <C-LEFT> <S-LEFT>
 
 nnoremap Q <nop>
@@ -204,7 +207,6 @@ nnoremap <leader>sn :SyntaxHighlighting<CR>
 " 266
 vnoremap Z s<C-R>=eval(substitute("<C-R>"", "\r", "", ""))<CR><ESC>
 
-
 " Useful location list search. Find current word in buffer and populate
 " location list and show location list. To close location list use :lcl[ose]
 nnoremap <silent> <leader>f :<C-U>call setloclist(".", [])<CR>
@@ -220,6 +222,7 @@ vnoremap <silent> <leader>f :normal *<CR>
     \:lw<CR>
     \:nnoremap <silent> <buffer> q :lcl<CR>
 
+" Git merge symbols search
 nnoremap <leader>i /<<<<<<<\\|=======\\|>>>>>>><CR>
 
 " =========================================================================== "
@@ -360,9 +363,10 @@ set incsearch                       " Make search act like search in modern brow
 set linebreak
 set listchars=tab:▸\ ,eol:¬,trail:●,extends:❯,precedes:❮
 set magic                           " Set magic on, for regular expressions
-set mat=2                           " How many tenths of a second to blink
+set matchtime=2                     " How many tenths of a second to blink
 set wildignore+=*/target/*
 
+" AHH I NO MORE BELLS
 set noerrorbells visualbell t_vb=
 if has('autocmd')
   autocmd GUIEnter * set visualbell t_vb=
