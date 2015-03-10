@@ -1,4 +1,3 @@
-
 " Echo startup time on start {{{
 if has('vim_starting') && has('reltime')
   " Shell: vim --startuptime {filename} -q; vim {filename}
@@ -33,6 +32,8 @@ NeoBundle 'chriskempson/base16-vim'              " base-16 color scheme
 NeoBundle 'peaksea'                              " peaksea, good for console
 NeoBundle 'altercation/vim-colors-solarized.git' " solarized color scheme
 NeoBundle 'kien/rainbow_parentheses.vim'         " make my brackets pretty colors
+NeoBundle 'Yggdroot/indentLine'
+NeoBundle 'whatyouhide/vim-gotham'
 
 NeoBundle 'bling/vim-airline'                    " better status line
 NeoBundle 'conradirwin/vim-bracketed-paste'      " Sane pasting in insert mode
@@ -45,7 +46,7 @@ NeoBundle 'nvie/vim-flake8'                      " PEP8 Checks
 NeoBundle 'rking/ag.vim'                         " search with ag in vim
 NeoBundle 'scrooloose/syntastic'                 " syntax checker
 NeoBundle 'sjl/gundo.vim'                        " visual undo tree
-NeoBundle 'sudo.vim'                             " do sudo write and read in vim
+NeoBundle 'chrisbra/sudoedit.vim'                " do sudo write and read in vim
 NeoBundle 'takac/ultisnips'                      " tab completions and snippets
 NeoBundle 'takac/vim-commandcaps'                " correct mistyped commands like :Wq
 NeoBundle 'takac/vim-fontmanager'                " manage fonts easily
@@ -105,16 +106,18 @@ match ExtraWhitespace /\s\+\%#\@<!$/
 "                                 Plugin Config                               "
 " =========================================================================== "
 
+let g:indentLine_enabled = 0
 let g:commandcaps_override = 1
 
 " Syntastic Config
+let g:syntastic_mode_map = { 'mode': 'passive' }
 let g:syntastic_javascript_checkers = ['jslint']
 let g:syntastic_error_symbol='✗'
 let g:syntastic_warning_symbol='⚠'
 
 " Hardtime config
 let g:hardtime_ignore_buffer_patterns = [ "N[EeA]RD.*", ".*git/index" ]
-let g:hardtime_default_on = 0
+let g:hardtime_showmsg = 1
 
 " Rainbow Parens!
 au VimEnter * call TryCommand("RainbowParenthesesToggle")
@@ -124,7 +127,7 @@ au Syntax * call TryCommand("RainbowParenthesesLoadRound")
 " Airline conf
 set laststatus=2
 let g:airline_powerline_fonts=1
-let g:airline_theme="dark"
+let g:airline_theme="gotham256"
 
 " Easy motion config
 let g:EasyMotion_leader_key = '<Space>'
@@ -137,7 +140,7 @@ map <Space><Space> <Plug>(easymotion-bd-jk)
 
 " Ctrl p config
 let g:ctrlp_extensions=['line']
-let g:ctrlp_clear_cache_on_exit = 0
+let g:ctrlp_clear_cache_on_exit = 1
 let g:ctrlp_custom_ignore = {
 \ 'file': '\v\.(exe|so|dll|class)$',
 \ 'dir':  '\v<(\.git|\.hg|\.svn|\.vim|\.config)[\/]'
@@ -165,6 +168,14 @@ set tags+=.git/ctags
 " =========================================================================== "
 "                                 Remappings                                  "
 " =========================================================================== "
+
+" select pasted text
+noremap gV `[v`]
+
+" Make a simple "search" text object.
+vnoremap <silent> x //e<C-r>=&selection=='exclusive'?'+1':''<CR><CR>
+    \:<C-u>call histdel('search',-1)<Bar>let @/=histget('search',-1)<CR>gv
+omap x :normal vs<CR>
 
 cnoremap <C-LEFT> <S-LEFT>
 
@@ -223,23 +234,32 @@ vnoremap <silent> <leader>f :normal *<CR>
     \:nnoremap <silent> <buffer> q :lcl<CR>
 
 " Git merge symbols search
-nnoremap <leader>i /<<<<<<<\\|=======\\|>>>>>>><CR>
+nnoremap <leader>i /^\(<<<<<<<\\|=======$\\|>>>>>>>\)<CR>
 
 " =========================================================================== "
 "                                   Autocmds                                  "
 " =========================================================================== "
+
+
+autocmd FileType yaml IndentLinesEnable
+autocmd FileType yaml set shiftwidth=2 tabstop=2
 
 " When vimrc is edited, reload it
 autocmd! bufwritepost .vimrc source ~/.vimrc
 
 " Hide imports for java files
 autocmd! BufEnter *.java :setlocal foldexpr=HideImportFold(v:lnum) foldmethod=expr foldlevel=0
+autocmd! FileType *.py :setlocal foldexpr=HideCopyRight(v:lnum) foldmethod=expr foldlevel=0
 
 " check my english
-autocmd FileType md :set spell
-autocmd FileType md :set spelllang=en
-autocmd FileType markdown :set spell
-autocmd FileType markdown :set spelllang=en
+autocmd FileType rst set spell
+autocmd FileType rst set spelllang=en
+autocmd FileType rst set tw=79
+autocmd FileType md set spell
+autocmd FileType md set spelllang=en
+autocmd FileType markdown set spell
+autocmd FileType markdown set spelllang=en
+autocmd FileType gitcommit set spell
 
 " Restore cursor on load file
 augroup resCur
@@ -263,6 +283,22 @@ command! -nargs=0 SyntaxHighlighting call SynStack()
 "                                   Functions                                 "
 " =========================================================================== "
 
+nnoremap gb :call FuzzyFileFind()<CR>
+
+function! FuzzyFileFind()
+    " let line = line(".")
+    " let col = co
+    let pos = getpos('.')
+    " echo 'line: ' . pos[1] . ', col: ' . pos[2]
+    let name = expand("<cWORD>")
+    let f = system('find . -iname "*' . name  . '*"
+                \ -not \( -path "*/.git/*" -prune \)
+                \ -not \( -path "*/build/*" -prune \)
+                \ -not \( -iname "*.pyc" -prune \)
+                \ -not \( -path "*/.venv/*" -prune \) -print -quit')
+    exec "edit " . f
+endfunction
+
 " Execute search with pattern
 function! DoSearch(pattern)
     let l:escaped_pattern = escape(a:pattern, '\\/.*$^~[]')
@@ -283,6 +319,13 @@ function! VisualSelectionSearch() range
     execute "normal! vgvy"
     call DoSearch(@")
     let @" = l:saved_reg
+endfunction
+
+function! HideCopyRight(lnum)
+    if getline(a:lnum) =~ '^#'
+        return '1'
+    endif
+    return '0'
 endfunction
 
 function! HideImportFold(lnum)
@@ -354,7 +397,7 @@ set backupdir=~/.vim/backup//
 set clipboard+=unnamed              "
 set cmdheight=2                     " The commandbar height
 set cpoptions=aABceFsmq
-" set cursorline                      " highlight current line :set cul
+" set cursorline                    " highlight current line :set cul
 set directory=~/.vim/tmp//
 set hid                             " Change buffer - without saving
 set history=1000
@@ -371,6 +414,11 @@ set noerrorbells visualbell t_vb=
 if has('autocmd')
   autocmd GUIEnter * set visualbell t_vb=
 endif
+
+if exists(":FontSize")
+    FontSize 15
+endif
+
 "
 " Basic colouring and encoding
 set t_Co=256
@@ -426,6 +474,9 @@ set viminfo='10,\"100,:200,%,n~/.vim/viminfo
 "  :200  :  up to 200 lines of command-line history will be remembered
 "  %    :  saves and restores the buffer list
 "  n... :  where to save the viminfo files
+
+" thesaurus file
+" set thesaurus=~/git/thesaurus/mthesaur.txt
 
 " =========================================================================== "
 "                            Common Spelling mistakes                         "
@@ -625,6 +676,8 @@ iabbrev exmaple example
 iabbrev Exmaple Example
 iabbrev exmaples examples
 iabbrev Exmaples Examples
+iabbrev exprot export
+iabbrev Exprot Export
 iabbrev eyt yet
 iabbrev Eyt Yet
 iabbrev familar familiar
@@ -865,8 +918,12 @@ iabbrev reconize recognize
 iabbrev Reconize Recognize
 iabbrev recrod record
 iabbrev Recrod Record
+iabbrev reivew review
+iabbrev Reivew Review
 iabbrev religous religious
 iabbrev Religous Religious
+iabbrev reveiw review
+iabbrev Reveiw Review
 iabbrev rwite write
 iabbrev Rwite Write
 iabbrev rythm rhythm

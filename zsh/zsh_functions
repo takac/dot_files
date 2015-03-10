@@ -1,0 +1,40 @@
+#redirect std err to stdout pipe
+# strace ls 2>&1 > /dev/null | less
+std_err_rdy()
+{
+    $@ 2>&1 > /dev/null
+}
+
+myip()
+{
+	echo "Int: $( ip a | awk '/inet / {sub(/\/.*/,""); if(!match ($2, /127\.0\.0/)){ print $2 }}')"
+	echo "Ext: $(curl -s ip.appspot.com)"
+}
+
+freach ()
+{
+    while read line; do
+        $@ $line
+    done
+}
+
+vim()
+{
+    if [[ ${1} =~ ":" ]]; then
+        command vim +${1##*:} ${1%%:*}
+    else
+        command vim $@
+    fi
+}
+
+ff () {
+    firefox $@ 2> /tmp/ff.err
+    if [[ $? != 0 ]]; then cat /tmp/ff.err; fi
+}
+
+function vc() { ( cd "$(git rev-parse --show-toplevel)"; vim $(git ls "$@") ) }
+# function vcp() { ( cd "$(git rev-parse --show-toplevel)"; vim $(git ls "$@" | percol) ) }
+function vs() { ( cd "$(git rev-parse --show-toplevel)"; vim $(git lss "$@") ) }
+# function vsp() { ( cd "$(git rev-parse --show-toplevel)"; vim $(git lss "$@" | percol) ) }
+function cless() { colorize $@ | less }
+

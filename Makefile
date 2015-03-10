@@ -21,7 +21,7 @@ Z_DIR=~/.z-dir
 FZF_DIR=~/.fzf
 IPYTHON_CONFIG_DIR=~/.ipython/profile_default
 IPYTHON_CONFIG=$(IPYTHON_CONFIG_DIR)/ipython_config.py
-ZSH_SYNTAX_HIGH=$(OH_MY_ZSH)/custom/plugins/zsh-syntax-highlighting
+ZSH_SYNTAX_HIGH=$(OH_MY_ZSH)/custom/plugins/syntax-highlighting
 VIRTUAL_ENV_WRAPPER=/usr/local/lib/python2.7/dist-packages/virtualenvwrapper
 XDEFAULTS=~/.Xdefaults
 
@@ -45,7 +45,7 @@ fzf: /usr/bin/ruby $(FZF_DIR)
 
 urxvt: /usr/bin/urxvt $(XDEFAULTS)
 
-ipython: $(IPYTHON_CONFIG)
+ipython: /usr/local/bin/ipython $(IPYTHON_CONFIG)
 
 $(IPYTHON_CONFIG): $(IPYTHON_CONFIG_DIR)
 	cp $(DOT_DIR)/ipython/ipython_config.py $(IPYTHON_CONFIG)
@@ -55,7 +55,6 @@ $(IPYTHON_CONFIG_DIR):
 
 $(FZF_DIR):
 	git clone $(GIT_PROTOCOL)://github.com/junegunn/fzf $(FZF_DIR)
-	# remove lines that ask for input and use defaults
 	sed -i '/^read /d' $(FZF_DIR)/install
 	$(FZF_DIR)/install
 
@@ -63,8 +62,6 @@ z: $(Z_DIR)
 
 $(Z_DIR):
 	git clone $(GIT_PROTOCOL)://github.com/rupa/z.git $(Z_DIR)
-	# Configure Z with zsh
-	# echo "source $(Z_DIR)/z.sh" >> ~/.bashrc
 
 $(NEOBUNDLE):
 	git clone $(GIT_PROTOCOL)://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle.vim
@@ -128,12 +125,12 @@ $(SCREEN_RC):
 	cp $(DOT_DIR)/screen/screenrc $(SCREEN_RC)
 
 $(GIT_CONF):
-	# Configure git to use meld diff
+# Configure git to use meld diff
 	git config --global diff.tool meld
 	git config --global difftool.prompt false
-	# Configure git to use color
+# Configure git to use color
 	git config --global color.ui true
-	# Configure git to use vim!
+# Configure git to use vim!
 	git config --global core.editor "vim"
 	git config --global user.name "Tom Cammann"
 	git config --global user.email "cammann.tom@gmail.com"
@@ -160,7 +157,7 @@ $(ZSH_RC):
 	cat >> $(ZSH_RC) < $(DOT_DIR)/zsh/extras.zsh
 
 $(ZSH_SYNTAX_HIGH):
-	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git syntax-highlighting
+	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $(ZSH_SYNTAX_HIGH)
 
 $(VIRTUAL_ENV_WRAPPER):
 	sudo pip install virtualenvwrapper
