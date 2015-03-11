@@ -21,7 +21,7 @@ Z_DIR=~/.z-dir
 FZF_DIR=~/.fzf
 IPYTHON_CONFIG_DIR=~/.ipython/profile_default
 IPYTHON_CONFIG=$(IPYTHON_CONFIG_DIR)/ipython_config.py
-ZSH_SYNTAX_HIGH=$(OH_MY_ZSH)/custom/plugins/syntax-highlighting
+ZSH_SYNTAX_HIGH=$(OH_MY_ZSH)/custom/plugins/zsh-syntax-highlighting
 VIRTUAL_ENV_WRAPPER=/usr/local/lib/python2.7/dist-packages/virtualenvwrapper
 XDEFAULTS=~/.Xdefaults
 
@@ -45,7 +45,7 @@ fzf: /usr/bin/ruby $(FZF_DIR)
 
 urxvt: /usr/bin/urxvt $(XDEFAULTS)
 
-ipython: /usr/local/bin/ipython $(IPYTHON_CONFIG)
+ipython: /usr/bin/ipython $(IPYTHON_CONFIG)
 
 $(IPYTHON_CONFIG): $(IPYTHON_CONFIG_DIR)
 	cp $(DOT_DIR)/ipython/ipython_config.py $(IPYTHON_CONFIG)
@@ -58,7 +58,10 @@ $(FZF_DIR):
 	sed -i '/^read /d' $(FZF_DIR)/install
 	$(FZF_DIR)/install
 
-z: $(Z_DIR)
+z: $(Z_DIR) $(HOME)/.z
+
+$(HOME)/.z
+	mkdir $(HOME)/.z
 
 $(Z_DIR):
 	git clone $(GIT_PROTOCOL)://github.com/rupa/z.git $(Z_DIR)
