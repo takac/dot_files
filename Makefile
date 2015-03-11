@@ -24,10 +24,12 @@ IPYTHON_CONFIG=$(IPYTHON_CONFIG_DIR)/ipython_config.py
 ZSH_SYNTAX_HIGH=$(OH_MY_ZSH)/custom/plugins/zsh-syntax-highlighting
 VIRTUAL_ENV_WRAPPER=/usr/local/lib/python2.7/dist-packages/virtualenvwrapper
 XDEFAULTS=~/.Xdefaults
+I3_CONFIG=$(HOME)/.i3/config
+I3_STATUS_CONFIG=$(HOME)/.i3status.conf
 
 .PHONY=fonts clean_tmux clean_vim
 
-all: bash zsh git tmux screen vim z fzf ipython urxvt
+all: bash zsh git tmux screen vim z fzf ipython urxvt i3
 
 bash: /bin/bash $(BASH_ALIASES) $(BASH_RC)
 
@@ -47,6 +49,8 @@ urxvt: /usr/bin/urxvt $(XDEFAULTS)
 
 ipython: /usr/bin/ipython $(IPYTHON_CONFIG)
 
+i3: /usr/bin/Xorg /usr/bin/i3 $(I3_CONFIG) $(I3_STATUS_CONFIG)
+
 $(IPYTHON_CONFIG): $(IPYTHON_CONFIG_DIR)
 	cp $(DOT_DIR)/ipython/ipython_config.py $(IPYTHON_CONFIG)
 
@@ -60,7 +64,7 @@ $(FZF_DIR):
 
 z: $(Z_DIR) $(HOME)/.z
 
-$(HOME)/.z
+$(HOME)/.z:
 	mkdir $(HOME)/.z
 
 $(Z_DIR):
@@ -168,3 +172,10 @@ $(VIRTUAL_ENV_WRAPPER):
 $(XDEFAULTS):
 	cp $(DOT_DIR)/urxvt/Xdefaults $(XDEFAULTS)
 	xrdb $(XDEFAULTS)
+
+$(I3_CONFIG):
+	mkdir -p $(HOME)/.i3/
+	cp $(DOT_DIR)/i3/config $(I3_CONFIG)
+
+$(I3_STATUS_CONFIG):
+	cp $(DOT_DIR)/i3/i3status.conf $(I3_STATUS_CONFIG)
