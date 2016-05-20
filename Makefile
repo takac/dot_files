@@ -27,19 +27,35 @@ XDEFAULTS=~/.Xdefaults
 I3_CONFIG=$(HOME)/.i3/config
 I3_STATUS_CONFIG=$(HOME)/.i3status.conf
 
+UNAME_S := $(shell uname -s)
+
 .PHONY=fonts clean_tmux clean_vim
 
+ifeq ($(UNAME_S),Darwin)
+all: bash zsh git tmux screen vim z ipython
+zsh: /bin/zsh
+ipython: /usr/local/bin/ipython
+tmux: /usr/local/bin/tmux
+else
 all: bash zsh git tmux screen vim z fzf ipython urxvt i3
+zsh: /usr/bin/zsh
+ipython: /usr/bin/ipython
+# install custom fonts under Linux
+tmux: /usr/bin/tmux fonts
+endif
 
 bash: /bin/bash $(BASH_ALIASES) $(BASH_RC)
 
-zsh: /usr/bin/zsh $(OH_MY_ZSH) $(ZSH_SYNTAX_HIGH) $(VIRTUAL_ENV_WRAPPER) $(ZSH_RC)
+zsh: $(OH_MY_ZSH) $(ZSH_SYNTAX_HIGH) $(ZSH_RC)
 
 git: /usr/bin/git $(GIT_CONF)
 
 screen: /usr/bin/screen $(SCREEN_RC)
 
-tmux: /usr/bin/tmux $(POWERLINE) $(POWERLINE_FONTS) fonts $(TMUX_CONF)
+/usr/local/bin/tmux:
+	brew install tmux
+
+tmux: $(POWERLINE) $(POWERLINE_FONTS) $(TMUX_CONF)
 
 vim: /usr/bin/vim ~/.vim/tmp ~/.vim/backup ~/.vim/undo $(VIM_RC) $(NEOBUNDLE)
 
@@ -47,7 +63,11 @@ fzf: /usr/bin/ruby $(FZF_DIR)
 
 urxvt: /usr/bin/urxvt $(XDEFAULTS)
 
-ipython: /usr/bin/ipython $(IPYTHON_CONFIG)
+/usr/bin/ipython:
+/usr/local/bin/ipython:
+	pip install ipython
+
+ipython: $(IPYTHON_CONFIG)
 
 i3: /usr/bin/Xorg /usr/bin/i3 $(I3_CONFIG) $(I3_STATUS_CONFIG)
 
@@ -62,10 +82,7 @@ $(FZF_DIR):
 	sed -i '/^read /d' $(FZF_DIR)/install
 	$(FZF_DIR)/install
 
-z: $(Z_DIR) $(HOME)/.z
-
-$(HOME)/.z:
-	mkdir $(HOME)/.z
+z: $(Z_DIR)
 
 $(Z_DIR):
 	git clone $(GIT_PROTOCOL)://github.com/rupa/z.git $(Z_DIR)
@@ -159,15 +176,15 @@ $(OH_MY_ZSH):
 
 $(ZSH_RC):
 	cp $(OH_MY_ZSH)/templates/zshrc.zsh-template $(ZSH_RC)
-	sed -i -e 's/^plugins=.*/plugins=(git mvn tmux screen virtualenvwrapper history-substring-search zsh-syntax-highlighting)/' $(ZSH_RC)
+	sed -i -e 's/^plugins=.*/plugins=(git mvn tmux screen history-substring-search zsh-syntax-highlighting)/' $(ZSH_RC)
 	sed -i -e 's/^ZSH_THEME=.*/ZSH_THEME=darkblood/' $(ZSH_RC)
 	cat >> $(ZSH_RC) < $(DOT_DIR)/zsh/extras.zsh
 
 $(ZSH_SYNTAX_HIGH):
 	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $(ZSH_SYNTAX_HIGH)
 
-$(VIRTUAL_ENV_WRAPPER):
-	sudo pip install virtualenvwrapper
+# $(VIRTUAL_ENV_WRAPPER):
+# 	sudo pip install virtualenvwrapper
 
 $(XDEFAULTS):
 	cp $(DOT_DIR)/urxvt/Xdefaults $(XDEFAULTS)
