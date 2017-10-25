@@ -34,7 +34,10 @@ NeoBundle 'altercation/vim-colors-solarized.git' " solarized color scheme
 NeoBundle 'kien/rainbow_parentheses.vim'         " make my brackets pretty colors
 NeoBundle 'Yggdroot/indentLine'
 NeoBundle 'whatyouhide/vim-gotham'
+NeoBundle 'morhetz/gruvbox'
 
+NeoBundle 'mhinz/vim-startify'
+" NeoBundle 'dahu/vim-fanfingtastic'
 NeoBundle 'vim-airline/vim-airline-themes'
 NeoBundle 'vim-airline/vim-airline'                    " better status line
 NeoBundle 'conradirwin/vim-bracketed-paste'      " Sane pasting in insert mode
@@ -61,6 +64,16 @@ NeoBundle 'tpope/vim-surround'                   " mappings for wrapping objects
 NeoBundle 'vim-scripts/scratch.vim'              " Easy tmp buffer
 NeoBundle 'wellle/targets.vim'                   " jump to more objects
 NeoBundle 'fatih/vim-go'
+NeoBundle 'Shougo/vimproc.vim', {
+\ 'build' : {
+\     'windows' : 'tools\\update-dll-mingw',
+\     'cygwin' : 'make -f make_cygwin.mak',
+\     'mac' : 'make',
+\     'linux' : 'make',
+\     'unix' : 'gmake',
+\    },
+\ }
+NeoBundle 'shougo/vimshell.vim'
 
 call neobundle#end()
 
@@ -87,7 +100,8 @@ if has("gui_running")
     endif
 else
     set background=dark
-    silent! color peaksea
+    " silent! color peaksea
+    silent! color gruvbox
 endif
 
 set pastetoggle=<F12>                " pastetoggle (sane indentation on pastes)
@@ -109,6 +123,8 @@ match ExtraWhitespace /\s\+\%#\@<!$/
 " =========================================================================== "
 "                                 Plugin Config                               "
 " =========================================================================== "
+
+let g:fanfingtastic_ignorecase = 1
 
 "Go lang
 let g:go_highlight_functions = 1
@@ -140,7 +156,8 @@ au Syntax * call TryCommand("RainbowParenthesesLoadRound")
 " Airline conf
 set laststatus=2
 let g:airline_powerline_fonts=1
-let g:airline_theme="gotham256"
+let g:airline_theme="gruvbox"
+" let g:airline_theme="gotham256"
 
 " Easy motion config
 let g:EasyMotion_leader_key = '<Space>'
@@ -200,6 +217,8 @@ nnoremap <silent> <leader>w :call system("tmux send-keys -t ':{last}' C-p C-m &&
 
 nnoremap Q <nop>
 nnoremap K <nop>
+nnoremap <leader>c :set cc=79<CR>
+nnoremap <leader>n :set nu!<CR>
 nnoremap <leader>e :e ~/.vimrc<CR>
 nnoremap <leader>l :set list!<CR>
 nnoremap <leader>tn :tabnew<CR>
@@ -208,6 +227,10 @@ nnoremap <silent> <F4> :set hlsearch!<CR>
 nnoremap <silent> <leader><CR> :set hlsearch!<CR>
 nnoremap <silent> <F7> :set spell!<CR>
 nnoremap <silent> <F8> :TagbarToggle<CR>
+
+" Cycle buffers quickly
+nnoremap <silent> <C-k> :bnext<CR>
+nnoremap <silent> <C-j> :bprev<CR>
 
 " Use current selection for Acking all files in cwd
 vnoremap <silent> <leader>a :<C-U>let @/=GetVisual()<CR> :set hls<CR>:Ag "<C-R>/"<CR>
@@ -446,6 +469,7 @@ set encoding=utf-8
 set noexrc                          " Don't use local version of .(g)vimrc, .exrc
 set nolazyredraw                    " Don't redraw while executing macros
 set nowrap                          " Wrap long lines
+set formatoptions+=j                " Delete comment character when joining commented lines
 set nrformats-=octal                " Don't treat numbers starting with 0 as octal
 set number                          " Set line numbers
 set numberwidth=5                   " Show line numbers up to size 99999
@@ -474,7 +498,8 @@ set guicursor=n-c:block-Cursor-blinkon0
 set guicursor+=v:block-vCursor-blinkon0
 set guicursor+=i:ci-ver20-iCursor
 highlight iCursor guifg=white guibg=white
-hi MatchParen guifg=lightblue guibg=darkblue
+" hi MatchParen guifg=lightblue guibg=darkblue
+hi MatchParen ctermfg=white ctermbg=none
 
 " Make those folders automatically if they don't already exist.
 if !isdirectory(expand(&undodir))
