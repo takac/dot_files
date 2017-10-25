@@ -11,7 +11,7 @@ if has('vim_starting')
    set runtimepath+=~/.vim/bundle/neobundle.vim/
 endif
 
-call neobundle#rc(expand('~/.vim/bundle/'))
+call neobundle#begin(expand('~/.vim/bundle/'))
 
 set ttyfast
 
@@ -59,6 +59,8 @@ NeoBundle 'tpope/vim-rsi'                        " Readline mappings for insert 
 NeoBundle 'tpope/vim-surround'                   " mappings for wrapping objects
 NeoBundle 'vim-scripts/scratch.vim'              " Easy tmp buffer
 NeoBundle 'wellle/targets.vim'                   " jump to more objects
+
+call neobundle#end()
 
 " =========================================================================== "
 "                                 System Setup                                "
