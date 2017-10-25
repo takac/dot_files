@@ -35,7 +35,8 @@ NeoBundle 'kien/rainbow_parentheses.vim'         " make my brackets pretty color
 NeoBundle 'Yggdroot/indentLine'
 NeoBundle 'whatyouhide/vim-gotham'
 
-NeoBundle 'bling/vim-airline'                    " better status line
+NeoBundle 'vim-airline/vim-airline-themes'
+NeoBundle 'vim-airline/vim-airline'                    " better status line
 NeoBundle 'conradirwin/vim-bracketed-paste'      " Sane pasting in insert mode
 NeoBundle 'godlygeek/tabular'                    " formatter
 NeoBundle 'guns/vim-clojure-static'              " add clojure syntax highlight
@@ -44,10 +45,10 @@ NeoBundle 'kien/ctrlp.vim'                       " fuzzy file finder
 NeoBundle 'mhinz/vim-signify'                    " gutter showing git changes
 NeoBundle 'nvie/vim-flake8'                      " PEP8 Checks
 NeoBundle 'rking/ag.vim'                         " search with ag in vim
-NeoBundle 'scrooloose/syntastic'                 " syntax checker
+" NeoBundle 'scrooloose/syntastic'                 " syntax checker
 NeoBundle 'sjl/gundo.vim'                        " visual undo tree
 NeoBundle 'chrisbra/sudoedit.vim'                " do sudo write and read in vim
-NeoBundle 'takac/ultisnips'                      " tab completions and snippets
+" NeoBundle 'takac/ultisnips'                      " tab completions and snippets
 NeoBundle 'takac/vim-commandcaps'                " correct mistyped commands like :Wq
 NeoBundle 'takac/vim-fontmanager'                " manage fonts easily
 NeoBundle 'takac/vim-hardtime'                   " deter using repeative keys
@@ -59,6 +60,7 @@ NeoBundle 'tpope/vim-rsi'                        " Readline mappings for insert 
 NeoBundle 'tpope/vim-surround'                   " mappings for wrapping objects
 NeoBundle 'vim-scripts/scratch.vim'              " Easy tmp buffer
 NeoBundle 'wellle/targets.vim'                   " jump to more objects
+NeoBundle 'fatih/vim-go'
 
 call neobundle#end()
 
@@ -107,6 +109,15 @@ match ExtraWhitespace /\s\+\%#\@<!$/
 " =========================================================================== "
 "                                 Plugin Config                               "
 " =========================================================================== "
+
+"Go lang
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_types = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_build_constraints = 1
+let g:go_fmt_command = "goimports"
 
 let g:indentLine_enabled = 0
 let g:commandcaps_override = 1
@@ -181,6 +192,12 @@ omap x :normal vs<CR>
 
 cnoremap <C-LEFT> <S-LEFT>
 
+" Repeat last command in previous pane
+nnoremap <silent> <leader>r :call system("tmux send-keys -t ':.{last}' C-p C-m")<CR>
+
+" Repeat last command in previous pane
+nnoremap <silent> <leader>w :call system("tmux send-keys -t ':{last}' C-p C-m && tmux last-window")<CR>
+
 nnoremap Q <nop>
 nnoremap K <nop>
 nnoremap <leader>e :e ~/.vimrc<CR>
@@ -251,7 +268,7 @@ autocmd! bufwritepost .vimrc source ~/.vimrc
 
 " Hide imports for java files
 autocmd! BufEnter *.java :setlocal foldexpr=HideImportFold(v:lnum) foldmethod=expr foldlevel=0
-autocmd! FileType *.py :setlocal foldexpr=HideCopyRight(v:lnum) foldmethod=expr foldlevel=0
+autocmd! BufEnter *.py :setlocal foldexpr=HideCopyRight(v:lnum) foldmethod=expr foldlevel=0
 
 " check my english
 autocmd FileType rst set spell
