@@ -28,32 +28,6 @@ source_if_exists ~/.dots/fancy-ctrl-z.zsh
 source_if_exists ~/.zsh_functions
 source_if_exists ~/proxyconf.sh
 
-# Hook in z jump
-function precmd () {
- _z --add "$(pwd -P)"
-}
-
-# Taken from https://github.com/zsh-users/fizsh/blob/master/fizsh-dev/scripts/fizsh-miscellaneous.zsh
-################################################
-#
-# Rebind tab so that it uses syntax-highlighting
-#
-# This is a bug in the syntax highlighting system (https://github.com/zsh-users/zsh-syntax-highlighting/issues/102)
-# We work around it by calling all types of highlighters explictily
-#
-function _fizsh-expand-or-complete-and-highlight() {
-  zle expand-or-complete
-  _zsh_highlight_brackets_highlighter
-  _zsh_highlight_main_highlighter
-  _zsh_highlight_cursor_highlighter
-  _zsh_highlight_pattern_highlighter
-  _zsh_highlight_root_highlighter
-}
-
-zle -N _fizsh-expand-or-complete-and-highlight _fizsh-expand-or-complete-and-highlight
-
-bindkey "^I" _fizsh-expand-or-complete-and-highlight
-
 ################################################
 # Colors
 ESC_SEQ="\x1b["
