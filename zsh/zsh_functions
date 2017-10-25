@@ -18,19 +18,25 @@ freach ()
     done
 }
 
+# TODO handle multiple file inputs
 vim()
 {
+    # If 0 args, open last position, can be annoying
+    # if [[ ${#} == 0 ]]; then
+    #     command vim -c "normal '0"
+    
+    # if first arg has colon, treat as file and line no
     if [[ ${1} =~ ":" ]]; then
         command vim +${1##*:} ${1%%:*}
     else
         command vim $@
     fi
 }
-
-ff () {
-    firefox $@ 2> /tmp/ff.err
-    if [[ $? != 0 ]]; then cat /tmp/ff.err; fi
-}
+#
+# function tmw
+# {
+#     tmux split-window -dh "$*"
+# }
 
 function vc() { ( cd "$(git rev-parse --show-toplevel)"; vim $(git ls "$@") ) }
 # function vcp() { ( cd "$(git rev-parse --show-toplevel)"; vim $(git ls "$@" | percol) ) }
@@ -38,3 +44,170 @@ function vs() { ( cd "$(git rev-parse --show-toplevel)"; vim $(git lss "$@") ) }
 # function vsp() { ( cd "$(git rev-parse --show-toplevel)"; vim $(git lss "$@" | percol) ) }
 function cless() { colorize $@ | less }
 
+function countdown()
+{
+   date1=$((`date +%s` + $1));
+   while [ "$date1" -ne `date +%s` ]; do
+     echo -ne "$(date -u --date @$(($date1 - `date +%s`)) +%H:%M:%S)\r";
+   done
+}
+
+function stopwatch()
+{
+  date1=`date +%s`;
+   while true; do
+    echo -ne "$(date -u --date @$((`date +%s` - $date1)) +%H:%M:%S:%N)\r";
+   done
+}
+
+function agv()
+{
+    cmd="grep"
+    if hash ag 2> /dev/null; then
+        cmd="ag"
+    fi
+    if [[ $@ == "" ]]; then
+        last_ag=$(history | grep "^\s*[0-9]\+\s*\(grep\|ag\)" | tail -1 | sed 's/^\s*//' | cut -f3- -d" ")
+        results=$(eval "$last_ag")
+    else
+        results=$(command $cmd $@)
+    fi
+    if [[ "${results}" != "" ]]; then
+        vim -c "setlocal buftype=nofile bufhidden=hide noswapfile" -c "let @/="'"'$@'"'" | set hls" - <<< "$results"
+    else
+        return -1
+    fi
+}
+
+function gip()
+{
+    if [[ "$1" == "" ]]; then
+        local TYPE=".."
+    else
+        local TYPE="$1"
+    fi
+    local TOP_DIR=$(git rev-parse --show-toplevel)
+    local REL="$(python -c 'import os.path; print os.path.relpath("'"$TOP_DIR"'", os.path.abspath("."))')"
+    git status --porcelain | sed -ne "/^$TYPE/s/^$TYPE \+/$REL\//p" -e 's/\n/ /'
+}
+
+function gim()
+{
+    vim $(gip)
+}
+
+function zuul()
+{
+    STATUS_JSON=/tmp/zuul-status.json
+    curl -s http://${ZUUL_URL}/status.json > ${STATUS_JSON}
+    jq -r '.pipelines[].change_queues[] | select(.heads[] | length) | .heads[][]
+        | select(.id and (.id | contains("'"${1}"'"))) |
+        [ .jobs[] | if .voting then (if .result then .result else "PENDING" end) + ": " + "\(.url)" else "" end ] | join("\n")' ${STATUS_JSON}
+}
+
+function jenkins()
+{
+    BUILD=${1%%/}
+    BUILD_NAME=${BUILD%%/*}
+    BUILD_NO=${BUILD##*/}
+
+    BUILD_URL="https://$JENKINS_URL/job/$BUILD_NAME/$BUILD_NO/logText/progressiveText"
+
+    curl -sk -D /tmp/headers $BUILD_URL > /dev/null
+
+    while true; do
+        LEN=$(awk '/X-Text-Size/{print $2}' /tmp/headers | sed 's/[^0-9]//g')
+        curl -sk -D /tmp/headers -d start=${LEN} ${BUILD_URL} | tee /tmp/console2.txt
+        sleep 0.3
+    done
+}
+
+# Used to acommplish more complex gerrit queries. Requires ssh key to be added to gerrit.
+# Ouput is in JSON format.
+# See https://review.openstack.org/Documentation/cmd-index.html for more detail.
+#
+# $1 gerrit query string
+function gerrit()
+{
+    if [[ -z "${GERRIT_URL}" ]]; then echo "GERRIT_URL must be set"; return 1; fi
+    local gerrit_user=$(gerrit-username)
+    if [[ -z "${gerrit_user}" ]]; then return 1; fi
+    ssh -p 29418 ${gerrit_user}@${GERRIT_URL##*//} "gerrit query --format=JSON ${1}" | tee /tmp/gerritquery.json
+}
+
+function gerrit-username()
+{
+    local gerrit_user=${GERRIT_USERNAME:-"$(git config gitreview.username)"}
+    if [[ -z "${gerrit_user}" ]]; then
+        echo "Gerrit username not found" 1>&2
+        echo "Please export GERRIT_USERNAME" 1>&2
+        echo "Or set 'git config --global gitreview.username'" 1>&2
+        return 1
+    else
+        echo "${gerrit_user}"
+    fi
+}
+
+function patch-check()
+{
+    gerrit "--all-approvals $1" | jq -s '.[0]' > /tmp/gerrit.json
+    # SUMMARY=$(jq -r '.commitMessage | split("\n")[0]' /tmp/gerrit.json)
+    SUMMARY=$(jq -r '.commitMessage' /tmp/gerrit.json)
+    STATUS=$(jq -r '.status' /tmp/gerrit.json)
+    NUMBER=$(jq -r '.number' /tmp/gerrit.json)
+    echo $SUMMARY
+    echo
+    echo "---------------"
+    if [[ "${STATUS}" == "NEW" ]]; then
+        echo "Patch open"
+        echo
+        jq '[ .patchSets[(.patchSets | length)-1].approvals[] | { "\(.by.name)": .value } ] | add' /tmp/gerrit.json > /tmp/reviews.json 2> /dev/null
+        if grep -q null /tmp/reviews.json; then
+            echo "No reviews"
+        else
+            echo "Code Review"
+            echo "---------------"
+            jq -r '[ .patchSets[(.patchSets | length)-1].approvals[] | select(.type == "Code-Review") | "\(.by.name): \(.value)" ] | join("\n")' /tmp/gerrit.json
+            echo "---------------"
+            echo "Verified"
+            echo "---------------"
+            jq -r '[ .patchSets[(.patchSets | length)-1].approvals[] | select(.type == "Verified") | "\(.by.name): \(.value)" ] | join("\n")' /tmp/gerrit.json
+            echo "---------------"
+            echo "Workflow"
+            echo "---------------"
+            jq -r '[ .patchSets[(.patchSets | length)-1].approvals[] | select(.type == "Workflow") | "\(.by.name): \(.value)" ] | join("\n")' /tmp/gerrit.json
+            echo "---------------"
+        fi
+        if ! grep -q Zuul /tmp/reviews.json; then
+            echo
+            echo "Checking zuul for jobs"
+            zuul ${NUMBER}
+        fi
+    else
+        echo "Status: ${STATUS}"
+    fi
+}
+
+function console()
+{
+    BUILD=${1%%/}
+    BUILD_NAME=${BUILD%%/*}
+    BUILD_NO=${BUILD##*/}
+
+    BUILD_URL="https://$JENKINS_URL/job/$BUILD_NAME/$BUILD_NO/logText/progressiveText"
+
+    curl -sk -D /tmp/headers $BUILD_URL | tee /tmp/console.txt | tail
+    LEN=$(awk '/X-Text-Size/{print $2}' /tmp/headers | sed 's/[^0-9]//g')
+
+    echo "----------------------"
+
+    while true; do
+        curl -sk -D /tmp/headers -d start=${LEN} ${BUILD_URL} | tee /tmp/console2.txt
+        # cat /tmp/headers
+        LEN=$(awk '/X-Text-Size/{print $2}' /tmp/headers | sed 's/[^0-9]//g')
+        # LEN=$(wc -c /tmp/console.txt)
+        # echo "LEN: $LEN"
+        # echo "----------------------"
+        sleep 1
+    done
+}

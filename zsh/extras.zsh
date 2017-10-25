@@ -42,3 +42,5 @@ CYAN=$ESC_SEQ"36;01m"
 if [[ $(uname -s) == Darwin ]]; then
     export PATH="$(brew --prefix coreutils)/libexec/gnubin:/usr/local/bin:$PATH"
 fi
+
+export PATH=$PATH:/usr/local/go/bin
