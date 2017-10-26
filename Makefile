@@ -17,7 +17,6 @@ FONTS_DIR=~/.fonts
 FONT_CONF_DIR=~/.config/fontconfig/conf.d
 NEOBUNDLE=~/.vim/bundle/neobundle.vim
 VIM_RC=~/.vimrc
-Z_DIR=~/.z-dir
 FZF_DIR=~/.fzf
 IPYTHON_CONFIG_DIR=~/.ipython/profile_default
 IPYTHON_CONFIG=$(IPYTHON_CONFIG_DIR)/ipython_config.py
@@ -32,7 +31,7 @@ UNAME_S := $(shell uname -s)
 .PHONY=fonts clean_tmux clean_vim
 
 ifeq ($(UNAME_S),Darwin)
-all: bash zsh git tmux screen vim z ipython
+all: brew bash zsh git tmux screen vim ipython
 zsh: /bin/zsh
 ipython: /usr/local/bin/ipython
 tmux: /usr/local/bin/tmux
@@ -43,6 +42,8 @@ ipython: /usr/bin/ipython
 # install custom fonts under Linux
 tmux: $(POWERLINE) $(POWERLINE_FONTS) $(TMUX_CONF) fonts
 endif
+
+brew: /usr/local/bin/brew
 
 bash: /bin/bash $(BASH_ALIASES) $(BASH_RC)
 
@@ -55,6 +56,9 @@ screen: /usr/bin/screen $(SCREEN_RC)
 /usr/local/bin/tmux:
 	brew install tmux
 
+/usr/local/bin/brew:
+	curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install > /tmp/brew_installer
+	/usr/bin/ruby /tmp/brew_installer
 
 vim: /usr/bin/vim ~/.vim/tmp ~/.vim/backup ~/.vim/undo $(VIM_RC) $(NEOBUNDLE)
 
@@ -62,8 +66,11 @@ fzf: /usr/bin/ruby $(FZF_DIR)
 
 urxvt: /usr/bin/urxvt $(XDEFAULTS)
 
-/usr/bin/ipython:
-/usr/local/bin/ipython:
+/usr/local/bin/pip:
+	sudo easy_install pip
+
+/usr/bin/ipython: /usr/local/bin/pip
+/usr/local/bin/ipython: /usr/local/bin/pip
 	pip install ipython
 
 ipython: $(IPYTHON_CONFIG)
@@ -80,11 +87,6 @@ $(FZF_DIR):
 	git clone $(GIT_PROTOCOL)://github.com/junegunn/fzf $(FZF_DIR)
 	sed -i '/^read /d' $(FZF_DIR)/install
 	$(FZF_DIR)/install
-
-z: $(Z_DIR)
-
-$(Z_DIR):
-	git clone $(GIT_PROTOCOL)://github.com/rupa/z.git $(Z_DIR)
 
 $(NEOBUNDLE):
 	git clone $(GIT_PROTOCOL)://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle.vim
