@@ -37,11 +37,11 @@ zsh: /bin/zsh
 ipython: /usr/local/bin/ipython
 tmux: /usr/local/bin/tmux
 else
-all: bash zsh git tmux screen vim z fzf ipython urxvt i3
+all: bash zsh git tmux screen vim ipython urxvt
 zsh: /usr/bin/zsh
 ipython: /usr/bin/ipython
 # install custom fonts under Linux
-tmux: /usr/bin/tmux fonts
+tmux: $(POWERLINE) $(POWERLINE_FONTS) $(TMUX_CONF) fonts
 endif
 
 bash: /bin/bash $(BASH_ALIASES) $(BASH_RC)
@@ -55,7 +55,6 @@ screen: /usr/bin/screen $(SCREEN_RC)
 /usr/local/bin/tmux:
 	brew install tmux
 
-tmux: $(POWERLINE) $(POWERLINE_FONTS) $(TMUX_CONF)
 
 vim: /usr/bin/vim ~/.vim/tmp ~/.vim/backup ~/.vim/undo $(VIM_RC) $(NEOBUNDLE)
 
