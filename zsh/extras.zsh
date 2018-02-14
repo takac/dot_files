@@ -12,7 +12,6 @@ fi
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
 # Smart case completion
 zstyle ':completion:*'  matcher-list 'm:{a-z}={A-Z}'
-export PATH=$PATH:/home/tom/.powerline/scripts
 
 function source_if_exists()
 {
@@ -36,6 +35,8 @@ source_if_exists ~/.dots/ff.bash
 source_if_exists ~/.dots/fancy-ctrl-z.zsh
 source_if_exists ~/.zsh_functions
 source_if_exists ~/proxyconf.sh
+source_if_exists ~/Downloads/google-cloud-sdk/path.zsh.inc
+source_if_exists ~/Downloads/google-cloud-sdk/completion.zsh.inc
 
 ################################################
 # Colors
@@ -48,10 +49,15 @@ BLUE=$ESC_SEQ"34;01m"
 MAGENTA=$ESC_SEQ"35;01m"
 CYAN=$ESC_SEQ"36;01m"
 
+export EDITOR=/usr/local/bin/vim
+export GPG_TTY=$(tty)
+
 if [[ $(uname -s) == Darwin ]]; then
     export PATH="$(brew --prefix coreutils)/libexec/gnubin:/usr/local/bin:$PATH"
 fi
 
+export PATH=$PATH:$HOME/Downloads/google-cloud-sdk/bin/
+export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:/usr/local/go/bin
 
 if [[ "$PROFILE_STARTUP" == true ]]; then
