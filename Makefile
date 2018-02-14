@@ -4,6 +4,7 @@ DOT_DIR=~/.dots
 GIT_PROTOCOL=https
 
 ZSH_RC=~/.zshrc
+ZSH_FUNCTIONS=~/.zsh_functions
 OH_MY_ZSH=~/.oh-my-zsh
 BASH_ALIASES=~/.bash_aliases
 BASH_RC=~/.bashrc
@@ -34,7 +35,7 @@ ifeq ($(UNAME_S),Darwin)
 all: brew bash zsh git tmux screen vim ipython
 zsh: /bin/zsh
 ipython: /usr/local/bin/ipython
-tmux: /usr/local/bin/tmux
+tmux: $(POWERLINE) $(POWERLINE_FONTS) $(TMUX_CONF)
 else
 all: bash zsh git tmux screen vim ipython urxvt
 zsh: /usr/bin/zsh
@@ -47,7 +48,7 @@ brew: /usr/local/bin/brew
 
 bash: /bin/bash $(BASH_ALIASES) $(BASH_RC)
 
-zsh: $(OH_MY_ZSH) $(ZSH_SYNTAX_HIGH) $(ZSH_RC)
+zsh: $(OH_MY_ZSH) $(ZSH_SYNTAX_HIGH) $(ZSH_RC) $(ZSH_FUNCTIONS)
 
 git: /usr/bin/git $(GIT_CONF)
 
@@ -161,7 +162,7 @@ $(GIT_CONF):
 	git config --global user.email "cammann.tom@gmail.com"
 
 clean: clean_tmux clean_vim
-	rm -rf $(ZSH_RC) $(OH_MY_ZSH) $(BASH_RC) $(BASH_ALIASES) $(SCREEN_RC) $(GIT_CONF) $(IPYTHON_CONFIG) $(FZF_DIR)
+	rm -rf $(ZSH_RC) $(ZSH_FUNCTIONS) $(OH_MY_ZSH) $(BASH_RC) $(BASH_ALIASES) $(SCREEN_RC) $(GIT_CONF) $(IPYTHON_CONFIG) $(FZF_DIR)
 
 clean_tmux:
 	rm -rf $(FONT_DIR) $(FONT_CONF_DIR) $(TMUX_CONF) $(POWERLINE) $(POWERLINE_FONTS) $(POWERLINE_CONF_DIR)
@@ -180,6 +181,9 @@ $(ZSH_RC):
 	sed -i -e 's/^plugins=.*/plugins=(git mvn tmux screen history-substring-search zsh-syntax-highlighting)/' $(ZSH_RC)
 	sed -i -e 's/^ZSH_THEME=.*/ZSH_THEME=darkblood/' $(ZSH_RC)
 	cat >> $(ZSH_RC) < $(DOT_DIR)/zsh/extras.zsh
+
+$(ZSH_FUNCTIONS):
+	cp $(DOT_DIR)/zsh/zsh_functions $(ZSH_FUNCTIONS)
 
 $(ZSH_SYNTAX_HIGH):
 	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $(ZSH_SYNTAX_HIGH)

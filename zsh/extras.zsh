@@ -1,3 +1,12 @@
+# Put at start of .zshrc
+PROFILE_STARTUP=false
+if [[ "$PROFILE_STARTUP" == true ]]; then
+    zmodload zsh/zprof # Output load-time statistics
+    # http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html
+    PS4=$'%D{%M%S%.} %N:%i> '
+    exec 3>&2 2>"${XDG_CACHE_HOME:-$HOME/tmp}/zsh_statup.$$"
+    setopt xtrace prompt_subst
+fi
 
 # Add all highlighting to zsh syntax hightlights
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
@@ -44,3 +53,9 @@ if [[ $(uname -s) == Darwin ]]; then
 fi
 
 export PATH=$PATH:/usr/local/go/bin
+
+if [[ "$PROFILE_STARTUP" == true ]]; then
+    zprof
+    unsetopt xtrace
+    exec 2>&3 3>&-
+fi
