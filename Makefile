@@ -34,19 +34,42 @@ UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
 all: brew bash zsh git tmux screen vim ipython
 zsh: /bin/zsh
+/usr/local/bin/pip:
+	sudo easy_install pip
+/usr/bin/ipython: /usr/local/bin/pip
 ipython: /usr/local/bin/ipython
 tmux: $(POWERLINE) $(POWERLINE_FONTS) $(TMUX_CONF)
 else
-all: bash zsh git tmux screen vim ipython urxvt
+# Assumed ubuntu/debain
+all: bash zsh git tmux screen vim ipython
+vim: /usr/bin/vim
 zsh: /usr/bin/zsh
-ipython: /usr/bin/ipython
+ipython: /usr/bin/pip /usr/bin/ipython
 # install custom fonts under Linux
-tmux: $(POWERLINE) $(POWERLINE_FONTS) $(TMUX_CONF) fonts
+tmux: /usr/bin/tmux $(POWERLINE) $(TMUX_CONF)
 endif
 
 brew: /usr/local/bin/brew
 
 bash: /bin/bash $(BASH_ALIASES) $(BASH_RC)
+
+/usr/bin/cc:
+	sudo apt install -y build-essential
+
+# Build tools required to compile plugins
+/usr/bin/vim: /usr/bin/cc
+	sudo apt install -y vim
+
+/usr/bin/tmux:
+	sudo apt install -y tmux
+
+/usr/bin/zsh:
+	sudo apt install -y zsh
+
+/usr/bin/pip:
+	sudo apt install python-pip
+/usr/bin/ipython:
+	pip install --user ipython
 
 zsh: $(OH_MY_ZSH) $(ZSH_SYNTAX_HIGH) $(ZSH_RC) $(ZSH_FUNCTIONS)
 
@@ -67,10 +90,6 @@ fzf: /usr/bin/ruby $(FZF_DIR)
 
 urxvt: /usr/bin/urxvt $(XDEFAULTS)
 
-/usr/local/bin/pip:
-	sudo easy_install pip
-
-/usr/bin/ipython: /usr/local/bin/pip
 /usr/local/bin/ipython: /usr/local/bin/pip
 	pip install ipython
 
@@ -135,16 +154,20 @@ $(FONTS_DIR)/PowerlineSymbols.otf: $(FONTS_DIR)
 $(FONTS_DIR)/Inconsolata\ for\ Powerline.otf: $(FONTS_DIR)
 	cp $(POWERLINE_FONTS)/Inconsolata/Inconsolata\ for\ Powerline.otf $(FONTS_DIR)/Inconsolata\ for\ Powerline.otf
 
-$(TMUX_CONF): $(POWERLINE_CONF_DIR) ~/.config/powerline/themes/tmux/default.json
+$(TMUX_CONF): zsh $(POWERLINE_CONF_DIR) ~/.config/powerline/themes/tmux/default.json
 	cp $(DOT_DIR)/tmux/tmux.conf $(TMUX_CONF)
 	echo 'export PATH=$$PATH:$(POWERLINE)/scripts' >> $(BASH_RC)
 	echo 'export PATH=$$PATH:$(POWERLINE)/scripts' >> $(ZSH_RC)
 	echo "source-file '$(POWERLINE)/powerline/bindings/tmux/powerline.conf'" >> ~/.tmux.conf
+	tmux
+	$(POWERLINE)/scripts/powerline-config tmux setup
+	tmux kill-server
 
 ~/.config/powerline/themes/tmux/default.json:
 	cp $(DOT_DIR)/tmux/powerline.json ~/.config/powerline/themes/tmux/default.json
 
 $(POWERLINE_CONF_DIR):
+	mkdir ~/.config || true
 	cp -r ~/.powerline/powerline/config_files/ ~/.config/powerline
 
 $(SCREEN_RC):
@@ -178,7 +201,8 @@ $(OH_MY_ZSH):
 
 $(ZSH_RC):
 	cp $(OH_MY_ZSH)/templates/zshrc.zsh-template $(ZSH_RC)
-	sed -i -e 's/^plugins=.*/plugins=(git mvn tmux screen history-substring-search zsh-syntax-highlighting)/' $(ZSH_RC)
+	# plugins split across multiple lines
+	sed -i -e '/plugins=/{N;N;N;N;s/.*/plugins=(git mvn tmux screen history-substring-search zsh-syntax-highlighting)/}' $(ZSH_RC)
 	sed -i -e 's/^ZSH_THEME=.*/ZSH_THEME=darkblood/' $(ZSH_RC)
 	cat >> $(ZSH_RC) < $(DOT_DIR)/zsh/extras.zsh
 
