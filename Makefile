@@ -9,7 +9,6 @@ OH_MY_ZSH=~/.oh-my-zsh
 BASH_ALIASES=~/.bash_aliases
 BASH_RC=~/.bashrc
 GIT_CONF=~/.gitconfig
-POWERLINE=$(HOME)/.local/lib/python2.7/site-packages/powerline
 POWERLINE_FONTS=~/.powerline-fonts
 POWERLINE_CONF_DIR=~/.config/powerline
 SCREEN_RC=~/.screenrc
@@ -32,6 +31,8 @@ UNAME_S := $(shell uname -s)
 .PHONY=fonts clean_tmux clean_vim
 
 ifeq ($(UNAME_S),Darwin)
+POWERLINE=/Users/tom.cammann/Library/Python/2.7/lib/python/site-packages/powerline
+POWERLINE_BIN=/Users/tom.cammann/Library/Python/2.7/bin
 all: brew bash zsh git tmux screen vim ipython
 zsh: /bin/zsh
 pip: /usr/local/bin/pip
@@ -40,13 +41,15 @@ pip: /usr/local/bin/pip
 /usr/bin/ipython: /usr/local/bin/pip
 ipython: /usr/local/bin/ipython
 tmux: $(POWERLINE) $(POWERLINE_FONTS) $(TMUX_CONF)
+vim: /usr/local/bin/vim
 else
+POWERLINE=$(HOME)/.local/lib/python2.7/site-packages/powerline
 # Assumed ubuntu/debain
 all: bash zsh git tmux screen vim ipython
 vim: /usr/bin/vim
 zsh: /usr/bin/zsh
 pip: /usr/bin/pip
-ipython: /usr/bin/pip $(HOME)/.local/bin/ipython
+ipython: /usr/bin/pip $(POWERLINE_BIN)/ipython
 # install custom fonts under Linux
 tmux: /usr/bin/tmux $(POWERLINE) $(TMUX_CONF)
 endif
@@ -55,9 +58,10 @@ brew: /usr/local/bin/brew
 
 bash: /bin/bash $(BASH_ALIASES) $(BASH_RC)
 
-$(HOME)/.local/bin/powerline-config:
+$(POWERLINE_BIN)/powerline-config:
 	pip install --user powerline-status
 
+# FIXME
 $(HOME)/.local/bin/ipython:
 	pip install --user ipython
 
@@ -90,7 +94,7 @@ screen: /usr/bin/screen $(SCREEN_RC)
 	curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install > /tmp/brew_installer
 	/usr/bin/ruby /tmp/brew_installer
 
-vim: /usr/bin/vim ~/.vim/tmp ~/.vim/backup ~/.vim/undo $(VIM_RC) $(NEOBUNDLE)
+vim: ~/.vim/tmp ~/.vim/backup ~/.vim/undo $(VIM_RC) $(NEOBUNDLE)
 
 fzf: /usr/bin/ruby $(FZF_DIR)
 
@@ -131,7 +135,7 @@ $(VIM_RC):
 clean_vim:
 	rm -rf ~/.vim ~/.vimrc
 
-$(POWERLINE): /usr/bin/python pip $(HOME)/.local/bin/powerline-config
+$(POWERLINE): /usr/bin/python pip $(POWERLINE_BIN)/powerline-config
 
 $(POWERLINE_FONTS):
 	git clone $(GIT_PROTOCOL)://github.com/Lokaltog/powerline-fonts $(POWERLINE_FONTS)
@@ -158,8 +162,8 @@ $(FONTS_DIR)/Inconsolata\ for\ Powerline.otf: $(FONTS_DIR)
 
 $(TMUX_CONF): zsh
 	cp $(DOT_DIR)/tmux/tmux.conf $(TMUX_CONF)
-	echo 'export PATH=$$PATH:$(POWERLINE)/scripts' >> $(BASH_RC)
-	echo 'export PATH=$$PATH:$(POWERLINE)/scripts' >> $(ZSH_RC)
+	echo 'export PATH=$$PATH:$(POWERLINE_BIN)' >> $(BASH_RC)
+	echo 'export PATH=$$PATH:$(POWERLINE_BIN)' >> $(ZSH_RC)
 	echo "source-file '$(POWERLINE)/bindings/tmux/powerline.conf'" >> ~/.tmux.conf
 
 # ~/.config/powerline/themes/tmux/default.json:
