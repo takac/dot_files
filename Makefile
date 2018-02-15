@@ -30,9 +30,11 @@ UNAME_S := $(shell uname -s)
 
 .PHONY=fonts clean_tmux clean_vim
 
+#TODO Fix font install
+
 ifeq ($(UNAME_S),Darwin)
-POWERLINE=/Users/tom.cammann/Library/Python/2.7/lib/python/site-packages/powerline
-POWERLINE_BIN=/Users/tom.cammann/Library/Python/2.7/bin
+POWERLINE=$(HOME)/Library/Python/2.7/lib/python/site-packages/powerline
+PIP_BIN=$(HOME)/Library/Python/2.7/bin
 all: brew bash zsh git tmux screen vim ipython
 zsh: /bin/zsh
 pip: /usr/local/bin/pip
@@ -45,11 +47,12 @@ vim: /usr/local/bin/vim
 else
 POWERLINE=$(HOME)/.local/lib/python2.7/site-packages/powerline
 # Assumed ubuntu/debain
+PIP_BIN=$(HOME)/.local/bin
 all: bash zsh git tmux screen vim ipython
 vim: /usr/bin/vim
 zsh: /usr/bin/zsh
 pip: /usr/bin/pip
-ipython: /usr/bin/pip $(POWERLINE_BIN)/ipython
+ipython: /usr/bin/pip $(PIP_BIN)/ipython
 # install custom fonts under Linux
 tmux: /usr/bin/tmux $(POWERLINE) $(TMUX_CONF)
 endif
@@ -58,11 +61,10 @@ brew: /usr/local/bin/brew
 
 bash: /bin/bash $(BASH_ALIASES) $(BASH_RC)
 
-$(POWERLINE_BIN)/powerline-config:
+$(PIP_BIN)/powerline-config:
 	pip install --user powerline-status
 
-# FIXME
-$(HOME)/.local/bin/ipython:
+$(PIP_BIN)/ipython:
 	pip install --user ipython
 
 /usr/bin/cc:
@@ -135,7 +137,7 @@ $(VIM_RC):
 clean_vim:
 	rm -rf ~/.vim ~/.vimrc
 
-$(POWERLINE): /usr/bin/python pip $(POWERLINE_BIN)/powerline-config
+$(POWERLINE): /usr/bin/python pip $(PIP_BIN)/powerline-config
 
 $(POWERLINE_FONTS):
 	git clone $(GIT_PROTOCOL)://github.com/Lokaltog/powerline-fonts $(POWERLINE_FONTS)
@@ -162,8 +164,8 @@ $(FONTS_DIR)/Inconsolata\ for\ Powerline.otf: $(FONTS_DIR)
 
 $(TMUX_CONF): zsh
 	cp $(DOT_DIR)/tmux/tmux.conf $(TMUX_CONF)
-	echo 'export PATH=$$PATH:$(POWERLINE_BIN)' >> $(BASH_RC)
-	echo 'export PATH=$$PATH:$(POWERLINE_BIN)' >> $(ZSH_RC)
+	#FIXME do this another way, i.e. file to source?
+	echo 'export PATH=$$PATH:$(PIP_BIN)' >> $(BASH_RC)
 	echo "source-file '$(POWERLINE)/bindings/tmux/powerline.conf'" >> ~/.tmux.conf
 
 # ~/.config/powerline/themes/tmux/default.json:

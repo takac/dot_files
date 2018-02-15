@@ -29,9 +29,6 @@ zstyle ':completion:*'  matcher-list 'm:{a-z}={A-Z}'
 
 source_if_exists ~/.bash_aliases
 source_if_exists ~/.dots/till.sh
-source_if_exists ~/.z-dir/z.sh
-# source_if_exists ~/.fzf.zsh
-source_if_exists ~/.dots/ff.bash
 source_if_exists ~/.dots/fancy-ctrl-z.zsh
 source_if_exists ~/.zsh_functions
 source_if_exists ~/proxyconf.sh
@@ -54,10 +51,12 @@ export GPG_TTY=$(tty)
 
 if [[ $(uname -s) == Darwin ]]; then
     export PATH="$(brew --prefix coreutils)/libexec/gnubin:/usr/local/bin:$PATH"
+    export PATH=$PATH:$HOME/Library/Python/2.7/bin
+else
+    export PATH=$PATH:$HOME/.local/bin
 fi
 
 export PATH=$PATH:$HOME/Downloads/google-cloud-sdk/bin/
-export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:/usr/local/go/bin
 
 if [[ "$PROFILE_STARTUP" == true ]]; then
