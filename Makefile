@@ -81,7 +81,7 @@ $(PIP_BIN)/ipython:
 	sudo apt install -y zsh
 
 /usr/bin/pip:
-	sudo apt install python-pip
+	sudo apt install -y python-pip
 
 zsh: $(OH_MY_ZSH) $(ZSH_SYNTAX_HIGH) $(ZSH_RC) $(ZSH_FUNCTIONS)
 
