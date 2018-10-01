@@ -209,24 +209,28 @@ omap x :normal vs<CR>
 
 cnoremap <C-LEFT> <S-LEFT>
 
+" Always use line number when jumping to files
+nnoremap <silent> gf gF
+
 " Repeat last command in previous pane
 nnoremap <silent> <leader>r :call system("tmux send-keys -t ':.{last}' C-p C-m")<CR>
 
 " Repeat last command in previous pane
 nnoremap <silent> <leader>w :call system("tmux send-keys -t ':{last}' C-p C-m && tmux last-window")<CR>
 
+" Stop stupid key presses from breaking flow
 nnoremap Q <nop>
 nnoremap K <nop>
-nnoremap <leader>c :set cc=79<CR>
-nnoremap <leader>n :set nu!<CR>
+
+" TODO toggle colorcolumn
+nnoremap <leader>c :set colorcolumn=79<CR>
+nnoremap <leader>n :set number!<CR>
+
 nnoremap <leader>e :e ~/.vimrc<CR>
 nnoremap <leader>l :set list!<CR>
-nnoremap <leader>tn :tabnew<CR>
-nnoremap <silent> <F3> :NERDTreeToggle<CR>
-nnoremap <silent> <F4> :set hlsearch!<CR>
+
 nnoremap <silent> <leader><CR> :set hlsearch!<CR>
-nnoremap <silent> <F7> :set spell!<CR>
-nnoremap <silent> <F8> :TagbarToggle<CR>
+" nnoremap <silent> <F7> :set spell!<CR>
 
 " Cycle buffers quickly
 nnoremap <silent> <C-k> :bnext<CR>
@@ -299,9 +303,12 @@ autocmd FileType rst set spelllang=en
 autocmd FileType rst set tw=79
 autocmd FileType md set spell
 autocmd FileType md set spelllang=en
+autocmd FileType md set tw=79
 autocmd FileType markdown set spell
 autocmd FileType markdown set spelllang=en
+autocmd FileType markdown set tw=79
 autocmd FileType gitcommit set spell
+autocmd FileType gitcommit set spelllang=en
 
 " Restore cursor on load file
 augroup resCur
@@ -330,7 +337,7 @@ nnoremap gb :call FuzzyFileFind()<CR>
 function! FuzzyFileFind()
     " let line = line(".")
     " let col = co
-    let pos = getpos('.')
+    " let pos = getpos('.')
     " echo 'line: ' . pos[1] . ', col: ' . pos[2]
     let name = expand("<cWORD>")
     let f = system('find . -iname "*' . name  . '*"
