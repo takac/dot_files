@@ -1,0 +1,19 @@
+[diff]
+	tool = meld
+[difftool]
+	prompt = false
+[color]
+	ui = true
+[core]
+	editor = vim
+[user]
+	name = Tom Cammann
+	email = cammann.tom@gmail.com
+[gpg]
+	program = gpg
+[commit]
+	gpgsign = true
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
+[alias]
+    hub = "!f(){ open `git remote -v | awk '/fetch/{print $2}' | sed -Ee 's#(git@|git://)#https://#' -e 's@com:@com/@'`| head -n1; }; f"

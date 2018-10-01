@@ -179,15 +179,7 @@ $(SCREEN_RC):
 	cp $(DOT_DIR)/screen/screenrc $(SCREEN_RC)
 
 $(GIT_CONF):
-# Configure git to use meld diff
-	git config --global diff.tool meld
-	git config --global difftool.prompt false
-# Configure git to use color
-	git config --global color.ui true
-# Configure git to use vim!
-	git config --global core.editor "vim"
-	git config --global user.name "Tom Cammann"
-	git config --global user.email "cammann.tom@gmail.com"
+	cp $(DOT_DIR)/git/gitconfig $(GIT_CONF)
 
 clean: clean_tmux clean_vim
 	rm -rf $(ZSH_RC) $(ZSH_FUNCTIONS) $(OH_MY_ZSH) $(BASH_RC) $(BASH_ALIASES) $(SCREEN_RC) $(GIT_CONF) $(IPYTHON_CONFIG) $(FZF_DIR)
