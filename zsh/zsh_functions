@@ -24,7 +24,7 @@ vim()
     # If 0 args, open last position, can be annoying
     # if [[ ${#} == 0 ]]; then
     #     command vim -c "normal '0"
-    
+
     # if first arg has colon, treat as file and line no
     if [[ ${1} =~ ":" ]]; then
         command vim +${1##*:} ${1%%:*}

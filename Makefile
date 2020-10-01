@@ -34,16 +34,18 @@ UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S),Darwin)
 SED=/usr/local/opt/gnu-sed/libexec/gnubin/sed
-POWERLINE=$(HOME)/Library/Python/2.7/lib/python/site-packages/powerline
-PIP_BIN=$(HOME)/Library/Python/2.7/bin
+POWERLINE=$(HOME)/Library/Python/3.8/lib/python/site-packages/powerline
+PIP_BIN=$(HOME)/Library/Python/3.8/bin
 TMUX=/usr/local/bin/tmux
-all: brew bash zsh git tmux screen vim ipython $(SED)
+PYTHON3=/usr/local/bin/python3
+all: brew bash zsh git tmux screen vim $(SED) find ag
 zsh: /bin/zsh
-pip: /usr/local/bin/pip
-# TODO is this right?
-/usr/local/bin/pip:
-	sudo easy_install pip
-# FIXME doesn't work
+find: /usr/local/bin/gfind
+/usr/local/bin/gfind:
+	brew install findutils
+ag: /usr/local/bin/ag
+/usr/local/bin/ag:
+	brew install the_silver_searcher
 # /usr/bin/ipython: /usr/local/bin/pip
 # ipython: /usr/local/bin/ipython
 tmux: $(TMUX) $(POWERLINE) $(POWERLINE_FONTS) $(TMUX_CONF)
@@ -70,10 +72,10 @@ brew: /usr/local/bin/brew
 bash: /bin/bash $(BASH_ALIASES) $(BASH_RC)
 
 $(PIP_BIN)/powerline-config:
-	pip install --user powerline-status
+	$(PYTHON3) -m pip install --user powerline-status
 
 $(PIP_BIN)/ipython:
-	pip install --user ipython
+	$(PYTHON3) -m pip install --user ipython
 
 /usr/bin/cc:
 	sudo apt install -y build-essential
@@ -145,7 +147,7 @@ $(VIM_RC):
 clean_vim:
 	rm -rf ~/.vim ~/.vimrc
 
-$(POWERLINE): /usr/bin/python pip $(PIP_BIN)/powerline-config
+$(POWERLINE): $(PYTHON3) $(PIP_BIN)/powerline-config
 
 $(POWERLINE_FONTS):
 	git clone $(GIT_PROTOCOL)://github.com/powerline/fonts $(POWERLINE_FONTS)
@@ -204,7 +206,7 @@ $(BASH_ALIASES):
 $(OH_MY_ZSH):
 	git clone $(GIT_PROTOCOL)://github.com/robbyrussell/oh-my-zsh $(OH_MY_ZSH)
 
-$(ZSH_RC):
+$(ZSH_RC): $(SED)
 	cp $(OH_MY_ZSH)/templates/zshrc.zsh-template $(ZSH_RC)
 	# plugins split across multiple lines
 	$(SED) -i -e 's/^ZSH_THEME=.*/ZSH_THEME=darkblood/' $(ZSH_RC)
@@ -233,3 +235,7 @@ $(I3_STATUS_CONFIG):
 
 $(SED):
 	brew install gnu-sed
+
+$(PYTHON3):
+	brew install python
+

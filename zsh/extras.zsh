@@ -53,13 +53,15 @@ export GPG_TTY=$(tty)
 
 if [[ $(uname -s) == Darwin ]]; then
     export PATH="$(brew --prefix coreutils)/libexec/gnubin:/usr/local/bin:$PATH"
-    export PATH=$PATH:$HOME/Library/Python/2.7/bin
+    export PATH=$PATH:$HOME/Library/Python/3.8/bin
 else
     export PATH=$PATH:$HOME/.local/bin
 fi
 
 export PATH=$PATH:$HOME/Downloads/google-cloud-sdk/bin/
 export PATH=$PATH:/usr/local/go/bin
+export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
+export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
 
 if [[ "$PROFILE_STARTUP" == true ]]; then
     zprof
