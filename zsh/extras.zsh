@@ -1,3 +1,5 @@
+source $ZSH/oh-my-zsh.sh
+
 # Put at start of .zshrc
 PROFILE_STARTUP=false
 if [[ "$PROFILE_STARTUP" == true ]]; then

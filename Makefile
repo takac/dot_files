@@ -1,7 +1,7 @@
 # Should be dir we are running make from
 DOT_DIR=~/.dots
 
-GIT_PROTOCOL=https
+GIT_PROTOCOL=git
 
 ZSH_RC=~/.zshrc
 ZSH_FUNCTIONS=~/.zsh_functions
@@ -33,28 +33,36 @@ UNAME_S := $(shell uname -s)
 #TODO Fix font install
 
 ifeq ($(UNAME_S),Darwin)
+SED=/usr/local/opt/gnu-sed/libexec/gnubin/sed
 POWERLINE=$(HOME)/Library/Python/2.7/lib/python/site-packages/powerline
 PIP_BIN=$(HOME)/Library/Python/2.7/bin
-all: brew bash zsh git tmux screen vim ipython
+TMUX=/usr/local/bin/tmux
+all: brew bash zsh git tmux screen vim ipython $(SED)
 zsh: /bin/zsh
 pip: /usr/local/bin/pip
+# TODO is this right?
 /usr/local/bin/pip:
 	sudo easy_install pip
-/usr/bin/ipython: /usr/local/bin/pip
-ipython: /usr/local/bin/ipython
-tmux: $(POWERLINE) $(POWERLINE_FONTS) $(TMUX_CONF)
-vim: /usr/local/bin/vim
+# FIXME doesn't work
+# /usr/bin/ipython: /usr/local/bin/pip
+# ipython: /usr/local/bin/ipython
+tmux: $(TMUX) $(POWERLINE) $(POWERLINE_FONTS) $(TMUX_CONF)
+vim: /usr/bin/vim
+
 else
-POWERLINE=$(HOME)/.local/lib/python2.7/site-packages/powerline
 # Assumed ubuntu/debain
+SED=/usr/bin/sed
+POWERLINE=$(HOME)/.local/lib/python2.7/site-packages/powerline
 PIP_BIN=$(HOME)/.local/bin
+TMUX=/usr/bin/tmux
+
 all: bash zsh git tmux screen vim ipython
 vim: /usr/bin/vim
 zsh: /usr/bin/zsh
 pip: /usr/bin/pip
 ipython: /usr/bin/pip $(PIP_BIN)/ipython
 # install custom fonts under Linux
-tmux: /usr/bin/tmux $(POWERLINE) $(TMUX_CONF)
+tmux: $(TMUX) $(POWERLINE) $(TMUX_CONF)
 endif
 
 brew: /usr/local/bin/brew
@@ -114,7 +122,7 @@ $(IPYTHON_CONFIG_DIR):
 
 $(FZF_DIR):
 	git clone $(GIT_PROTOCOL)://github.com/junegunn/fzf $(FZF_DIR)
-	sed -i '/^read /d' $(FZF_DIR)/install
+	$(SED) -i '/^read /d' $(FZF_DIR)/install
 	$(FZF_DIR)/install
 
 $(NEOBUNDLE):
@@ -140,7 +148,7 @@ clean_vim:
 $(POWERLINE): /usr/bin/python pip $(PIP_BIN)/powerline-config
 
 $(POWERLINE_FONTS):
-	git clone $(GIT_PROTOCOL)://github.com/Lokaltog/powerline-fonts $(POWERLINE_FONTS)
+	git clone $(GIT_PROTOCOL)://github.com/powerline/fonts $(POWERLINE_FONTS)
 
 $(FONTS_DIR):
 	mkdir -p $(FONTS_DIR)
@@ -199,8 +207,8 @@ $(OH_MY_ZSH):
 $(ZSH_RC):
 	cp $(OH_MY_ZSH)/templates/zshrc.zsh-template $(ZSH_RC)
 	# plugins split across multiple lines
-	sed -i -e '/plugins=/{N;N;N;N;s/.*/plugins=(git mvn tmux screen history-substring-search zsh-syntax-highlighting)/}' $(ZSH_RC)
-	sed -i -e 's/^ZSH_THEME=.*/ZSH_THEME=darkblood/' $(ZSH_RC)
+	$(SED) -i -e 's/^ZSH_THEME=.*/ZSH_THEME=darkblood/' $(ZSH_RC)
+	$(SED) -i -e '/plugins=/{N;N;N;N;s/.*/plugins=(git history-substring-search zsh-syntax-highlighting)/}' $(ZSH_RC)
 	cat >> $(ZSH_RC) < $(DOT_DIR)/zsh/extras.zsh
 
 $(ZSH_FUNCTIONS):
@@ -222,3 +230,6 @@ $(I3_CONFIG):
 
 $(I3_STATUS_CONFIG):
 	cp $(DOT_DIR)/i3/i3status.conf $(I3_STATUS_CONFIG)
+
+$(SED):
+	brew install gnu-sed
