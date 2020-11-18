@@ -7,19 +7,88 @@ if has('vim_starting') && has('reltime')
     \ | echomsg 'startuptime: ' . reltimestr(s:startuptime)
 endif
 
-if has('vim_starting')
-   set runtimepath+=~/.vim/bundle/neobundle.vim/
-endif
+" if has('vim_starting')
+"    set runtimepath+=~/.vim/bundle/neobundle.vim/
+" endif
 
-call neobundle#begin(expand('~/.vim/bundle/'))
+" call neobundle#begin(expand('~/.vim/bundle/'))
 
 set ttyfast
 
 " =========================================================================== "
 "                                   Plugins                                   "
 " =========================================================================== "
+set runtimepath+=~/.cache/dein/repos/github.com/Shougo/dein.vim
 
-NeoBundleFetch 'Shougo/neobundle.vim'
+if dein#load_state('~/.cache/dein')
+ call dein#begin('~/.cache/dein')
+
+ call dein#add('~/.cache/dein')
+ " call dein#add('Shougo/deoplete.nvim')
+
+call dein#add('chriskempson/base16-vim')              " base-16 color scheme
+call dein#add('vim-scripts/peaksea')                              " peaksea, good for console
+call dein#add('altercation/vim-colors-solarized.git') " solarized color scheme
+call dein#add('kien/rainbow_parentheses.vim')         " make my brackets pretty colors
+call dein#add('Yggdroot/indentLine')
+call dein#add('whatyouhide/vim-gotham')
+call dein#add('morhetz/gruvbox')
+
+" call dein#add('python-mode/python-mode')
+call dein#add('mhinz/vim-startify')
+" NeoBundle 'dahu/vim-fanfingtastic'
+call dein#add('vim-airline/vim-airline-themes')
+call dein#add('vim-airline/vim-airline')                    " better status line
+call dein#add('conradirwin/vim-bracketed-paste')      " Sane pasting in insert mode
+call dein#add('godlygeek/tabular')                    " formatter
+call dein#add('guns/vim-clojure-static')              " add clojure syntax highlight
+call dein#add('Lokaltog/vim-easymotion')              " movement plugin
+call dein#add('kien/ctrlp.vim')                       " fuzzy file finder
+call dein#add('mhinz/vim-signify')                    " gutter showing git changes
+" call dein#add('nvie/vim-flake8')                      " PEP8 Checks
+call dein#add('rking/ag.vim')                         " search with ag in vim
+call dein#add('w0rp/ale')                             " linting/compile checking
+" call dein#add('sjl/gundo.vim')                        " visual undo tree
+call dein#add('eagletmt/ghcmod-vim')                    " haskell
+call dein#add('eagletmt/neco-ghc')                    " haskell
+call dein#add('chrisbra/sudoedit.vim')                " do sudo write and read in vim
+call dein#add('Shougo/neocomplete.vim')
+" call dein#add('SirVer/ultisnips')
+
+" Snippets are separated from the engine. Add this if you want them:
+call dein#add('honza/vim-snippets')
+" call dein#add('takac/ultisnips')                      " tab completions and snippets
+call dein#add('takac/vim-commandcaps')                " correct mistyped commands like :Wq
+call dein#add('takac/vim-fontmanager')                " manage fonts easily
+call dein#add('takac/vim-hardtime')                   " deter using repeative keys
+call dein#add('thinca/vim-quickrun')                  " Quickly run scripts in vim
+call dein#add('tpope/vim-commentary')                 " Add operator for adding comments
+call dein#add('tpope/vim-fugitive')                   " Git integration
+call dein#add('tpope/vim-repeat')                     " Repeat more commands
+call dein#add('tpope/vim-rsi')                        " Readline mappings for insert and command mode
+call dein#add('tpope/vim-surround')                   " mappings for wrapping objects
+call dein#add('vim-scripts/scratch.vim')              " Easy tmp buffer
+" NeoBundle 'wellle/targets.vim'                   " jump to more objects
+call dein#add('fatih/vim-go')                         " golang for vim
+call dein#add('Shougo/vimproc.vim', {'build' : 'make'})
+call dein#add('shougo/vimshell.vim')
+call dein#add('leafgarland/typescript-vim')
+" call dein#add('davidhalter/jedi-vim')
+
+" call dein#add('metakirby5/codi.vim')               " Python scratch pad
+" NeoBundle 'plytophogy/vim-virtualenv'
+" call dein#add('zchee/deoplete-jedi')
+ " if !has('nvim')
+   " call dein#add('roxma/nvim-yarp')
+   " call dein#add('roxma/vim-hug-neovim-rpc')
+ " endif
+
+ call dein#end()
+ call dein#save_state()
+endif
+
+
+" NeoBundleFetch 'Shougo/neobundle.vim'
 
 " Maybe useful
 " NeoBundle 'mattn/zencoding-vim'
@@ -28,55 +97,14 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 " NeoBundle 'majutsushi/tagbar'                  " outline objects etc
 
 " Pretty Colors
-NeoBundle 'chriskempson/base16-vim'              " base-16 color scheme
-NeoBundle 'peaksea'                              " peaksea, good for console
-NeoBundle 'altercation/vim-colors-solarized.git' " solarized color scheme
-NeoBundle 'kien/rainbow_parentheses.vim'         " make my brackets pretty colors
-NeoBundle 'Yggdroot/indentLine'
-NeoBundle 'whatyouhide/vim-gotham'
-NeoBundle 'morhetz/gruvbox'
 
-NeoBundle 'mhinz/vim-startify'
-" NeoBundle 'dahu/vim-fanfingtastic'
-NeoBundle 'vim-airline/vim-airline-themes'
-NeoBundle 'vim-airline/vim-airline'                    " better status line
-NeoBundle 'conradirwin/vim-bracketed-paste'      " Sane pasting in insert mode
-NeoBundle 'godlygeek/tabular'                    " formatter
-NeoBundle 'guns/vim-clojure-static'              " add clojure syntax highlight
-NeoBundle 'Lokaltog/vim-easymotion'              " movement plugin
-NeoBundle 'kien/ctrlp.vim'                       " fuzzy file finder
-NeoBundle 'mhinz/vim-signify'                    " gutter showing git changes
-NeoBundle 'nvie/vim-flake8'                      " PEP8 Checks
-NeoBundle 'rking/ag.vim'                         " search with ag in vim
-" NeoBundle 'scrooloose/syntastic'                 " syntax checker
-NeoBundle 'sjl/gundo.vim'                        " visual undo tree
-NeoBundle 'chrisbra/sudoedit.vim'                " do sudo write and read in vim
-" NeoBundle 'takac/ultisnips'                      " tab completions and snippets
-NeoBundle 'takac/vim-commandcaps'                " correct mistyped commands like :Wq
-NeoBundle 'takac/vim-fontmanager'                " manage fonts easily
-NeoBundle 'takac/vim-hardtime'                   " deter using repeative keys
-NeoBundle 'thinca/vim-quickrun'                  " Quickly run scripts in vim
-NeoBundle 'tpope/vim-commentary'                 " Add operator for adding comments
-NeoBundle 'tpope/vim-fugitive'                   " Git integration
-NeoBundle 'tpope/vim-repeat'                     " Repeat more commands
-NeoBundle 'tpope/vim-rsi'                        " Readline mappings for insert and command mode
-NeoBundle 'tpope/vim-surround'                   " mappings for wrapping objects
-NeoBundle 'vim-scripts/scratch.vim'              " Easy tmp buffer
-NeoBundle 'wellle/targets.vim'                   " jump to more objects
-NeoBundle 'fatih/vim-go'
-NeoBundle 'Shougo/vimproc.vim', {
-\ 'build' : {
-\     'windows' : 'tools\\update-dll-mingw',
-\     'cygwin' : 'make -f make_cygwin.mak',
-\     'mac' : 'make',
-\     'linux' : 'make',
-\     'unix' : 'gmake',
-\    },
-\ }
-NeoBundle 'shougo/vimshell.vim'
+" call neobundle#end()
 
-call neobundle#end()
+" let g:deoplete#enable_at_startup = 1
+" let g:python3_host_prog = '/Users/tom.cammann/git/gke-release-notify/.venv/bin/python'
 
+
+" let g:loaded_python_provider = 1
 " =========================================================================== "
 "                                 System Setup                                "
 " =========================================================================== "
@@ -85,7 +113,10 @@ call neobundle#end()
 filetype plugin on
 filetype indent on
 syntax on
+" I don't know what this does...
 set omnifunc=syntaxcomplete#Complete
+
+set dictionary+=/usr/share/dict/words
 
 "Set colours and fonts
 if has("gui_running")
@@ -120,9 +151,40 @@ endif
 highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+\%#\@<!$/
 
+" set pythonhome=$VIRTUAL_ENV
+" set pythondll=$VIRTUAL_ENV/lib/libpython2.7.dylib
+" set pythonthreehome=$HOME/.pyenv/versions/3.6.0
+" set pythonthreedll=$HOME/.pyenv/versions/3.6.0/lib/libpython3.6m.dylib
+
+
 " =========================================================================== "
 "                                 Plugin Config                               "
 " =========================================================================== "
+let g:jedi#popup_on_dot = 0
+
+
+let g:pymode = 1
+let g:pymode_python = 'python3'
+let g:pymode_doc = 1
+let g:pymode_doc_bind = 'K'
+let g:pymode_indent = 1
+let g:pymode_motion = 1
+let g:pymode_lint = 1
+let g:pymode_lint_on_fly = 1
+" let g:pymode_lint_ignore = ["E501", "W",]
+let g:pymode_lint_ignore = []
+let g:pymode_lint_cwindow = 0
+let g:pymode_syntax_print_as_function = 1
+let g:pymode_lint_message = 1
+let g:pymode_rope_completion = 1
+let g:pymode_rope_complete_on_dot = 1
+
+" fix on save
+" let g:ale_fix_on_save = 1
+let g:ale_fixers = {'javascript': ['prettier', 'eslint'], 'python': ['autopep8', 'remove_trailing_lines', 'trim_whitespace'], 'typescript': ['prettier', 'eslint']}
+let g:ale_linters = {'typescript': ['eslint', 'typecheck']}
+
+let g:virtualenv_auto_activate = 1
 
 let g:fanfingtastic_ignorecase = 1
 
@@ -173,7 +235,7 @@ let g:ctrlp_extensions=['line']
 let g:ctrlp_clear_cache_on_exit = 1
 let g:ctrlp_custom_ignore = {
 \ 'file': '\v\.(exe|so|dll|class)$',
-\ 'dir':  '\v<(\.git|\.hg|\.svn|\.vim|\.config)[\/]'
+\ 'dir':  '\v<(\.git|\.hg|\.svn|\.vim|\.config|node_modules|virtual-env)[\/]'
 \ }
 
 " Ultisnips
@@ -295,7 +357,7 @@ autocmd! bufwritepost .vimrc source ~/.vimrc
 
 " Hide imports for java files
 autocmd! BufEnter *.java :setlocal foldexpr=HideImportFold(v:lnum) foldmethod=expr foldlevel=0
-autocmd! BufEnter *.py :setlocal foldexpr=HideCopyRight(v:lnum) foldmethod=expr foldlevel=0
+" autocmd! BufEnter *.py :setlocal foldexpr=HideCopyRight(v:lnum) foldmethod=expr foldlevel=0
 
 " check my english
 autocmd FileType rst set spell

@@ -1,13 +1,3 @@
-# Put at start of .zshrc
-PROFILE_STARTUP=false
-if [[ "$PROFILE_STARTUP" == true ]]; then
-    zmodload zsh/zprof # Output load-time statistics
-    # http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html
-    PS4=$'%D{%M%S%.} %N:%i> '
-    exec 3>&2 2>"${XDG_CACHE_HOME:-$HOME/tmp}/zsh_statup.$$"
-    setopt xtrace prompt_subst
-fi
-
 # Add all highlighting to zsh syntax hightlights
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
 # Smart case completion
@@ -29,9 +19,8 @@ zstyle ':completion:*'  matcher-list 'm:{a-z}={A-Z}'
 
 source_if_exists ~/.bash_aliases
 source_if_exists ~/.dots/till.sh
-source_if_exists ~/.dots/fancy-ctrl-z.zsh
+# source_if_exists ~/.dots/fancy-ctrl-z.zsh
 source_if_exists ~/.zsh_functions
-source_if_exists ~/proxyconf.sh
 source_if_exists ~/Downloads/google-cloud-sdk/path.zsh.inc
 source_if_exists ~/Downloads/google-cloud-sdk/completion.zsh.inc
 
@@ -58,9 +47,25 @@ fi
 
 export PATH=$PATH:$HOME/Downloads/google-cloud-sdk/bin/
 export PATH=$PATH:/usr/local/go/bin
+export PATH="/usr/local/opt/libpq/bin:$PATH"
 
 if [[ "$PROFILE_STARTUP" == true ]]; then
     zprof
     unsetopt xtrace
     exec 2>&3 3>&-
 fi
+export HISTSIZE=10000000
+export SAVEHIST=10000000
+setopt BANG_HIST                 # Treat the '!' character specially during expansion.
+setopt EXTENDED_HISTORY          # Write the history file in the ":start:elapsed;command" format.
+setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits.
+setopt SHARE_HISTORY             # Share history between all sessions.
+setopt HIST_EXPIRE_DUPS_FIRST    # Expire duplicate entries first when trimming history.
+setopt HIST_IGNORE_DUPS          # Don't record an entry that was just recorded again.
+setopt HIST_IGNORE_ALL_DUPS      # Delete old recorded entry if new entry is a duplicate.
+setopt HIST_FIND_NO_DUPS         # Do not display a line previously found.
+setopt HIST_IGNORE_SPACE         # Don't record an entry starting with a space.
+setopt HIST_SAVE_NO_DUPS         # Don't write duplicate entries in the history file.
+setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording entry.
+setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
+setopt HIST_BEEP                 # Beep when accessing nonexistent history.
