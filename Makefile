@@ -162,8 +162,11 @@ $(TMUX_CONF): zsh $(TPM)
 	cp $(DOT_DIR)/tmux/tmux.conf $(TMUX_CONF)
 	~/.tmux/plugins/tpm/bin/install_plugins
 
-$(TPM):
+$(TPM): ~/.tmux/plugins
 	git clone https://github.com/tmux-plugins/tpm $(TPM)
+
+~/.tmux/plugins:
+	mkdir -p ~/.tmux/plugins
 
 $(SCREEN_RC):
 	cp $(DOT_DIR)/screen/screenrc $(SCREEN_RC)
