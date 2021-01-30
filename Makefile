@@ -18,7 +18,6 @@ FONTS_DIR=~/.fonts
 FONT_CONF_DIR=~/.config/fontconfig/conf.d
 NEOBUNDLE=~/.vim/bundle/neobundle.vim
 VIM_RC=~/.vimrc
-FZF_DIR=~/.fzf
 IPYTHON_CONFIG_DIR=~/.ipython/profile_default
 IPYTHON_CONFIG=$(IPYTHON_CONFIG_DIR)/ipython_config.py
 ZSH_SYNTAX_HIGH=$(OH_MY_ZSH)/custom/plugins/zsh-syntax-highlighting
@@ -63,6 +62,7 @@ vim: /usr/bin/vim
 zsh: /usr/bin/zsh
 pip: /usr/bin/pip
 ipython: /usr/bin/pip $(PIP_BIN)/ipython
+PYTHON3=/usr/bin/python3
 # install custom fonts under Linux
 endif
 
@@ -108,8 +108,6 @@ screen: /usr/bin/screen $(SCREEN_RC)
 
 vim: ~/.vim/tmp ~/.vim/backup ~/.vim/undo $(VIM_RC) $(NEOBUNDLE)
 
-fzf: /usr/bin/ruby $(FZF_DIR)
-
 urxvt: /usr/bin/urxvt $(XDEFAULTS)
 
 ipython: $(IPYTHON_CONFIG)
@@ -121,11 +119,6 @@ $(IPYTHON_CONFIG): $(IPYTHON_CONFIG_DIR)
 
 $(IPYTHON_CONFIG_DIR):
 	mkdir -p $(IPYTHON_CONFIG_DIR)
-
-$(FZF_DIR):
-	git clone $(GIT_PROTOCOL)://github.com/junegunn/fzf $(FZF_DIR)
-	$(SED) -i '/^read /d' $(FZF_DIR)/install
-	$(FZF_DIR)/install
 
 $(NEOBUNDLE):
 	git clone $(GIT_PROTOCOL)://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle.vim
@@ -175,7 +168,7 @@ $(GIT_CONF):
 	cp $(DOT_DIR)/git/gitconfig $(GIT_CONF)
 
 clean: clean_tmux clean_vim
-	rm -rf $(ZSH_RC) $(ZSH_FUNCTIONS) $(OH_MY_ZSH) $(BASH_RC) $(BASH_ALIASES) $(SCREEN_RC) $(GIT_CONF) $(IPYTHON_CONFIG) $(FZF_DIR)
+	rm -rf $(ZSH_RC) $(ZSH_FUNCTIONS) $(OH_MY_ZSH) $(BASH_RC) $(BASH_ALIASES) $(SCREEN_RC) $(GIT_CONF) $(IPYTHON_CONFIG)
 
 clean_tmux:
 	rm -rf $(FONT_DIR) $(FONT_CONF_DIR) $(TMUX_CONF)
