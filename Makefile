@@ -3,6 +3,7 @@ DOT_DIR=~/.dots
 
 GIT_PROTOCOL=git
 
+TPM=~/.tmux/plugins/tpm
 EMACS_RC=~/.emacs.d/init.el
 EMACS_DIR=~/.emacs.d
 ZSH_RC=~/.zshrc
@@ -11,8 +12,6 @@ OH_MY_ZSH=~/.oh-my-zsh
 BASH_ALIASES=~/.bash_aliases
 BASH_RC=~/.bashrc
 GIT_CONF=~/.gitconfig
-POWERLINE_FONTS=~/.powerline-fonts
-POWERLINE_CONF_DIR=~/.config/powerline
 SCREEN_RC=~/.screenrc
 TMUX_CONF=~/.tmux.conf
 FONTS_DIR=~/.fonts
@@ -36,7 +35,6 @@ UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S),Darwin)
 SED=/usr/local/opt/gnu-sed/libexec/gnubin/sed
-POWERLINE=$(HOME)/Library/Python/3.8/lib/python/site-packages/powerline
 PIP_BIN=$(HOME)/Library/Python/3.8/bin
 TMUX=/usr/local/bin/tmux
 PYTHON3=/usr/local/bin/python3
@@ -52,13 +50,11 @@ coreutils:
 	brew install coreutils
 # /usr/bin/ipython: /usr/local/bin/pip
 # ipython: /usr/local/bin/ipython
-tmux: $(TMUX) $(POWERLINE) $(POWERLINE_FONTS) $(TMUX_CONF)
 vim: /usr/bin/vim
 
 else
 # Assumed ubuntu/debain
 SED=/usr/bin/sed
-POWERLINE=$(HOME)/.local/lib/python2.7/site-packages/powerline
 PIP_BIN=$(HOME)/.local/bin
 TMUX=/usr/bin/tmux
 
@@ -68,17 +64,15 @@ zsh: /usr/bin/zsh
 pip: /usr/bin/pip
 ipython: /usr/bin/pip $(PIP_BIN)/ipython
 # install custom fonts under Linux
-tmux: $(TMUX) $(POWERLINE) $(TMUX_CONF)
 endif
+
+tmux: $(TMUX) $(TMUX_CONF)
 
 emacs: $(EMACS_RC)
 
 brew: /usr/local/bin/brew
 
 bash: /bin/bash $(BASH_ALIASES) $(BASH_RC)
-
-$(PIP_BIN)/powerline-config:
-	$(PYTHON3) -m pip install --user powerline-status
 
 $(PIP_BIN)/ipython:
 	$(PYTHON3) -m pip install --user ipython
@@ -158,43 +152,18 @@ $(EMACS_RC): $(EMACS_DIR)
 $(EMACS_DIR):
 	mkdir ~/.emacs
 
-$(POWERLINE): $(PYTHON3) $(PIP_BIN)/powerline-config
-
-$(POWERLINE_FONTS):
-	git clone $(GIT_PROTOCOL)://github.com/powerline/fonts $(POWERLINE_FONTS)
-
 $(FONTS_DIR):
 	mkdir -p $(FONTS_DIR)
 
 $(FONT_CONF_DIR):
 	mkdir -p $(FONT_CONF_DIR)
 
-fonts: /usr/bin/fc-cache $(FONT_CONF_DIR)/10-powerline-symbols.conf \
-	$(FONTS_DIR)/Inconsolata\ for\ Powerline.otf \
-	$(FONTS_DIR)/PowerlineSymbols.otf
-	fc-cache -vf $(FONTS_DIR)
-
-$(FONT_CONF_DIR)/10-powerline-symbols.conf: $(FONT_CONF_DIR)
-	cp $(POWERLINE)/font/10-powerline-symbols.conf $(FONT_CONF_DIR)/10-powerline-symbols.conf
-
-$(FONTS_DIR)/PowerlineSymbols.otf: $(FONTS_DIR)
-	cp $(POWERLINE)/font/PowerlineSymbols.otf $(FONTS_DIR)/PowerlineSymbols.otf
-
-$(FONTS_DIR)/Inconsolata\ for\ Powerline.otf: $(FONTS_DIR)
-	cp $(POWERLINE_FONTS)/Inconsolata/Inconsolata\ for\ Powerline.otf $(FONTS_DIR)/Inconsolata\ for\ Powerline.otf
-
-$(TMUX_CONF): zsh
+$(TMUX_CONF): zsh $(TPM)
 	cp $(DOT_DIR)/tmux/tmux.conf $(TMUX_CONF)
-	#FIXME do this another way, i.e. file to source?
-	echo 'export PATH=$$PATH:$(PIP_BIN)' >> $(BASH_RC)
-	echo "source-file '$(POWERLINE)/bindings/tmux/powerline.conf'" >> ~/.tmux.conf
+	~/.tmux/plugins/tpm/bin/install_plugins
 
-# ~/.config/powerline/themes/tmux/default.json:
-# 	cp $(DOT_DIR)/tmux/powerline.json ~/.config/powerline/themes/tmux/default.json
-
-# $(POWERLINE_CONF_DIR):
-# 	mkdir ~/.config || true
-# 	cp -r ~/.powerline/powerline/config_files/ ~/.config/powerline
+$(TPM):
+	git clone https://github.com/tmux-plugins/tpm $(TPM)
 
 $(SCREEN_RC):
 	cp $(DOT_DIR)/screen/screenrc $(SCREEN_RC)
@@ -206,7 +175,7 @@ clean: clean_tmux clean_vim
 	rm -rf $(ZSH_RC) $(ZSH_FUNCTIONS) $(OH_MY_ZSH) $(BASH_RC) $(BASH_ALIASES) $(SCREEN_RC) $(GIT_CONF) $(IPYTHON_CONFIG) $(FZF_DIR)
 
 clean_tmux:
-	rm -rf $(FONT_DIR) $(FONT_CONF_DIR) $(TMUX_CONF) $(POWERLINE) $(POWERLINE_FONTS)
+	rm -rf $(FONT_DIR) $(FONT_CONF_DIR) $(TMUX_CONF)
 
 $(BASH_RC):
 	cp $(DOT_DIR)/bash/bashrc ~/.bashrc
