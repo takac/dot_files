@@ -3,6 +3,8 @@ DOT_DIR=~/.dots
 
 GIT_PROTOCOL=git
 
+EMACS_RC=~/.emacs.d/init.el
+EMACS_DIR=~/.emacs.d
 ZSH_RC=~/.zshrc
 ZSH_FUNCTIONS=~/.zsh_functions
 OH_MY_ZSH=~/.oh-my-zsh
@@ -68,6 +70,8 @@ ipython: /usr/bin/pip $(PIP_BIN)/ipython
 # install custom fonts under Linux
 tmux: $(TMUX) $(POWERLINE) $(TMUX_CONF)
 endif
+
+emacs: $(EMACS_RC)
 
 brew: /usr/local/bin/brew
 
@@ -136,7 +140,6 @@ $(NEOBUNDLE):
 $(VIM_RC):
 	cp $(DOT_DIR)/vim/vimrc $(VIM_RC)
 
-
 ~/.vim/backup:
 	mkdir -p ~/.vim/backup
 
@@ -148,6 +151,12 @@ $(VIM_RC):
 
 clean_vim:
 	rm -rf ~/.vim ~/.vimrc
+
+$(EMACS_RC): $(EMACS_DIR)
+	cp $(DOT_DIR)/emacs/init.el $(EMACS_RC)
+
+$(EMACS_DIR):
+	mkdir ~/.emacs
 
 $(POWERLINE): $(PYTHON3) $(PIP_BIN)/powerline-config
 
