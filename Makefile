@@ -38,7 +38,7 @@ POWERLINE=$(HOME)/Library/Python/3.8/lib/python/site-packages/powerline
 PIP_BIN=$(HOME)/Library/Python/3.8/bin
 TMUX=/usr/local/bin/tmux
 PYTHON3=/usr/local/bin/python3
-all: brew bash zsh git tmux screen vim $(SED) find ag
+all: brew bash zsh git tmux screen vim $(SED) find ag coreutils
 zsh: /bin/zsh
 find: /usr/local/bin/gfind
 /usr/local/bin/gfind:
@@ -46,6 +46,8 @@ find: /usr/local/bin/gfind
 ag: /usr/local/bin/ag
 /usr/local/bin/ag:
 	brew install the_silver_searcher
+coreutils:
+	brew install coreutils
 # /usr/bin/ipython: /usr/local/bin/pip
 # ipython: /usr/local/bin/ipython
 tmux: $(TMUX) $(POWERLINE) $(POWERLINE_FONTS) $(TMUX_CONF)

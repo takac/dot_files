@@ -53,6 +53,8 @@ export GPG_TTY=$(tty)
 
 if [[ $(uname -s) == Darwin ]]; then
     export PATH="$(brew --prefix coreutils)/libexec/gnubin:/usr/local/bin:$PATH"
+    export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
+    export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
     export PATH=$PATH:$HOME/Library/Python/3.8/bin
 else
     export PATH=$PATH:$HOME/.local/bin
@@ -60,8 +62,10 @@ fi
 
 export PATH=$PATH:$HOME/Downloads/google-cloud-sdk/bin/
 export PATH=$PATH:/usr/local/go/bin
-export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
-export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 if [[ "$PROFILE_STARTUP" == true ]]; then
     zprof
