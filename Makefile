@@ -151,12 +151,12 @@ $(FONTS_DIR):
 $(FONT_CONF_DIR):
 	mkdir -p $(FONT_CONF_DIR)
 
-$(TMUX_CONF): zsh $(TPM)
+$(TMUX_CONF): zsh ~/.tmux/plugins $(TPM_DIR)
 	cp $(DOT_DIR)/tmux/tmux.conf $(TMUX_CONF)
 	~/.tmux/plugins/tpm/bin/install_plugins
 
-$(TPM): ~/.tmux/plugins
-	git clone https://github.com/tmux-plugins/tpm $(TPM)
+$(TPM_DIR):
+	git clone https://github.com/tmux-plugins/tpm $(TPM_DIR)
 
 ~/.tmux/plugins:
 	mkdir -p ~/.tmux/plugins
