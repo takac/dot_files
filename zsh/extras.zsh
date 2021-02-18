@@ -1,5 +1,10 @@
 source $ZSH/oh-my-zsh.sh
 
+setopt hist_expire_dups_first # delete duplicates first when HISTFILE size exceeds HISTSIZE
+setopt hist_ignore_dups       # ignore duplicated commands history list
+setopt hist_ignore_space      # ignore commands that start with space
+# setopt hist_verify            # show command with history expansion to user before running it
+
 # Put at start of .zshrc
 PROFILE_STARTUP=false
 if [[ "$PROFILE_STARTUP" == true ]]; then

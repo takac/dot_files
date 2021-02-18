@@ -1,6 +1,8 @@
 ;;; package --- Tom's init.el
 
 ;;; Commentary:
+;; TODO Snippets
+;; TODO tangle this
 
 ;;; Code:
 
@@ -202,6 +204,7 @@
 
 (use-package counsel
   :bind (("C-M-j" . 'counsel-switch-buffer)
+	 ("C-c r" . counsel-recentf)
 	 :map minibuffer-local-map
 	 ("C-r" . 'counsel-minibuffer-history))
   :config
@@ -221,8 +224,7 @@
   :custom
   (ivy-prescient-enable-filtering nil)
   :config
-  ;; Uncomment the following line to have sorting remembered across sessions!
-					;(prescient-persist-mode 1)
+  (prescient-persist-mode 1)
   (ivy-prescient-mode 1))
 
 (use-package flx
@@ -233,23 +235,30 @@
   :custom
   (counsel-describe-function-function #'helpful-callable)
   (counsel-describe-variable-function #'helpful-variable)
-  :bind
+  ;; :bind
   ([remap describe-function] . counsel-describe-function)
   ([remap describe-command] . helpful-command)
   ([remap describe-variable] . counsel-describe-variable)
-  ([remap describe-key] . helpful-key))
+  ([remap describe-key] . helpful-key)
+  )
 
 (use-package org
   :config
-  ;; (setq org-src-fontify-natively t)
+  (setq org-src-fontify-natively t)
+  :hook (org-mode . (lambda ()
+                      (org-indent-mode)
+                      ;; (variable-pitch-mode 1)
+                      (visual-line-mode 1)
+                      ))
   )
+
 (use-package org-bullets
   :after org
   :hook (org-mode . org-bullets-mode))
 
 (use-package company
-  ;; :bind
-  ;; ("M-n" . comany-complete)
+  :bind
+  ("M-n" . comany-complete)
   :config
   (company-mode t))
 
@@ -286,6 +295,35 @@
 
 
 (use-package python-mode)
+
+  ;; (defun efs/lsp-mode-setup ()
+  ;;   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+  ;;   (lsp-headerline-breadcrumb-mode))
+
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  ;; :hook (lsp-mode . efs/lsp-mode-setup)
+  :init
+  (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
+  :config
+  (lsp-enable-which-key-integration t))
+
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-position 'bottom))
+
+(use-package lsp-treemacs
+  :after lsp)
+
+(use-package lsp-ivy)
+
+(use-package lsp-pyright
+  :ensure t
+  ;; :hook (python-mode . (lambda ()
+  ;;                         (require 'lsp-pyright)
+  ;;                         (lsp)))
+  )  ; or lsp-deferred
 
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
@@ -353,6 +391,8 @@
   ;; (add-hook 'prog-mode-hook 'whitespace-mode)
   )
 
+(use-package gnuplot-mode)
+(use-package gnuplot)
 
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -373,6 +413,8 @@
 (setq org-src-fontify-natively t)
 (setq org-src-tab-acts-natively t)
 
+(save-place-mode 1)
+
 
 (setenv "PATH" (concat (getenv "PATH") ":/Users/tom.cammann/.pyenv/shims:/Users/tom.cammann/.pyenv/bin:/usr/local/opt/gnu-sed/libexec/gnubin:/usr/local/opt/findutils/libexec/gnubin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/Users/tom.cammann/Downloads/google-cloud-sdk/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/tom.cammann/.nvm/versions/node/v11.15.0/bin:/Users/tom.cammann/.pyenv/shims:/Users/tom.cammann/.pyenv/bin:/usr/local/opt/gnu-sed/libexec/gnubin:/usr/local/opt/findutils/libexec/gnubin:/usr/local/opt/coreutils/libexec/gnubin:/Users/tom.cammann/Downloads/google-cloud-sdk/bin:/Users/tom.cammann/Library/Python/3.8/bin:/Users/tom.cammann/go/bin:/Users/tom.cammann/bin:/Users/tom.cammann/Downloads/google-cloud-sdk/bin/:/usr/local/go/bin:/Users/tom.cammann/Library/Python/3.8/bin:/Users/tom.cammann/go/bin:/Users/tom.cammann/bin:/Users/tom.cammann/Downloads/google-cloud-sdk/bin/:/usr/local/go/bin"))
 
@@ -386,7 +428,7 @@
  '(line-number-mode nil)
  '(org-agenda-files '("~/org/work.org"))
  '(package-selected-packages
-   '(diff-hl markdown-mode flx yaml-mode json-mode web-mode undo-tree evil-surround evil-visualstar evil-commentary flycheck vterm rainbow-delimiters python-mode evil-collection magit counsel-projectile company-box company org-bullets helpful ivy-prescient counsel ivy-rich ivy which-key doom-modeline all-the-icons doom-themes evil-easymotion general evil no-littering use-package)))
+   '(lsp-pyright lsp-ivy lsp-treemacs lsp-ui lsp-mode gnuplot-mode gnuplot gnu-plot-mode gnu-plot diff-hl markdown-mode flx yaml-mode json-mode web-mode undo-tree evil-surround evil-visualstar evil-commentary flycheck vterm rainbow-delimiters python-mode evil-collection magit counsel-projectile company-box company org-bullets helpful ivy-prescient counsel ivy-rich ivy which-key doom-modeline all-the-icons doom-themes evil-easymotion general evil no-littering use-package)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
