@@ -1,31 +1,19 @@
 ;;; package --- Tom's init.el
 
 ;;; Commentary:
-;; TODO Snippets
-;; TODO tangle this
+
+;; DO NOT EDIT: Generated from emacs-init.org 
 
 ;;; Code:
-
-(setq inhibit-startup-message t)
-
-;; Disable tool bar, menu bar, scroll bar.
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
-(set-fringe-mode 10)        ; Give some breathing room
-(setq scroll-step 1)
-(setq scroll-margin 7)
-;; Turn off sounds
-(setq ring-bell-function 'ignore)
 
 ;; Initialize package sources
 (require 'package)
 
 (setq package-archives '(("melpa-stable" . "https://stable.melpa.org/packages/")
-			 ("melpa" . "https://melpa.org/packages/")
-			 ("org" . "https://orgmode.org/elpa/")
-			 ("elpa" . "https://elpa.gnu.org/packages/")
-			 ))
+                         ("melpa" . "https://melpa.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")
+                         ))
 
 (package-initialize)
 (unless package-archive-contents
@@ -43,24 +31,40 @@
 (setq user-emacs-directory "~/.cache/emacs")
 
 (use-package no-littering)
-
 ;; no-littering doesn't set this by default so we must place
 ;; auto save files in the same path as it uses for sessions
 (setq auto-save-file-name-transforms
-      `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+    `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
 
-(use-package undo-tree
-  :init
-  (undo-tree-mode))
+;; Simplify UI
 
+(setq inhibit-startup-message t)
 
+;; Disable tool bar, menu bar, scroll bar.
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+(set-fringe-mode 10)        ; Give some breathing room
+(setq scroll-step 1)
+(setq scroll-margin 7)
+;; Turn off sounds
+(setq ring-bell-function 'ignore)
 (column-number-mode)
 (global-display-line-numbers-mode t)
 (setq-default display-line-numbers-width 5)
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-(global-unset-key (kbd "C-f"))
+(save-place-mode 1)
 
+(set-frame-font "Hasklig 12" nil t)
+
+(setenv "PATH" (concat (getenv "PATH") ":/Users/tom.cammann/.pyenv/shims:/Users/tom.cammann/.pyenv/bin:/usr/local/opt/gnu-sed/libexec/gnubin:/usr/local/opt/findutils/libexec/gnubin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/Users/tom.cammann/Downloads/google-cloud-sdk/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/tom.cammann/.nvm/versions/node/v11.15.0/bin:/Users/tom.cammann/.pyenv/shims:/Users/tom.cammann/.pyenv/bin:/usr/local/opt/gnu-sed/libexec/gnubin:/usr/local/opt/findutils/libexec/gnubin:/usr/local/opt/coreutils/libexec/gnubin:/Users/tom.cammann/Downloads/google-cloud-sdk/bin:/Users/tom.cammann/Library/Python/3.8/bin:/Users/tom.cammann/go/bin:/Users/tom.cammann/bin:/Users/tom.cammann/Downloads/google-cloud-sdk/bin/:/usr/local/go/bin:/Users/tom.cammann/Library/Python/3.8/bin:/Users/tom.cammann/go/bin:/Users/tom.cammann/bin:/Users/tom.cammann/Downloads/google-cloud-sdk/bin/:/usr/local/go/bin"))
+
+(setq exec-path (append exec-path (split-string (getenv "PATH") ":")))
+
+(use-package undo-tree
+  :init
+  (undo-tree-mode))
 
 (use-package general
   :config
@@ -129,14 +133,6 @@
   :ensure t
   :config
   (global-evil-surround-mode 1))
-;; This is needed as of Org 9.2
-
-(require 'org-tempo)
-
-(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
-(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-(add-to-list 'org-structure-template-alist '("py" . "src python"))
-
 
 (use-package evil-easymotion
   :config
@@ -145,9 +141,50 @@
   (evilem-define (kbd "SPC b") 'evil-backward-word-begin)
   )
 
+(require 'org-tempo)
+
+    (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+    (add-to-list 'org-structure-template-alist '("py" . "src python"))
+
+    (use-package org
+      :config
+      (setq org-src-fontify-natively t)
+      :hook (org-mode . (lambda ()
+                          (org-indent-mode)
+                          ;; (variable-pitch-mode 1)
+                          (visual-line-mode 1)
+                          ))
+      )
+
+    (use-package org-bullets
+      :after org
+      :hook (org-mode . org-bullets-mode))
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '(
+     (shell . t)
+     (emacs-lisp . t)
+     (org . t)
+     (shell . t)
+     (C . t)
+     (python . t)
+     (gnuplot . t)
+     (octave . t)
+     (R . t)
+     (dot . t)
+     (awk . t)
+     ))
+
+(setq org-src-fontify-natively t)
+(setq org-src-tab-acts-natively t)
+
+(use-package gnuplot-mode)
+(use-package gnuplot)
+
 (use-package doom-themes
   :init (load-theme 'doom-one t))
-
 
 (use-package all-the-icons)
 
@@ -155,12 +192,25 @@
   :init (doom-modeline-mode 1)
   :custom ((doom-modeline-height 15)))
 
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
 (use-package which-key
   :init (which-key-mode)
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 0.5))
 
+(use-package helpful
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key)
+  )
 
 (use-package ivy
   :diminish
@@ -231,38 +281,6 @@
   :defer t  ; is loaded by ivy
   :init (setq ivy-flx-limit 10000))
 
-(use-package helpful
-  :custom
-  (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable)
-  ;; :bind
-  ([remap describe-function] . counsel-describe-function)
-  ([remap describe-command] . helpful-command)
-  ([remap describe-variable] . counsel-describe-variable)
-  ([remap describe-key] . helpful-key)
-  )
-
-(use-package org
-  :config
-  (setq org-src-fontify-natively t)
-  :hook (org-mode . (lambda ()
-                      (org-indent-mode)
-                      ;; (variable-pitch-mode 1)
-                      (visual-line-mode 1)
-                      ))
-  )
-
-(use-package org-bullets
-  :after org
-  :hook (org-mode . org-bullets-mode))
-
-(use-package company
-  :bind
-  ("M-n" . comany-complete)
-  :config
-  (company-mode t))
-
-
 (use-package projectile
   :diminish projectile-mode
   :config (projectile-mode)
@@ -278,27 +296,35 @@
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
 
+(use-package company
+  :bind
+  ("M-n" . comany-complete)
+  :config
+  (company-mode t))
 
-;; :bind (:map company-active-map
-;; ("<tab>" . company-complete-selection))
-;; (:map lsp-mode-map
-;; ("<tab>" . company-indent-or-complete-common))
-;; :custom
-;; (company-minimum-prefix-length 1)
-;; (company-idle-delay 0.0))
 (use-package company-box
   :hook (company-mode . company-box-mode))
 
+(use-package magit)
 
-
- (use-package magit)
-
-
-(use-package python-mode)
-
-  ;; (defun efs/lsp-mode-setup ()
-  ;;   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-  ;;   (lsp-headerline-breadcrumb-mode))
+(use-package diff-hl
+   :ensure t
+   :defer 1
+   :diminish
+   :init
+   :config
+   ;; Highlight changes to the current file in the fringe
+   ;; (add-hook 'prog-mode-hook #'diff-hl-mode)
+   ;; (add-hook 'org-mode-hook #'diff-hl-mode)
+   (global-diff-hl-mode)
+   ;; Highlight changed files in the fringe of Dired
+   (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
+   ;; Fall back to the display margin, if the fringe is unavailable
+   ;; (unless (display-graphic-p) (diff-hl-margin-mode))
+   ;; (setq diff-hl-fringe-bmp-function 'diff-hl-fringe-bmp-from-type)
+   (diff-hl-margin-mode)
+   (setq diff-hl-margin-side 'right)
+   )
 
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
@@ -318,19 +344,6 @@
 
 (use-package lsp-ivy)
 
-(use-package lsp-pyright
-  :ensure t
-  ;; :hook (python-mode . (lambda ()
-  ;;                         (require 'lsp-pyright)
-  ;;                         (lsp)))
-  )  ; or lsp-deferred
-
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
-
-;; needs cmake
-(use-package vterm)
-
 (use-package dired
 :ensure nil
 :commands (dired dired-jump)
@@ -346,6 +359,7 @@
   (use-package all-the-icons-dired
     :hook (dired-mode . all-the-icons-dired-mode))
 
+(use-package vterm)
 
 (use-package flycheck
   :ensure t
@@ -360,30 +374,6 @@
     (add-hook 'text-mode-hook 'flyspell-mode)
     ))
 
-(use-package json-mode)
-(use-package yaml-mode)
-(use-package markdown-mode)
-(use-package web-mode)
-
- (use-package diff-hl
-    :ensure t
-    :defer 1
-    :diminish
-    :init
-    :config
-    ;; Highlight changes to the current file in the fringe
-    ;; (add-hook 'prog-mode-hook #'diff-hl-mode)
-    ;; (add-hook 'org-mode-hook #'diff-hl-mode)
-    (global-diff-hl-mode)
-    ;; Highlight changed files in the fringe of Dired
-    (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
-    ;; Fall back to the display margin, if the fringe is unavailable
-    ;; (unless (display-graphic-p) (diff-hl-margin-mode))
-    ;; (setq diff-hl-fringe-bmp-function 'diff-hl-fringe-bmp-from-type)
-    (diff-hl-margin-mode)
-    (setq diff-hl-margin-side 'right)
-    )
-
 (use-package whitespace
   :ensure t
   :diminish whitespace-mode
@@ -391,58 +381,28 @@
   ;; (add-hook 'prog-mode-hook 'whitespace-mode)
   )
 
-(use-package gnuplot-mode)
-(use-package gnuplot)
+(use-package python-mode)
 
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '(
-   (shell . t)
-   (emacs-lisp . t)
-   (org . t)
-   (shell . t)
-   (C . t)
-   (python . t)
-   (gnuplot . t)
-   (octave . t)
-   (R . t)
-   (dot . t)
-   (awk . t)
-   ))
+(use-package json-mode)
 
-(setq org-src-fontify-natively t)
-(setq org-src-tab-acts-natively t)
+(use-package yaml-mode)
 
-(save-place-mode 1)
+(use-package markdown-mode)
 
-
-(setenv "PATH" (concat (getenv "PATH") ":/Users/tom.cammann/.pyenv/shims:/Users/tom.cammann/.pyenv/bin:/usr/local/opt/gnu-sed/libexec/gnubin:/usr/local/opt/findutils/libexec/gnubin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/Users/tom.cammann/Downloads/google-cloud-sdk/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/tom.cammann/.nvm/versions/node/v11.15.0/bin:/Users/tom.cammann/.pyenv/shims:/Users/tom.cammann/.pyenv/bin:/usr/local/opt/gnu-sed/libexec/gnubin:/usr/local/opt/findutils/libexec/gnubin:/usr/local/opt/coreutils/libexec/gnubin:/Users/tom.cammann/Downloads/google-cloud-sdk/bin:/Users/tom.cammann/Library/Python/3.8/bin:/Users/tom.cammann/go/bin:/Users/tom.cammann/bin:/Users/tom.cammann/Downloads/google-cloud-sdk/bin/:/usr/local/go/bin:/Users/tom.cammann/Library/Python/3.8/bin:/Users/tom.cammann/go/bin:/Users/tom.cammann/bin:/Users/tom.cammann/Downloads/google-cloud-sdk/bin/:/usr/local/go/bin"))
-
-(setq exec-path (append exec-path (split-string (getenv "PATH") ":")))
-
+(use-package web-mode)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(line-number-mode nil)
- '(org-agenda-files '("~/org/work.org"))
- '(package-selected-packages
-   '(lsp-pyright lsp-ivy lsp-treemacs lsp-ui lsp-mode gnuplot-mode gnuplot gnu-plot-mode gnu-plot diff-hl markdown-mode flx yaml-mode json-mode web-mode undo-tree evil-surround evil-visualstar evil-commentary flycheck vterm rainbow-delimiters python-mode evil-collection magit counsel-projectile company-box company org-bullets helpful ivy-prescient counsel ivy-rich ivy which-key doom-modeline all-the-icons doom-themes evil-easymotion general evil no-littering use-package)))
-
+ '(safe-local-variable-values
+   '((eval add-hook 'after-save-hook
+	   (lambda nil
+	     (org-babel-tangle))
+	   nil t))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
-;; (eval-after-load "evil-maps"
-;;   '(progn
-;;      (define-key evil-scroll-page-down "\C-f" 'nil)
-;;      (set-control-w-shortcuts)))
-
-(set-frame-font "Hasklig 12" nil t)
-
-(provide 'init)
-;;; init.el ends here
