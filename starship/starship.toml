@@ -1,0 +1,115 @@
+
+# $gcloud\
+# xformat = """
+# $openstack\
+# $env_var\
+# $username\
+# $hostname\
+# $shlvl\
+# $directory\
+# $git_branch\
+# $git_commit\
+# $git_state\
+# $git_status\
+# $cmd_duration\
+# $memory_usage\
+# $custom\
+# $jobs\
+# $docker_context\
+# $terraform\
+# $time\
+# $status\
+# $kubernetes\
+# $hg_branch\
+# $package\
+# $cmake\
+# $dart\
+# $dotnet\
+# $elixir\
+# $elm\
+# $erlang\
+# $golang\
+# $helm\
+# $java\
+# $julia\
+# $kotlin\
+# $nim\
+# $nodejs\
+# $ocaml\
+# $perl\
+# $php\
+# $purescript\
+# $python\
+# $ruby\
+# $rust\
+# $swift\
+# $vagrant\
+# $zig\
+# $nix_shell\
+# $conda\
+# $aws\
+# $crystal\
+# $lua\
+# $line_break\
+# $character\
+# """
+
+# ┌[tom.cammann@OVO6177MB] [/dev/ttys007] [master ⚡] 
+# └[~/git/sync/terraform]> 
+
+# $battery\
+# Use custom format
+format = """
+[┌\\[$username@$hostname\\]](red)$time$git_branch$git_commit$status$cmd_duration$env_var$aws $git_status 
+[└\\[](red)[$directory](white)[\\]> ](red)"""
+
+[username]
+show_always = true
+format = "[$user](white)"
+# format = "$user"
+
+[hostname]
+ssh_only = false
+format = "[$hostname](white)"
+# format = "$hostname"
+
+[directory]
+style = "white"
+truncate_to_repo = false
+format = "[$path]($style)[$read_only]($read_only_style)"
+
+[status]
+disabled = false
+format = "[\\[](red)[$status](white)[\\]](red)"
+
+[cmd_duration]
+format = "[\\[](red)[$duration](white)[\\]](red)"
+show_milliseconds = true
+
+[git_commit]
+format = "[\\[](red)[$hash](white)[\\]](red)"
+
+[git_branch]
+format = "[\\[](red)$branch(none white)[\\]](red)"
+only_attached = true
+
+# [git_state]
+# format = '\([$state($progress_current/$progress_total)]($style)\)'
+
+[git_status]
+# format = "[\\[](red)[$modified$staged$deleted](white)[\\]](red)"
+format = "[$modified$staged$deleted](white)"
+deleted = "[-\\($count\\)](bold red)"
+staged = "[+\\($count\\)](green)"
+modified = "[~\\($count\\)](yellow)"
+
+[time]
+disabled = false
+format = "[\\[](red)[$time](white)[\\]](red)"
+
+# [env_var]
+# variable = "AWS_PROFILE"
+# format = "AWS_PROFILE=$env_var"
+
+[aws]
+format = "[\\[](red)[AWS:$profile](white)[\\]](red)"
