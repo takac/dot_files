@@ -17,3 +17,4 @@
 	insteadOf = https://github.com/
 [alias]
     hub = "!f(){ open `git remote -v | awk '/fetch/{print $2}' | sed -Ee 's#(git@|git://)#https://#' -e 's@com:@com/@'`| head -n1; }; f"
+    r = "for-each-ref --count=15 --sort=-committerdate refs/heads/ --format='%(authordate:short) %(color:red)%(objectname:short) %(color:yellow)%(align:0, 30)%(refname:short)%(end)%(color:reset) (%(color:green)%(committerdate:relative)%(color:reset))'"
