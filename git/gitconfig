@@ -12,7 +12,7 @@
 [gpg]
 	program = gpg
 [commit]
-	gpgsign = true
+	; gpgsign = true
 [url "ssh://git@github.com/"]
 	insteadOf = https://github.com/
 [alias]
