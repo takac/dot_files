@@ -3,7 +3,7 @@ DOT_DIR=~/.dots
 
 GIT_PROTOCOL=git
 
-TPM=~/.tmux/plugins/tpm
+TPM_DIR=~/.tmux/plugins/tpm
 EMACS_RC=~/.emacs.d/init.el
 EMACS_DIR=~/.emacs.d
 ZSH_RC=~/.zshrc
