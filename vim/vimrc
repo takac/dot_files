@@ -40,6 +40,7 @@ NeoBundle 'mhinz/vim-startify'
 " NeoBundle 'dahu/vim-fanfingtastic'
 NeoBundle 'vim-airline/vim-airline-themes'
 NeoBundle 'vim-airline/vim-airline'                    " better status line
+" disable if needed
 NeoBundle 'conradirwin/vim-bracketed-paste'      " Sane pasting in insert mode
 NeoBundle 'godlygeek/tabular'                    " formatter
 NeoBundle 'guns/vim-clojure-static'              " add clojure syntax highlight
@@ -74,6 +75,8 @@ NeoBundle 'Shougo/vimproc.vim', {
 \    },
 \ }
 NeoBundle 'shougo/vimshell.vim'
+NeoBundle 'google/vim-jsonnet'
+NeoBundle 'bfrg/vim-jqplay'
 
 call neobundle#end()
 
@@ -123,6 +126,9 @@ match ExtraWhitespace /\s\+\%#\@<!$/
 " =========================================================================== "
 "                                 Plugin Config                               "
 " =========================================================================== "
+
+" turn off auto fmt
+let g:jsonnet_fmt_on_save = 0
 
 let g:fanfingtastic_ignorecase = 1
 
@@ -195,6 +201,10 @@ cabbr <expr> %h expand('$HOME')
 
 set tags+=.git/ctags
 
+let g:jqplay = {
+    \ 'opts': '-Rn',
+    \ }
+
 " =========================================================================== "
 "                                 Remappings                                  "
 " =========================================================================== "
@@ -228,6 +238,8 @@ nnoremap <leader>n :set number!<CR>
 
 nnoremap <leader>e :e ~/.vimrc<CR>
 nnoremap <leader>l :set list!<CR>
+" save
+nnoremap <leader>s :w<CR>
 
 nnoremap <silent> <leader><CR> :set hlsearch!<CR>
 " nnoremap <silent> <F7> :set spell!<CR>
@@ -256,7 +268,7 @@ noremap gk k
 
 " Show the stack of syntax hilighting classes affecting whatever is under the
 " cursor.
-nnoremap <leader>sn :SyntaxHighlighting<CR>
+" nnoremap <leader>sn :SyntaxHighlighting<CR>
 
 " Evaluate calculation highlighted and replace with answer!
 " Try it now:
@@ -295,7 +307,7 @@ autocmd! bufwritepost .vimrc source ~/.vimrc
 
 " Hide imports for java files
 autocmd! BufEnter *.java :setlocal foldexpr=HideImportFold(v:lnum) foldmethod=expr foldlevel=0
-autocmd! BufEnter *.py :setlocal foldexpr=HideCopyRight(v:lnum) foldmethod=expr foldlevel=0
+" autocmd! BufEnter *.py :setlocal foldexpr=HideCopyRight(v:lnum) foldmethod=expr foldlevel=0
 
 " check my english
 autocmd FileType rst set spell
@@ -453,7 +465,7 @@ set history=1000
 set ignorecase                      " Ignore case when searching
 set incsearch                       " Make search act like search in modern browsers
 set linebreak
-set listchars=tab:▸\ ,eol:¬,trail:●,extends:❯,precedes:❮
+set listchars=tab:▸\ ,eol:¬,trail:●,extends:❯,precedes:❮,nbsp:☠
 set magic                           " Set magic on, for regular expressions
 set matchtime=2                     " How many tenths of a second to blink
 set wildignore+=*/target/*
