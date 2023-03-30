@@ -57,23 +57,42 @@ export EDITOR=/usr/local/bin/vim
 export GPG_TTY=$(tty)
 
 if [[ $(uname -s) == Darwin ]]; then
-    export PATH="$(brew --prefix coreutils)/libexec/gnubin:/usr/local/bin:$PATH"
+ eval "$(zoxide init zsh)"   # TODO only do this once as it adds time to every shell start
+    # export PATH="$(brew --prefix coreutils)/libexec/gnubin:/usr/local/bin:/usr/local/sbin:$PATH"
+    export PATH="/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/usr/local/sbin:$PATH"
     export PATH="/usr/local/opt/findutils/libexec/gnubin:$PATH"
     export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
-    export PATH=$PATH:$HOME/Library/Python/3.8/bin
 else
     export PATH=$PATH:$HOME/.local/bin
 fi
 
 export PATH=$PATH:$HOME/Downloads/google-cloud-sdk/bin/
-export PATH=$PATH:/usr/local/go/bin
+# export PATH=$PATH:/usr/local/go/bin
+export PATH=$HOME/.cargo/bin:$PATH
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# recommended but adds significant time to shell startup
+# if command -v pyenv 1>/dev/null 2>&1; then
+# eval "$(pyenv init --path)"
+# fi
+# Output:
+# PATH="$(bash --norc -ec 'IFS=:; paths=($PATH); 
+# for i in ${!paths[@]}; do 
+# if [[ ${paths[i]} == "''/Users/tcammann/.pyenv/shims''" ]]; then unset '\''paths[i]'\''; 
+# fi; done; 
+# echo "${paths[*]}"')"
+export PATH="/Users/tcammann/.pyenv/shims:${PATH}"
+# command pyenv rehash 2>/dev/null
 
 if [[ "$PROFILE_STARTUP" == true ]]; then
     zprof
     unsetopt xtrace
     exec 2>&3 3>&-
 fi
+if [[ $DISABLE_ATUIN != true ]]; then
+    eval "$(atuin init zsh --disable-up-arrow --disable-ctrl-r)"
+fi
+eval "$(zoxide init zsh)"
