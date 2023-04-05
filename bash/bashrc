@@ -71,7 +71,7 @@ export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}ignorespace
 # Ignore some controlling instructions
 export HISTIGNORE="[   ]*:&:bg:fg:exit"
 # Ignore some controlling instructions
-export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}erasedups 
+export HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}erasedups
 # Whenever displaying the prompt, write the previous line to disk
 
 

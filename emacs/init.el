@@ -16,8 +16,13 @@
                          ))
 
 (package-initialize)
-(unless package-archive-contents
-  (package-refresh-contents))
+
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(eval-and-compile
+  (setq use-package-always-ensure t
+        use-package-expand-minimally t))
 
 ;; Initialize use-package on non-Linux platforms
 (unless (package-installed-p 'use-package)
@@ -56,7 +61,7 @@
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 (save-place-mode 1)
 
-(set-frame-font "Hasklig 12" nil t)
+(set-frame-font "Hasklug Nerd Font 12" nil t)
 
 (setenv "PATH" (concat (getenv "PATH") ":/Users/tom.cammann/.pyenv/shims:/Users/tom.cammann/.pyenv/bin:/usr/local/opt/gnu-sed/libexec/gnubin:/usr/local/opt/findutils/libexec/gnubin:/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:/Users/tom.cammann/Downloads/google-cloud-sdk/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/tom.cammann/.nvm/versions/node/v11.15.0/bin:/Users/tom.cammann/.pyenv/shims:/Users/tom.cammann/.pyenv/bin:/usr/local/opt/gnu-sed/libexec/gnubin:/usr/local/opt/findutils/libexec/gnubin:/usr/local/opt/coreutils/libexec/gnubin:/Users/tom.cammann/Downloads/google-cloud-sdk/bin:/Users/tom.cammann/Library/Python/3.8/bin:/Users/tom.cammann/go/bin:/Users/tom.cammann/bin:/Users/tom.cammann/Downloads/google-cloud-sdk/bin/:/usr/local/go/bin:/Users/tom.cammann/Library/Python/3.8/bin:/Users/tom.cammann/go/bin:/Users/tom.cammann/bin:/Users/tom.cammann/Downloads/google-cloud-sdk/bin/:/usr/local/go/bin"))
 

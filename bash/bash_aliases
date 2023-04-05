@@ -6,13 +6,13 @@ myip()
 	echo "Ext: $(curl -s ip.appspot.com)"
 }
 
-alias ack='ack-grep'
-alias fau='sudo apt-get -y upgrade'
-alias fap='sudo apt-get install --force-yes -y'
+# alias ack='ack-grep'
+# alias fau='sudo apt-get -y upgrade'
+# alias fap='sudo apt-get install --force-yes -y'
 
 alias gs='git status'
 alias gco='git checkout'
-alias hs='history | grep -i'
+# alias hs='history | grep -i'
 
 #Add color to things :D
 alias ls="ls --color"
@@ -20,7 +20,7 @@ alias grep='grep --color'
 alias fgrep='fgrep --color'
 alias egrep='egrep --color'
 alias tree='tree -C'
-alias tmux='tmux -2'
+# alias tmux='tmux -2'
 
 # Show all the dot files
 alias dot='ls .[a-za-z0-9_]*'
@@ -28,8 +28,7 @@ alias dot='ls .[a-za-z0-9_]*'
 # common misspellings
 alias mroe=more
 alias pdw=pwd
-alias ivm=vim 
-
+alias ivm=vim
 
 # default to human readable figures
 alias df='df -h'

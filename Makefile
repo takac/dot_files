@@ -1,8 +1,11 @@
 # Should be dir we are running make from
 DOT_DIR=~/.dots
 
-GIT_PROTOCOL=git
+GIT_PROTOCOL=https
 
+NVIM_LAZY=~/.share/nvim/
+NVIM_RC=~/.config/nvim/init.lua
+NVIM_CONFIG_DIR=~/.config/nvim/
 TPM_DIR=~/.tmux/plugins/tpm
 EMACS_RC=~/.emacs.d/init.el
 EMACS_DIR=~/.emacs.d
@@ -28,29 +31,51 @@ I3_STATUS_CONFIG=$(HOME)/.i3status.conf
 
 UNAME_S := $(shell uname -s)
 
+# TODO font needed before emacs
+HASKLUG_FONT_NAME=Hasklug Nerd Font Complete.otf
+HASKLUG_FONT_URL=https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/Hasklig/Regular/complete/Hasklug%20Nerd%20Font%20Complete.otf
+
 .PHONY=fonts clean_tmux clean_vim
 
 #TODO Fix font install
 
 ifeq ($(UNAME_S),Darwin)
 SED=/usr/local/opt/gnu-sed/libexec/gnubin/sed
-PIP_BIN=$(HOME)/Library/Python/3.8/bin
+# PIP_BIN=$(HOME)/Library/Python/3.8/bin
 TMUX=/usr/local/bin/tmux
-PYTHON3=/usr/local/bin/python3
-all: brew bash zsh git tmux screen vim $(SED) find ag coreutils
+# PYTHON3=/usr/local/bin/python3
+all: brew bash zsh git tmux screen vim $(SED) find rg coreutils kitty hasklug emacs zoxide
 zsh: /bin/zsh
 find: /usr/local/bin/gfind
 /usr/local/bin/gfind:
 	brew install findutils
-ag: /usr/local/bin/ag
-/usr/local/bin/ag:
-	brew install the_silver_searcher
+rg: /usr/local/bin/rg
+/usr/local/bin/rg:
+	brew install rg
+kitty: /usr/local/bin/kitty
+/usr/local/bin/kitty:
+	brew install kitty
 coreutils:
 	brew install coreutils
-# /usr/bin/ipython: /usr/local/bin/pip
-# ipython: /usr/local/bin/ipython
+nvim: /usr/local/bin/nvim
+/usr/local/bin/nvim:
+	brew install nvim
 vim: /usr/bin/vim
 
+zoxide: /usr/local/bin/zoxide
+
+/usr/local/bin/zoxide:
+	brew install zoxide
+
+hasklug: ~/Library/Fonts/$(HASKLUG_FONT_NAME)
+~/Library/Fonts/Hasklug Nerd Font Complete.otf:
+	curl -fsSL $(HASKLUG_FONT_URL) > ~/Library/Fonts/$(HASKLUG_FONT_NAME)
+
+emacs: hasklug $(EMACS_RC) /Applications/Emacs.app/Contents/MacOS/Emacs
+	# TODO run emacs to install and then close
+
+/Applications/Emacs.app/Contents/MacOS/Emacs:
+	brew install --cask emacs
 else
 # Assumed ubuntu/debain
 SED=/usr/bin/sed
@@ -69,6 +94,15 @@ endif
 tmux: $(TMUX) $(TMUX_CONF)
 
 emacs: $(EMACS_RC)
+
+$(EMACS_RC): $(EMACS_DIR)
+	cp $(DOT_DIR)/emacs/init.el $(EMACS_RC)
+
+$(EMACS_DIR):
+	mkdir ~/.emacs
+
+clean_emacs:
+	rm -rf $(EMACS_DIR)
 
 brew: /usr/local/bin/brew
 
@@ -139,11 +173,17 @@ $(VIM_RC):
 clean_vim:
 	rm -rf ~/.vim ~/.vimrc
 
-$(EMACS_RC): $(EMACS_DIR)
-	cp $(DOT_DIR)/emacs/init.el $(EMACS_RC)
+clean_nvim:
+	rm -rf $(NVIM_CONFIG_DIR)
 
-$(EMACS_DIR):
-	mkdir ~/.emacs
+$(NVIM_RC):
+	cp $(DOT_DIR)/nvim/init.lua $(NVIM_RC)
+
+$(NVIM_LAZY):
+	# TODO
+
+nvim: ~/.config/nvim $(NVIM_RC) $(NVIM_LAZY)
+
 
 $(FONTS_DIR):
 	mkdir -p $(FONTS_DIR)
@@ -167,7 +207,7 @@ $(SCREEN_RC):
 $(GIT_CONF):
 	cp $(DOT_DIR)/git/gitconfig $(GIT_CONF)
 
-clean: clean_tmux clean_vim
+clean: clean_tmux clean_vim clean_nvim clean_emacs
 	rm -rf $(ZSH_RC) $(ZSH_FUNCTIONS) $(OH_MY_ZSH) $(BASH_RC) $(BASH_ALIASES) $(SCREEN_RC) $(GIT_CONF) $(IPYTHON_CONFIG)
 
 clean_tmux:
@@ -212,6 +252,6 @@ $(I3_STATUS_CONFIG):
 $(SED):
 	brew install gnu-sed
 
-$(PYTHON3):
-	brew install python
+# $(PYTHON3):
+# 	brew install python
 
