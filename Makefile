@@ -223,11 +223,12 @@ $(OH_MY_ZSH):
 	git clone $(GIT_PROTOCOL)://github.com/robbyrussell/oh-my-zsh $(OH_MY_ZSH)
 
 $(ZSH_RC): $(SED)
-	cp $(OH_MY_ZSH)/templates/zshrc.zsh-template $(ZSH_RC)
-	# plugins split across multiple lines
+	cp $(DOT_DIR)/zsh/before.zsh $(ZSH_RC)
+	cat $(OH_MY_ZSH)/templates/zshrc.zsh-template >> $(ZSH_RC)
+	cat $(DOT_DIR)/zsh/extras.zsh >> $(ZSH_RC) 
 	$(SED) -i -e 's/^ZSH_THEME=.*/ZSH_THEME=darkblood/' $(ZSH_RC)
-	$(SED) -i -e '/plugins=/{N;N;N;N;s/.*/plugins=(git history-substring-search zsh-syntax-highlighting)/}' $(ZSH_RC)
-	cat >> $(ZSH_RC) < $(DOT_DIR)/zsh/extras.zsh
+	# plugins split across multiple lines
+	$(SED) -i -e '/plugins=/{N;N;N;N;s/.*/plugins=(git history-substring-search zsh-syntax-highlighting zsh-autosuggestions)/}' $(ZSH_RC)
 
 $(ZSH_FUNCTIONS):
 	cp $(DOT_DIR)/zsh/zsh_functions $(ZSH_FUNCTIONS)
