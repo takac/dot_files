@@ -1,189 +1,221 @@
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-    vim.fn.system({
-        "git",
-        "clone",
-        "--filter=blob:none",
-        "https://github.com/folke/lazy.nvim.git",
-        "--branch=stable", -- latest stable release
-        lazypath,
-    })
+	vim.fn.system({
+		"git",
+		"clone",
+		"--filter=blob:none",
+		"https://github.com/folke/lazy.nvim.git",
+		"--branch=stable", -- latest stable release
+		lazypath,
+	})
 end
 vim.opt.rtp:prepend(lazypath)
 
 local plugins = {
-    "wbthomason/packer.nvim",
-    {
-        "ellisonleao/gruvbox.nvim",
-        lazy = false,
-    },
-    "nvim-tree/nvim-tree.lua",
-    "nvim-tree/nvim-web-devicons",
-    "nvim-lualine/lualine.nvim",
-    "nvim-treesitter/nvim-treesitter",
-    "lewis6991/gitsigns.nvim",
-    "airblade/vim-gitgutter",
-    "tpope/vim-fugitive",
-    "github/copilot.vim",
-    "simrat39/rust-tools.nvim",
-    {
-        "williamboman/mason.nvim",
-        lazy = false,
-    },
-    {
-        "williamboman/mason-lspconfig.nvim",
-        dependencies = { "williamboman/mason.nvim" },
-    },
-    "neovim/nvim-lspconfig",
-    "glepnir/lspsaga.nvim",
-    -- "is0n/jaq-nvim",
-    {},
-    "tpope/vim-commentary", -- Add operator for adding comments
-    "tpope/vim-fugitive",   -- Git integration
-    "tpope/vim-repeat",     -- Repeat more commands
-    "tpope/vim-rsi",        -- Readline mappings for insert and command mode
-    "tpope/vim-surround",   -- mappings for wrapping objects
-    "vim-scripts/scratch.vim", -- Easy tmp buffer
-    {
-        "lukas-reineke/indent-blankline.nvim",
-        opts = {
-            space_char_blankline = " ",
-            show_current_context = true,
-            show_current_context_start = true,
-            char_highlight_list = {
-                "IndentBlanklineIndent1",
-                "IndentBlanklineIndent2",
-                "IndentBlanklineIndent3",
-                "IndentBlanklineIndent4",
-                "IndentBlanklineIndent5",
-                "IndentBlanklineIndent6",
-            },
-        },
-    },
-    "goolord/alpha-nvim", -- startup screen
-    "google/vim-jsonnet",
-    -- "rking/ag.vim",       -- search with ag in vim
-    "godlygeek/tabular",  -- formatter
-    "takac/vim-commandcaps", -- correct mistyped commands like :Wq
-    "HiPhish/nvim-ts-rainbow2",
-    {
-        -- need to use fork for bug fix
-        -- https://github.com/spamwax/hop.nvim
-        "phaazon/hop.nvim",
-        branch = "v2", -- optional but strongly recommended
-        -- hop var should work..
-        opts = { keys = "etovxqpdygfblzhckisuran" },
-        config = function(hop, opts)
-            hop = require("hop")
-            hop.setup(opts)
-            local directions = require("hop.hint").HintDirection
+	"wbthomason/packer.nvim",
+	{
+		"ellisonleao/gruvbox.nvim",
+		lazy = false,
+	},
+	"nvim-tree/nvim-tree.lua",
+	"nvim-tree/nvim-web-devicons",
+	"nvim-lualine/lualine.nvim",
+	"nvim-treesitter/nvim-treesitter",
+	{
+		"lewis6991/gitsigns.nvim",
+		opts = {},
+	},
+	"airblade/vim-gitgutter",
+	"tpope/vim-fugitive",
+	"github/copilot.vim",
+	"simrat39/rust-tools.nvim",
+	{
+		"williamboman/mason.nvim",
+		lazy = false,
+		opts = {
+			ensure_installed = {
+				"stylua",
+			},
+		},
+	},
+	{
+		"williamboman/mason-lspconfig.nvim",
+		dependencies = { "williamboman/mason.nvim" },
+		opts = {
+			ensure_installed = {
+				-- "stylua",
+				"rust_analyzer",
+				"lua_ls",
+				"terraformls",
+				"tflint",
+				"yamlls",
+				"bashls",
+				"pyright",
+			},
+		},
+	},
+	{
+		"WhoIsSethDaniel/mason-tool-installer.nvim",
+		opts = {
+			ensure_installed = {
+				{ "bash-language-server", auto_update = true },
+				"lua-language-server",
+				"vim-language-server",
+				"stylua",
+				"shellcheck",
+				"shellcheck",
+			},
+		},
+	},
+	{
+		"jose-elias-alvarez/null-ls.nvim",
+		config = function(null_ls, opts)
+			null_ls = require("null-ls")
+			null_ls.setup({
+				sources = {
+					null_ls.builtins.formatting.stylua,
+					null_ls.builtins.completion.spell,
+					null_ls.builtins.formatting.black,
+					-- null_ls.builtins.diagnostics.flake8,
+					null_ls.builtins.formatting.isort,
+					null_ls.builtins.formatting.rustfmt,
+					-- null_ls.builtins.diagnostics.codespell,
+					null_ls.builtins.diagnostics.zsh,
+					null_ls.builtins.code_actions.shellcheck,
+					null_ls.builtins.diagnostics.shellcheck,
+				},
+			})
+		end,
+	},
+	"neovim/nvim-lspconfig",
+	"glepnir/lspsaga.nvim",
+	-- "is0n/jaq-nvim",
+	"tpope/vim-commentary", -- Add operator for adding comments
+	"tpope/vim-fugitive", -- Git integration
+	"tpope/vim-repeat", -- Repeat more commands
+	"tpope/vim-rsi",    -- Readline mappings for insert and command mode
+	"tpope/vim-surround", -- mappings for wrapping objects
+	"vim-scripts/scratch.vim", -- Easy tmp buffer
+	{
+		"lukas-reineke/indent-blankline.nvim",
+		opts = {
+			space_char_blankline = " ",
+			show_current_context = true,
+			show_current_context_start = true,
+			char_highlight_list = {
+				"IndentBlanklineIndent1",
+				"IndentBlanklineIndent2",
+				"IndentBlanklineIndent3",
+				"IndentBlanklineIndent4",
+				"IndentBlanklineIndent5",
+				"IndentBlanklineIndent6",
+			},
+		},
+	},
+	"goolord/alpha-nvim", -- startup screen
+	"google/vim-jsonnet",
+	-- "rking/ag.vim",       -- search with ag in vim
+	"godlygeek/tabular", -- formatter
+	"takac/vim-commandcaps", -- correct mistyped commands like :Wq
+	"HiPhish/nvim-ts-rainbow2",
+	{
+		-- need to use fork for bug fix
+		-- https://github.com/spamwax/hop.nvim
+		"phaazon/hop.nvim",
+		branch = "v2", -- optional but strongly recommended
+		-- hop var should work..
+		opts = { keys = "etovxqpdygfblzhckisuran" },
+		config = function(hop, opts)
+			hop = require("hop")
+			hop.setup(opts)
+			local directions = require("hop.hint").HintDirection
 
-            vim.keymap.set("n", "<space><space>", function()
-                hop.hint_anywhere()
-            end, { remap = true })
+			vim.keymap.set("n", "<space><space>", function()
+				hop.hint_anywhere()
+			end, { remap = true })
 
-            vim.keymap.set("n", "<space>j", function()
-                hop.hint_lines({ direction = directions.AFTER_CURSOR })
-            end, { remap = true })
+			vim.keymap.set("n", "<space>j", function()
+				hop.hint_lines({ direction = directions.AFTER_CURSOR })
+			end, { remap = true })
 
-            vim.keymap.set("n", "<space>k", function()
-                hop.hint_lines({ direction = directions.BEFORE_CURSOR })
-            end, { remap = true })
+			vim.keymap.set("n", "<space>k", function()
+				hop.hint_lines({ direction = directions.BEFORE_CURSOR })
+			end, { remap = true })
 
-            vim.keymap.set("n", "<space>w", function()
-                hop.hint_words({ direction = directions.AFTER_CURSOR })
-            end, { remap = true })
+			vim.keymap.set("n", "<space>w", function()
+				hop.hint_words({ direction = directions.AFTER_CURSOR })
+			end, { remap = true })
 
-            vim.keymap.set("n", "<space>b", function()
-                hop.hint_words({ direction = directions.BEFORE_CURSOR })
-            end, { remap = true })
-        end,
-    },
-    "kkharji/sqlite.lua",
-    "nvim-telescope/telescope-smart-history.nvim",
-    {
-        "nvim-telescope/telescope.nvim",
-        tag = "0.1.0",
-        dependencies = { { "nvim-lua/plenary.nvim" } },
-        config = function(telescope, opts)
-            telescope = require("telescope")
-            opts = {
-                defaults = {
-                    prompt_prefix = " ",
-                    history = {
-                        path = "~/.local/share/nvim/databases/telescope_history.sqlite3",
-                        limit = 100,
-                    },
-                    vimgrep_arguments = {
-                        "rg",
-                        "--color=never",
-                        "--no-heading",
-                        "--with-filename",
-                        "--line-number",
-                        "--column",
-                        "--smart-case",
-                    },
-                    mappings = {
-                        n = {
-                            ["<esc>"] = require("telescope.actions").close,
-                            ["<CR>"] = require("telescope.actions").select_default,
-                            ["<C-x>"] = require("telescope.actions").select_horizontal,
-                            ["<C-v>"] = require("telescope.actions").select_vertical,
-                            ["<C-t>"] = require("telescope.actions").select_tab,
-                            ["<Tab>"] = require("telescope.actions").toggle_selection
-                                + require("telescope.actions").move_selection_worse,
-                            ["<S-Tab>"] = require("telescope.actions").toggle_selection
-                                + require("telescope.actions").move_selection_better,
-                            ["<C-q>"] = require("telescope.actions").send_to_qflist
-                                + require("telescope.actions").open_qflist,
-                            ["<M-q>"] = require("telescope.actions").send_selected_to_qflist
-                                + require("telescope.actions").open_qflist,
-                            ["j"] = require("telescope.actions").move_selection_next,
-                            ["k"] = require("telescope.actions").move_selection_previous,
-                            ["H"] = require("telescope.actions").move_to_top,
-                            ["M"] = require("telescope.actions").move_to_middle,
-                            ["L"] = require("telescope.actions").move_to_bottom,
-                            ["<Down>"] = require("telescope.actions").move_selection_next,
-                            ["<Up>"] = require("telescope.actions").move_selection_previous,
-                            ["gg"] = require("telescope.actions").move_to_top,
-                            ["G"] = require("telescope.actions").move_to_bottom,
-                            ["<C-u>"] = require("telescope.actions").preview_scrolling_up,
-                            ["<C-d>"] = require("telescope.actions").preview_scrolling_down,
-                            ["<PageUp>"] = require("telescope.actions").results_scrolling_up,
-                            ["<PageDown>"] = require("telescope.actions").results_scrolling_down,
-                            ["?"] = require("telescope.actions").which_key,
-                        },
-                        i = {
-                            ["<C-n>"] = require("telescope.actions").cycle_history_next,
-                            ["<C-p>"] = require("telescope.actions").cycle_history_prev,
-                        },
-                    },
-                },
-            }
-            telescope.setup(opts)
-        end,
-    },
-    {
-        "jose-elias-alvarez/null-ls.nvim",
-        config = function(null_ls, opts)
-            null_ls = require("null-ls")
-            null_ls.setup({
-                sources = {
-                    null_ls.builtins.formatting.stylua,
-                    null_ls.builtins.completion.spell,
-                    null_ls.builtins.formatting.black,
-                    -- null_ls.builtins.diagnostics.flake8,
-                    null_ls.builtins.formatting.isort,
-                    null_ls.builtins.formatting.rustfmt,
-                    -- null_ls.builtins.diagnostics.codespell,
-                    null_ls.builtins.diagnostics.zsh,
-                    null_ls.builtins.code_actions.shellcheck,
-                    null_ls.builtins.diagnostics.shellcheck,
-                },
-            })
-        end,
-    },
-    "folke/trouble.nvim",
+			vim.keymap.set("n", "<space>b", function()
+				hop.hint_words({ direction = directions.BEFORE_CURSOR })
+			end, { remap = true })
+		end,
+	},
+	"kkharji/sqlite.lua",
+	"nvim-telescope/telescope-smart-history.nvim",
+	{
+		"nvim-telescope/telescope.nvim",
+		tag = "0.1.0",
+		dependencies = { { "nvim-lua/plenary.nvim" } },
+		config = function(telescope, opts)
+			telescope = require("telescope")
+			opts = {
+				defaults = {
+					prompt_prefix = " ",
+					history = {
+						path = "~/.local/share/nvim/databases/telescope_history.sqlite3",
+						limit = 100,
+					},
+					vimgrep_arguments = {
+						"rg",
+						"--color=never",
+						"--no-heading",
+						"--with-filename",
+						"--line-number",
+						"--column",
+						"--smart-case",
+					},
+					mappings = {
+						n = {
+							["<esc>"] = require("telescope.actions").close,
+							["<CR>"] = require("telescope.actions").select_default,
+							["<C-x>"] = require("telescope.actions").select_horizontal,
+							["<C-v>"] = require("telescope.actions").select_vertical,
+							["<C-t>"] = require("telescope.actions").select_tab,
+							["<Tab>"] = require("telescope.actions").toggle_selection
+							    + require("telescope.actions").move_selection_worse,
+							["<S-Tab>"] = require("telescope.actions").toggle_selection
+							    + require("telescope.actions").move_selection_better,
+							["<C-q>"] = require("telescope.actions").send_to_qflist
+							    + require("telescope.actions").open_qflist,
+							["<M-q>"] = require("telescope.actions").send_selected_to_qflist
+							    + require("telescope.actions").open_qflist,
+							["j"] = require("telescope.actions").move_selection_next,
+							["k"] = require("telescope.actions").move_selection_previous,
+							["H"] = require("telescope.actions").move_to_top,
+							["M"] = require("telescope.actions").move_to_middle,
+							["L"] = require("telescope.actions").move_to_bottom,
+							["<Down>"] = require("telescope.actions").move_selection_next,
+							["<Up>"] = require("telescope.actions").move_selection_previous,
+							["gg"] = require("telescope.actions").move_to_top,
+							["G"] = require("telescope.actions").move_to_bottom,
+							["<C-u>"] = require("telescope.actions").preview_scrolling_up,
+							["<C-d>"] = require("telescope.actions").preview_scrolling_down,
+							["<PageUp>"] = require("telescope.actions").results_scrolling_up,
+							["<PageDown>"] = require("telescope.actions").results_scrolling_down,
+							["?"] = require("telescope.actions").which_key,
+						},
+						i = {
+							["<C-n>"] = require("telescope.actions").cycle_history_next,
+							["<C-p>"] = require("telescope.actions").cycle_history_prev,
+						},
+					},
+				},
+			}
+			telescope.setup(opts)
+		end,
+	},
+	"folke/trouble.nvim",
 }
 
 require("lazy").setup(plugins)
@@ -412,20 +444,7 @@ vim.cmd([[
 highlight CopilotSuggestion ctermfg=8 guifg=white guibg=#5c6370
 ]])
 
-require("gitsigns").setup()
-require("mason").setup()
 -- https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
-require("mason-lspconfig").setup({
-    ensure_installed = {
-        "rust_analyzer",
-        "lua_ls",
-        "terraformls",
-        "tflint",
-        "yamlls",
-        "bashls",
-        "pyright",
-    },
-})
 
 -- local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
@@ -436,47 +455,47 @@ vim.keymap.set("n", "K", "<Cmd>Lspsaga hover_doc<cr>", { silent = true })
 vim.keymap.set("n", "<leader>rn", "<cmd>Lspsaga rename<CR>", { silent = true })
 
 require("lspconfig").lua_ls.setup({
-    -- capabilities = capabilities,
-    settings = {
-        Lua = {
-            diagnostics = {
-                globals = { "vim" },
-            },
-            workspace = {
-                library = {
-                    [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                    [vim.fn.stdpath("config") .. "/lua"] = true,
-                },
-            },
-        },
-    },
+	-- capabilities = capabilities,
+	settings = {
+		Lua = {
+			diagnostics = {
+				globals = { "vim" },
+			},
+			workspace = {
+				library = {
+					[vim.fn.expand("$VIMRUNTIME/lua")] = true,
+					[vim.fn.stdpath("config") .. "/lua"] = true,
+				},
+			},
+		},
+	},
 })
 
 require("lspconfig").pyright.setup({
-    -- capabilities = capabilities,
+	-- capabilities = capabilities,
 })
 
 require("lualine").setup({
-    options = {
-        icons_enabled = true,
-        theme = "gruvbox",
-    },
-    sections = {
-        lualine_a = {
-            {
-                "filename",
-                path = 1,
-            },
-        },
-    },
+	options = {
+		icons_enabled = true,
+		theme = "gruvbox",
+	},
+	sections = {
+		lualine_a = {
+			{
+				"filename",
+				path = 1,
+			},
+		},
+	},
 })
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
 require("nvim-tree").setup({
-    view = {
-        adaptive_size = true,
-    },
+	view = {
+		adaptive_size = true,
+	},
 })
 
 require("telescope").load_extension("smart_history")
@@ -491,54 +510,52 @@ vim.keymap.set("n", "fg", builtin.live_grep, {})
 vim.keymap.set("n", "<Space>fh", builtin.help_tags, {})
 
 require("nvim-treesitter.configs").setup({
-    -- A list of parser names, or "all"
-    ensure_installed = {
-        "c",
-        "lua",
-        "rust",
-        "ruby",
-        "vim",
-        "markdown",
-        "markdown_inline",
-        "python",
-        "javascript",
-        "typescript",
-        "tsx",
-        "html",
-        "css",
-        "json",
-        "yaml",
-        "toml",
-        "graphql",
-        "bash",
-        "regex",
-        "go",
-        "dart",
-        "java",
-        "php",
-        "haskell",
-        "ocaml",
-        "r",
-        "ruby",
-        "scala",
-        "swift",
-        "tsx",
-    },
-    -- Install parsers synchronously (only applied to `ensure_installed`)
-    sync_install = false,
-    auto_install = true,
-    highlight = {
-        enable = true,
-    },
-    rainbow = {
-        enable = true,
-        -- list of languages you want to disable the plugin for
-        disable = { "jsx", "cpp" },
-        -- Which query to use for finding delimiters
-        query = "rainbow-parens",
-        -- Highlight the entire buffer all at once
-        strategy = require("ts-rainbow").strategy.global,
-    },
+	-- A list of parser names, or "all"
+	ensure_installed = {
+		"c",
+		"lua",
+		"rust",
+		"ruby",
+		"vim",
+		"markdown",
+		"markdown_inline",
+		"python",
+		"javascript",
+		"typescript",
+		"tsx",
+		"html",
+		"css",
+		"json",
+		"yaml",
+		"toml",
+		"graphql",
+		"bash",
+		"regex",
+		"go",
+		"dart",
+		"java",
+		"php",
+		"haskell",
+		"ocaml",
+		"r",
+		"ruby",
+		"scala",
+	},
+	-- Install parsers synchronously (only applied to `ensure_installed`)
+	sync_install = false,
+	auto_install = true,
+	highlight = {
+		enable = true,
+	},
+	rainbow = {
+		enable = true,
+		-- list of languages you want to disable the plugin for
+		disable = { "jsx", "cpp" },
+		-- Which query to use for finding delimiters
+		query = "rainbow-parens",
+		-- Highlight the entire buffer all at once
+		strategy = require("ts-rainbow").strategy.global,
+	},
 })
 -- vim.cmd [[
 -- let test#strategy = "vimux"
@@ -565,21 +582,21 @@ require("indent_blankline").setup()
 vim.g.indent_blankline_filetype = { "json", "yaml" }
 
 require("rust-tools").setup({
-    server = {
-        flags = {
-            debounce_text_changes = 150,
-        },
-        settings = {
-            -- to enable rust-analyzer settings visit:
-            -- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
-            ["rust-analyzer"] = {
-                -- enable clippy on save
-                checkOnSave = {
-                    command = "clippy",
-                },
-            },
-        },
-    },
+	server = {
+		flags = {
+			debounce_text_changes = 150,
+		},
+		settings = {
+			-- to enable rust-analyzer settings visit:
+			-- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
+			["rust-analyzer"] = {
+				-- enable clippy on save
+				checkOnSave = {
+					command = "clippy",
+				},
+			},
+		},
+	},
 })
 
 vim.cmd([[

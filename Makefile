@@ -3,7 +3,7 @@ DOT_DIR=~/.dots
 
 GIT_PROTOCOL=https
 
-NVIM_LAZY=~/.share/nvim/
+NVIM_LAZY=~/.local/share/nvim/lazy
 NVIM_RC=~/.config/nvim/init.lua
 NVIM_CONFIG_DIR=~/.config/nvim/
 TPM_DIR=~/.tmux/plugins/tpm
@@ -44,7 +44,7 @@ SED=/usr/local/opt/gnu-sed/libexec/gnubin/sed
 # PIP_BIN=$(HOME)/Library/Python/3.8/bin
 TMUX=/usr/local/bin/tmux
 # PYTHON3=/usr/local/bin/python3
-all: brew bash zsh git tmux screen vim $(SED) find rg coreutils kitty hasklug emacs zoxide nvim
+all: brew bash zsh git tmux screen vim $(SED) find rg coreutils kitty hasklug emacs zoxide nvim node
 zsh: /bin/zsh
 find: /usr/local/bin/gfind
 /usr/local/bin/gfind:
@@ -69,6 +69,16 @@ zoxide: /usr/local/bin/zoxide
 
 /usr/local/bin/zoxide:
 	brew install zoxide
+
+nvm: /usr/local/opt/nvm/nvm.sh
+
+/usr/local/opt/nvm/nvm.sh:
+	brew install nvm
+
+node: nvm ~/.nvm/versions/node/v16.*
+
+~/.nvm/versions/node/v16.*:
+	zsh -c 'export NVM_DIR="$$HOME/.nvm" && source "/usr/local/opt/nvm/nvm.sh" && nvm install 16'
 
 hasklug: ~/Library/Fonts/$(HASKLUG_FONT_NAME)
 ~/Library/Fonts/Hasklug Nerd Font Complete.otf:
@@ -103,7 +113,7 @@ $(EMACS_RC): $(EMACS_DIR)
 	cp $(DOT_DIR)/emacs/init.el $(EMACS_RC)
 
 $(EMACS_DIR):
-	mkdir ~/.emacs
+	mkdir -p ~/.emacs.d
 
 clean_emacs:
 	rm -rf $(EMACS_DIR)
@@ -181,17 +191,16 @@ clean_nvim:
 	rm -rf $(NVIM_CONFIG_DIR)
 
 $(NVIM_RC):
-	cp $(DOT_DIR)/nvim/init.lua $(NVIM_RC)
+	cp $(DOT_DIR)/neovim/init.lua $(NVIM_RC)
 
 $(NVIM_LAZY):
-	# TODO
+	nvim +qa
 
 $(NVIM_CONFIG_DIR):
 	mkdir -p ~/.config/nvim
+	mkdir -p ~/.local/share/nvim/databases/
 
 nvim: $(NVIM_CONFIG_DIR) $(NVIM_RC) $(NVIM_LAZY)
-	nvim +qa
-
 
 $(FONTS_DIR):
 	mkdir -p $(FONTS_DIR)
