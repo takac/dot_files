@@ -21,76 +21,181 @@ local plugins = {
     "nvim-tree/nvim-web-devicons",
     "nvim-lualine/lualine.nvim",
     "nvim-treesitter/nvim-treesitter",
-    "vim-test/vim-test",
     "lewis6991/gitsigns.nvim",
     "airblade/vim-gitgutter",
-    "preservim/vimux",
-    "christoomey/vim-tmux-navigator",
     "tpope/vim-fugitive",
-    -- completion
-    -- "hrsh7th/nvim-cmp",
-    -- "hrsh7th/cmp-nvim-lsp",
-    -- "L3MON4D3/LuaSnip",
-    -- "saadparwaiz1/cmp_luasnip",
-    -- "rafamadriz/friendly-snippets",
     "github/copilot.vim",
-    "onsails/lspkind.nvim",
     "simrat39/rust-tools.nvim",
-    "williamboman/mason.nvim",
-    "neovim/nvim-lspconfig",
-    "williamboman/mason-lspconfig.nvim",
-    "glepnir/lspsaga.nvim",
-    "is0n/jaq-nvim",
     {
-        "nvim-telescope/telescope.nvim",
-        tag = "0.1.0",
-        dependencies = { { "nvim-lua/plenary.nvim" } },
+        "williamboman/mason.nvim",
+        lazy = false,
     },
-    -- "kien/rainbow_parentheses.vim",         -- make my brackets pretty colors
+    {
+        "williamboman/mason-lspconfig.nvim",
+        dependencies = { "williamboman/mason.nvim" },
+    },
+    "neovim/nvim-lspconfig",
+    "glepnir/lspsaga.nvim",
+    -- "is0n/jaq-nvim",
+    {},
     "tpope/vim-commentary", -- Add operator for adding comments
     "tpope/vim-fugitive",   -- Git integration
     "tpope/vim-repeat",     -- Repeat more commands
     "tpope/vim-rsi",        -- Readline mappings for insert and command mode
     "tpope/vim-surround",   -- mappings for wrapping objects
     "vim-scripts/scratch.vim", -- Easy tmp buffer
-    "lukas-reineke/indent-blankline.nvim",
-    "mhinz/vim-startify",
+    {
+        "lukas-reineke/indent-blankline.nvim",
+        opts = {
+            space_char_blankline = " ",
+            show_current_context = true,
+            show_current_context_start = true,
+            char_highlight_list = {
+                "IndentBlanklineIndent1",
+                "IndentBlanklineIndent2",
+                "IndentBlanklineIndent3",
+                "IndentBlanklineIndent4",
+                "IndentBlanklineIndent5",
+                "IndentBlanklineIndent6",
+            },
+        },
+    },
+    "goolord/alpha-nvim", -- startup screen
     "google/vim-jsonnet",
-    "rking/ag.vim",       -- search with ag in vim
+    -- "rking/ag.vim",       -- search with ag in vim
     "godlygeek/tabular",  -- formatter
     "takac/vim-commandcaps", -- correct mistyped commands like :Wq
     "HiPhish/nvim-ts-rainbow2",
     {
+        -- need to use fork for bug fix
+        -- https://github.com/spamwax/hop.nvim
         "phaazon/hop.nvim",
         branch = "v2", -- optional but strongly recommended
-        config = function()
-            -- you can configure Hop the way you like here; see :h hop-config
-            require("hop").setup({ keys = "etovxqpdygfblzhckisuran" })
+        -- hop var should work..
+        opts = { keys = "etovxqpdygfblzhckisuran" },
+        config = function(hop, opts)
+            hop = require("hop")
+            hop.setup(opts)
+            local directions = require("hop.hint").HintDirection
+
+            vim.keymap.set("n", "<space><space>", function()
+                hop.hint_anywhere()
+            end, { remap = true })
+
+            vim.keymap.set("n", "<space>j", function()
+                hop.hint_lines({ direction = directions.AFTER_CURSOR })
+            end, { remap = true })
+
+            vim.keymap.set("n", "<space>k", function()
+                hop.hint_lines({ direction = directions.BEFORE_CURSOR })
+            end, { remap = true })
+
+            vim.keymap.set("n", "<space>w", function()
+                hop.hint_words({ direction = directions.AFTER_CURSOR })
+            end, { remap = true })
+
+            vim.keymap.set("n", "<space>b", function()
+                hop.hint_words({ direction = directions.BEFORE_CURSOR })
+            end, { remap = true })
         end,
     },
     "kkharji/sqlite.lua",
     "nvim-telescope/telescope-smart-history.nvim",
-    "jose-elias-alvarez/null-ls.nvim",
+    {
+        "nvim-telescope/telescope.nvim",
+        tag = "0.1.0",
+        dependencies = { { "nvim-lua/plenary.nvim" } },
+        config = function(telescope, opts)
+            telescope = require("telescope")
+            opts = {
+                defaults = {
+                    prompt_prefix = " ",
+                    history = {
+                        path = "~/.local/share/nvim/databases/telescope_history.sqlite3",
+                        limit = 100,
+                    },
+                    vimgrep_arguments = {
+                        "rg",
+                        "--color=never",
+                        "--no-heading",
+                        "--with-filename",
+                        "--line-number",
+                        "--column",
+                        "--smart-case",
+                    },
+                    mappings = {
+                        n = {
+                            ["<esc>"] = require("telescope.actions").close,
+                            ["<CR>"] = require("telescope.actions").select_default,
+                            ["<C-x>"] = require("telescope.actions").select_horizontal,
+                            ["<C-v>"] = require("telescope.actions").select_vertical,
+                            ["<C-t>"] = require("telescope.actions").select_tab,
+                            ["<Tab>"] = require("telescope.actions").toggle_selection
+                                + require("telescope.actions").move_selection_worse,
+                            ["<S-Tab>"] = require("telescope.actions").toggle_selection
+                                + require("telescope.actions").move_selection_better,
+                            ["<C-q>"] = require("telescope.actions").send_to_qflist
+                                + require("telescope.actions").open_qflist,
+                            ["<M-q>"] = require("telescope.actions").send_selected_to_qflist
+                                + require("telescope.actions").open_qflist,
+                            ["j"] = require("telescope.actions").move_selection_next,
+                            ["k"] = require("telescope.actions").move_selection_previous,
+                            ["H"] = require("telescope.actions").move_to_top,
+                            ["M"] = require("telescope.actions").move_to_middle,
+                            ["L"] = require("telescope.actions").move_to_bottom,
+                            ["<Down>"] = require("telescope.actions").move_selection_next,
+                            ["<Up>"] = require("telescope.actions").move_selection_previous,
+                            ["gg"] = require("telescope.actions").move_to_top,
+                            ["G"] = require("telescope.actions").move_to_bottom,
+                            ["<C-u>"] = require("telescope.actions").preview_scrolling_up,
+                            ["<C-d>"] = require("telescope.actions").preview_scrolling_down,
+                            ["<PageUp>"] = require("telescope.actions").results_scrolling_up,
+                            ["<PageDown>"] = require("telescope.actions").results_scrolling_down,
+                            ["?"] = require("telescope.actions").which_key,
+                        },
+                        i = {
+                            ["<C-n>"] = require("telescope.actions").cycle_history_next,
+                            ["<C-p>"] = require("telescope.actions").cycle_history_prev,
+                        },
+                    },
+                },
+            }
+            telescope.setup(opts)
+        end,
+    },
+    {
+        "jose-elias-alvarez/null-ls.nvim",
+        config = function(null_ls, opts)
+            null_ls = require("null-ls")
+            null_ls.setup({
+                sources = {
+                    null_ls.builtins.formatting.stylua,
+                    null_ls.builtins.completion.spell,
+                    null_ls.builtins.formatting.black,
+                    -- null_ls.builtins.diagnostics.flake8,
+                    null_ls.builtins.formatting.isort,
+                    null_ls.builtins.formatting.rustfmt,
+                    -- null_ls.builtins.diagnostics.codespell,
+                    null_ls.builtins.diagnostics.zsh,
+                    null_ls.builtins.code_actions.shellcheck,
+                    null_ls.builtins.diagnostics.shellcheck,
+                },
+            })
+        end,
+    },
     "folke/trouble.nvim",
 }
--- vim.cmd([[
--- let g:gitgutter_signs = false
--- ]])
-vim.g.gitgutter_signs = false
 
-local opts = {}
-
-require("lazy").setup(plugins, opts)
--- Navigate vim panes better
-vim.keymap.set("n", "<c-k>", ":wincmd k<CR>")
-vim.keymap.set("n", "<c-j>", ":wincmd j<CR>")
-vim.keymap.set("n", "<c-h>", ":wincmd h<CR>")
-vim.keymap.set("n", "<c-l>", ":wincmd l<CR>")
+require("lazy").setup(plugins)
+-- require("alpha").setup(require("alpha.themes.startify").config)
 
 vim.keymap.set("n", "<leader><enter>", ":nohlsearch<CR>")
 vim.g.mapleader = "§"
 vim.g.maplocalleader = "§"
 vim.keymap.set("n", "<leader>f", ":lua vim.lsp.buf.format()<CR>")
+-- disable gitgutter and use gitsigns instead, but keep movements from
+-- gitgutter
+vim.g.gitgutter_signs = false
 
 vim.cmd([[
 
@@ -269,9 +374,9 @@ vim.opt.numberwidth = 5   -- " Show line numbers up to size 99999
 vim.opt.report = 0        -- " Tell us when anything is changed via status line
 vim.opt.termguicolors = false
 
-vim.opt.showmatch = true  --                       " Show matching bracets when text indicator is over them
-vim.opt.smartcase = true  --                       " Use smartcase searching
-vim.opt.scrolloff = 6     --                     " Minimal number of screen lines to keep above and below the cursor.
+vim.opt.showmatch = true --                       " Show matching bracets when text indicator is over them
+vim.opt.smartcase = true --                       " Use smartcase searching
+vim.opt.scrolloff = 6    --                     " Minimal number of screen lines to keep above and below the cursor.
 
 vim.opt.shiftround = true
 vim.opt.expandtab = true
@@ -290,30 +395,6 @@ vim.cmd.colorscheme("gruvbox")
 
 vim.opt.termguicolors = true
 
-local hop = require("hop")
-hop.setup()
-local directions = require("hop.hint").HintDirection
-
-vim.keymap.set("n", "<space><space>", function()
-    require("hop").hint_anywhere()
-end, { remap = true })
-
-vim.keymap.set("n", "<space>j", function()
-    require("hop").hint_lines({ direction = directions.AFTER_CURSOR })
-end, { remap = true })
-
-vim.keymap.set("n", "<space>k", function()
-    require("hop").hint_lines({ direction = directions.BEFORE_CURSOR })
-end, { remap = true })
-
-vim.keymap.set("n", "<space>w", function()
-    require("hop").hint_words({ direction = directions.AFTER_CURSOR })
-end, { remap = true })
-
-vim.keymap.set("n", "<space>b", function()
-    require("hop").hint_words({ direction = directions.BEFORE_CURSOR })
-end, { remap = true })
-
 --Line numbers
 
 vim.cmd([[
@@ -327,88 +408,31 @@ set viminfo='10,\"100,:200,%,n~/.local/state/nvim/viminfo
 "  n... :  where to save the viminfo files
 ]])
 
--- local cmp = require("cmp")
-
--- require("luasnip.loaders.from_vscode").lazy_load()
-
--- cmp.setup({
--- 	mapping = cmp.mapping.preset.insert({
--- 		["<C-b>"] = cmp.mapping.scroll_docs(-4),
--- 		["<C-f>"] = cmp.mapping.scroll_docs(4),
--- 		["<C-o>"] = cmp.mapping.complete(),
--- 		["<C-e>"] = cmp.mapping.abort(),
--- 		["<CR>"] = cmp.mapping.confirm({
--- 			behavior = cmp.ConfirmBehavior.Replace,
--- 			select = false,
--- 		}),
--- 	}),
--- 	-- 	snippet = {
--- 	-- 		expand = function(args)
--- 	-- 			require("luasnip").lsp_expand(args.body)
--- 	-- 		end,
--- 	-- 	},
--- 	sources = cmp.config.sources({
--- 		{
--- 			name = "copilot",
--- 			keyword_length = 0,
--- 			max_item_count = 3,
--- 			trigger_characters = {
--- 				{
--- 					".",
--- 					":",
--- 					"(",
--- 					"'",
--- 					'"',
--- 					"[",
--- 					",",
--- 					"#",
--- 					"*",
--- 					"@",
--- 					"|",
--- 					"=",
--- 					"-",
--- 					"{",
--- 					"/",
--- 					"\\",
--- 					"+",
--- 					"?",
--- 					" ",
--- 					"\t",
--- 					"\n",
--- 				},
--- 			},
--- 			group_index = 2,
--- 		},
--- 		{ name = "nvim_lsp" },
--- 		-- 		{ name = "luasnip" },
--- 		-- 	}, {
--- 		{ name = "buffer" },
--- 	}),
--- })
---highlight gray
---highlight gray guifg=#5c6370
 vim.cmd([[
 highlight CopilotSuggestion ctermfg=8 guifg=white guibg=#5c6370
 ]])
+
 require("gitsigns").setup()
-require("mason-lspconfig").setup()
-
--- local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
-
-require("lspsaga").setup({
-    code_action_icon = "💡",
-    symbol_in_winbar = {
-        in_custom = false,
-        enable = true,
-        separator = " ",
-        show_file = true,
-        file_formatter = "",
+require("mason").setup()
+-- https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
+require("mason-lspconfig").setup({
+    ensure_installed = {
+        "rust_analyzer",
+        "lua_ls",
+        "terraformls",
+        "tflint",
+        "yamlls",
+        "bashls",
+        "pyright",
     },
 })
 
+-- local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+require("lspsaga").setup({})
+vim.keymap.set({ "n", "v" }, "<leader>ca", "<cmd>Lspsaga code_action<CR>")
 vim.keymap.set("n", "gd", "<cmd>Lspsaga lsp_finder<CR>", { silent = true })
 vim.keymap.set("n", "K", "<Cmd>Lspsaga hover_doc<cr>", { silent = true })
-vim.keymap.set({ "n", "v" }, "<leader>ca", "<cmd>Lspsaga code_action<CR>", { silent = true })
 vim.keymap.set("n", "<leader>rn", "<cmd>Lspsaga rename<CR>", { silent = true })
 
 require("lspconfig").lua_ls.setup({
@@ -446,7 +470,6 @@ require("lualine").setup({
         },
     },
 })
-require("mason").setup()
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
@@ -456,39 +479,51 @@ require("nvim-tree").setup({
     },
 })
 
-vim.keymap.set("n", "<c-n>", ":NvimTreeFindFileToggle<CR>")
-require("telescope").setup({
-    defaults = {
-        file_ignore_patterns = { "node_modules", "__pycache__", "*.pyc" },
-        history = {
-            path = "~/.local/share/nvim/databases/telescope_history.sqlite3",
-            limit = 100,
-        },
-        mappings = {
-            -- n = {
-            --     ["<Down>"] = require('telescope.actions').cycle_history_next,
-            --     ["<Up>"] = require('telescope.actions').cycle_history_prev,
-            -- },
-            i = {
-                ["<C-n>"] = require("telescope.actions").cycle_history_next,
-                ["<C-p>"] = require("telescope.actions").cycle_history_prev,
-            },
-        },
-    },
-})
-
 require("telescope").load_extension("smart_history")
 local builtin = require("telescope.builtin")
 
+vim.keymap.set("n", "<c-n>", ":NvimTreeFindFileToggle<CR>")
 vim.keymap.set("n", "<c-p>", builtin.find_files, {})
+vim.keymap.set("n", "<c-t>", builtin.builtin, {})
 -- vim.keymap.set('n', '<c-p>', builtin.resume, {})
 --vim.keymap.set('n', '<Space><Space>', builtin.oldfiles, {})
-vim.keymap.set("n", "<Space>fg", builtin.live_grep, {})
+vim.keymap.set("n", "fg", builtin.live_grep, {})
 vim.keymap.set("n", "<Space>fh", builtin.help_tags, {})
 
 require("nvim-treesitter.configs").setup({
     -- A list of parser names, or "all"
-    ensure_installed = { "c", "lua", "rust", "ruby", "vim" },
+    ensure_installed = {
+        "c",
+        "lua",
+        "rust",
+        "ruby",
+        "vim",
+        "markdown",
+        "markdown_inline",
+        "python",
+        "javascript",
+        "typescript",
+        "tsx",
+        "html",
+        "css",
+        "json",
+        "yaml",
+        "toml",
+        "graphql",
+        "bash",
+        "regex",
+        "go",
+        "dart",
+        "java",
+        "php",
+        "haskell",
+        "ocaml",
+        "r",
+        "ruby",
+        "scala",
+        "swift",
+        "tsx",
+    },
     -- Install parsers synchronously (only applied to `ensure_installed`)
     sync_install = false,
     auto_install = true,
@@ -512,19 +547,6 @@ require("nvim-treesitter.configs").setup({
 -- vim.keymap.set('n', '<leader>t', ':TestNearest<CR>')
 -- vim.keymap.set('n', '<leader>T', ':TestFile<CR>')
 
-local null_ls = require("null-ls")
-
-null_ls.setup({
-    sources = {
-        null_ls.builtins.formatting.stylua,
-        null_ls.builtins.completion.spell,
-        null_ls.builtins.formatting.black,
-        -- null_ls.builtins.diagnostics.flake8,
-        null_ls.builtins.formatting.isort,
-        null_ls.builtins.formatting.rustfmt,
-    },
-})
-
 vim.cmd([[
 " autocmd BufWritePre <buffer> lua vim.lsp.buf.format({async=false})
 ]])
@@ -538,143 +560,27 @@ vim.cmd([[highlight IndentBlanklineIndent4 guifg=#56B6C2 gui=nocombine]])
 vim.cmd([[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]])
 vim.cmd([[highlight IndentBlanklineIndent6 guifg=#C678DD gui=nocombine]])
 
-require("indent_blankline").setup({
-    space_char_blankline = " ",
-    show_current_context = true,
-    show_current_context_start = true,
-    char_highlight_list = {
-        "IndentBlanklineIndent1",
-        "IndentBlanklineIndent2",
-        "IndentBlanklineIndent3",
-        "IndentBlanklineIndent4",
-        "IndentBlanklineIndent5",
-        "IndentBlanklineIndent6",
-    },
-})
+require("indent_blankline").setup()
+
 vim.g.indent_blankline_filetype = { "json", "yaml" }
--- require("indent_blankline").setup {
---     -- space_char_blankline = " ",
---     char_highlight_list = {
---         "IndentBlanklineIndent1",
---         "IndentBlanklineIndent2",
---         "IndentBlanklineIndent3",
---         "IndentBlanklineIndent4",
---         "IndentBlanklineIndent5",
---         "IndentBlanklineIndent6",
---     },
--- }
-
--- require("copilot").setup({
--- 	suggestion = {
--- 		enabled = true,
--- 		auto_trigger = false,
--- 	},
--- 	panel = { enabled = false },
--- 	filetypes = {
--- 		javascript = true, -- allow specific filetype
--- 		typescript = true, -- allow specific filetype
--- 		python = true,
--- 		["*"] = false, -- disable for all other filetypes and ignore default `filetypes`
--- 	},
--- 	settings = {
--- 		advanced = {
--- 			listCount = 10, -- #completions for panel
--- 			inlineSuggestCount = 5, -- #completions for getCompletions
--- 		},
--- 	},
--- })
--- require("copilot_cmp").setup({
--- 	formatters = {
--- 		label = require("copilot_cmp.format").format_label_text,
--- 		insert_text = require("copilot_cmp.format").format_insert_text,
--- 		preview = require("copilot_cmp.format").deindent,
--- 	},
--- })
-
-local lspkind = require("lspkind")
-lspkind.init({
-    symbol_map = {
-        Copilot = "",
-    },
-})
-
-vim.api.nvim_set_hl(0, "CmpItemKindCopilot", { fg = "#6CC644" })
-
-require("jaq-nvim").setup({
-    cmds = {
-        -- Uses vim commands
-        internal = {
-            lua = "luafile %",
-            vim = "source %",
-        },
-        -- Uses shell commands
-        external = {
-            markdown = "glow %",
-            python = "python3 %",
-            go = "go run %",
-            sh = "sh %",
-        },
-    },
-    behavior = {
-        -- Default type
-        default = "float",
-        -- Start in insert mode
-        startinsert = false,
-        -- Use `wincmd p` on startup
-        wincmd = false,
-        -- Auto-save files
-        autosave = false,
-    },
-    ui = {
-        float = {
-            -- See ':h nvim_open_win'
-            border = "none",
-            -- See ':h winhl'
-            winhl = "Normal",
-            borderhl = "FloatBorder",
-            -- See ':h winblend'
-            winblend = 0,
-            -- Num from `0-1` for measurements
-            height = 0.8,
-            width = 0.8,
-            x = 0.5,
-            y = 0.5,
-        },
-        terminal = {
-            -- Window position
-            position = "bot",
-            -- Window size
-            size = 10,
-            -- Disable line numbers
-            line_no = false,
-        },
-        quickfix = {
-            -- Window position
-            position = "bot",
-            -- Window size
-            size = 10,
-        },
-    },
-})
-
 
 require("rust-tools").setup({
     server = {
-    flags = {
-        debounce_text_changes = 150,
-    },
-    on_attach = function(client, bufnr)
-    end,
-    settings = {
-        ["rust-analyzer"] = {
-            checkOnSave = {
-                command = "clippy-driver",
+        flags = {
+            debounce_text_changes = 150,
+        },
+        settings = {
+            -- to enable rust-analyzer settings visit:
+            -- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
+            ["rust-analyzer"] = {
+                -- enable clippy on save
+                checkOnSave = {
+                    command = "clippy",
+                },
             },
         },
     },
-},
 })
-
 
 vim.cmd([[
 iabbrev accesories accessories
