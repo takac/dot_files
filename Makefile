@@ -32,7 +32,7 @@ I3_STATUS_CONFIG=$(HOME)/.i3status.conf
 UNAME_S := $(shell uname -s)
 
 # TODO font needed before emacs
-HASKLUG_FONT_NAME=Hasklug Nerd Font Complete.otf
+HASKLUG_FONT_NAME=Hasklug\ Nerd\ Font\ Complete.otf
 HASKLUG_FONT_URL=https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/Hasklig/Regular/complete/Hasklug%20Nerd%20Font%20Complete.otf
 
 .PHONY=fonts clean_tmux clean_vim
@@ -44,7 +44,7 @@ SED=/usr/local/opt/gnu-sed/libexec/gnubin/sed
 # PIP_BIN=$(HOME)/Library/Python/3.8/bin
 TMUX=/usr/local/bin/tmux
 # PYTHON3=/usr/local/bin/python3
-all: brew bash zsh git tmux screen vim $(SED) find rg coreutils kitty hasklug emacs zoxide
+all: brew bash zsh git tmux screen vim $(SED) find rg coreutils kitty hasklug emacs zoxide nvim
 zsh: /bin/zsh
 find: /usr/local/bin/gfind
 /usr/local/bin/gfind:
@@ -55,8 +55,11 @@ rg: /usr/local/bin/rg
 kitty: /usr/local/bin/kitty
 /usr/local/bin/kitty:
 	brew install kitty
-coreutils:
+
+coreutils: /usr/local/opt/coreutils/libexec/gnubin
+/usr/local/opt/coreutils/libexec/gnubin:
 	brew install coreutils
+
 nvim: /usr/local/bin/nvim
 /usr/local/bin/nvim:
 	brew install nvim
@@ -72,7 +75,8 @@ hasklug: ~/Library/Fonts/$(HASKLUG_FONT_NAME)
 	curl -fsSL $(HASKLUG_FONT_URL) > ~/Library/Fonts/$(HASKLUG_FONT_NAME)
 
 emacs: hasklug $(EMACS_RC) /Applications/Emacs.app/Contents/MacOS/Emacs
-	# TODO run emacs to install and then close
+
+# TODO run emacs to install and then close
 
 /Applications/Emacs.app/Contents/MacOS/Emacs:
 	brew install --cask emacs
@@ -182,7 +186,11 @@ $(NVIM_RC):
 $(NVIM_LAZY):
 	# TODO
 
-nvim: ~/.config/nvim $(NVIM_RC) $(NVIM_LAZY)
+$(NVIM_CONFIG_DIR):
+	mkdir -p ~/.config/nvim
+
+nvim: $(NVIM_CONFIG_DIR) $(NVIM_RC) $(NVIM_LAZY)
+	nvim +qa
 
 
 $(FONTS_DIR):
