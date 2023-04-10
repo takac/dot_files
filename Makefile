@@ -56,6 +56,8 @@ kitty: /usr/local/bin/kitty
 /usr/local/bin/kitty:
 	brew install kitty
 
+# TODO brew install urlview (for tmux-urlview)
+
 coreutils: /usr/local/opt/coreutils/libexec/gnubin
 /usr/local/opt/coreutils/libexec/gnubin:
 	brew install coreutils
