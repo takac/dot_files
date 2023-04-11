@@ -26,6 +26,7 @@ VIM_RC=~/.vimrc
 IPYTHON_CONFIG_DIR=~/.ipython/profile_default
 IPYTHON_CONFIG=$(IPYTHON_CONFIG_DIR)/ipython_config.py
 ZSH_SYNTAX_HIGH=$(OH_MY_ZSH)/custom/plugins/zsh-syntax-highlighting
+ZSH_AUTO_SUGGEST=$(OH_MY_ZSH)/custom/plugins/zsh-autosuggestions
 VIRTUAL_ENV_WRAPPER=$(BREW_PATH)/lib/python2.7/dist-packages/virtualenvwrapper
 XDEFAULTS=~/.Xdefaults
 I3_CONFIG=$(HOME)/.i3/config
@@ -54,9 +55,12 @@ $(BREW_PATH)/bin/gfind:
 rg: $(BREW_PATH)/bin/rg
 $(BREW_PATH)/bin/rg:
 	brew install rg
-kitty: $(BREW_PATH)/bin/kitty
+
+kitty: $(BREW_PATH)/bin/kitty ~/.config/kitty/kitty.conf
 $(BREW_PATH)/bin/kitty:
 	brew install kitty
+~/.config/kitty/kitty.conf:
+	cp ~/.dots/kitty/kitty.conf ~/.config/kitty/kitty.conf
 
 # TODO brew install urlview (for tmux-urlview)
 
@@ -145,7 +149,7 @@ $(PIP_BIN)/ipython:
 /usr/bin/pip:
 	sudo apt install -y python-pip
 
-zsh: $(OH_MY_ZSH) $(ZSH_SYNTAX_HIGH) $(ZSH_RC) $(ZSH_FUNCTIONS)
+zsh: $(OH_MY_ZSH) $(ZSH_SYNTAX_HIGH) $(ZSH_AUTO_SUGGEST) $(ZSH_RC) $(ZSH_FUNCTIONS)
 
 git: /usr/bin/git $(GIT_CONF)
 
@@ -256,6 +260,9 @@ $(ZSH_FUNCTIONS):
 
 $(ZSH_SYNTAX_HIGH):
 	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $(ZSH_SYNTAX_HIGH)
+
+$(ZSH_AUTO_SUGGEST):
+	git clone https://github.com/zsh-users/zsh-autosuggestions $(ZSH_AUTO_SUGGEST)
 
 # $(VIRTUAL_ENV_WRAPPER):
 # 	sudo pip install virtualenvwrapper
