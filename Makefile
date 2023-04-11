@@ -2,6 +2,8 @@
 DOT_DIR=~/.dots
 
 GIT_PROTOCOL=https
+# Can be $(BREW_PATH)
+BREW_PATH=/opt/homebrew/
 
 NVIM_LAZY=~/.local/share/nvim/lazy
 NVIM_RC=~/.config/nvim/init.lua
@@ -24,7 +26,7 @@ VIM_RC=~/.vimrc
 IPYTHON_CONFIG_DIR=~/.ipython/profile_default
 IPYTHON_CONFIG=$(IPYTHON_CONFIG_DIR)/ipython_config.py
 ZSH_SYNTAX_HIGH=$(OH_MY_ZSH)/custom/plugins/zsh-syntax-highlighting
-VIRTUAL_ENV_WRAPPER=/usr/local/lib/python2.7/dist-packages/virtualenvwrapper
+VIRTUAL_ENV_WRAPPER=$(BREW_PATH)/lib/python2.7/dist-packages/virtualenvwrapper
 XDEFAULTS=~/.Xdefaults
 I3_CONFIG=$(HOME)/.i3/config
 I3_STATUS_CONFIG=$(HOME)/.i3status.conf
@@ -40,47 +42,47 @@ HASKLUG_FONT_URL=https://github.com/ryanoasis/nerd-fonts/raw/master/patched-font
 #TODO Fix font install
 
 ifeq ($(UNAME_S),Darwin)
-SED=/usr/local/opt/gnu-sed/libexec/gnubin/sed
+SED=$(BREW_PATH)/opt/gnu-sed/libexec/gnubin/sed
 # PIP_BIN=$(HOME)/Library/Python/3.8/bin
-TMUX=/usr/local/bin/tmux
-# PYTHON3=/usr/local/bin/python3
+TMUX=$(BREW_PATH)/bin/tmux
+# PYTHON3=$(BREW_PATH)/bin/python3
 all: brew bash zsh git tmux screen vim $(SED) find rg coreutils kitty hasklug emacs zoxide nvim node
 zsh: /bin/zsh
-find: /usr/local/bin/gfind
-/usr/local/bin/gfind:
+find: $(BREW_PATH)/bin/gfind
+$(BREW_PATH)/bin/gfind:
 	brew install findutils
-rg: /usr/local/bin/rg
-/usr/local/bin/rg:
+rg: $(BREW_PATH)/bin/rg
+$(BREW_PATH)/bin/rg:
 	brew install rg
-kitty: /usr/local/bin/kitty
-/usr/local/bin/kitty:
+kitty: $(BREW_PATH)/bin/kitty
+$(BREW_PATH)/bin/kitty:
 	brew install kitty
 
 # TODO brew install urlview (for tmux-urlview)
 
-coreutils: /usr/local/opt/coreutils/libexec/gnubin
-/usr/local/opt/coreutils/libexec/gnubin:
+coreutils: $(BREW_PATH)/opt/coreutils/libexec/gnubin
+$(BREW_PATH)/opt/coreutils/libexec/gnubin:
 	brew install coreutils
 
-nvim: /usr/local/bin/nvim
-/usr/local/bin/nvim:
+nvim: $(BREW_PATH)/bin/nvim
+$(BREW_PATH)/bin/nvim:
 	brew install nvim
 vim: /usr/bin/vim
 
-zoxide: /usr/local/bin/zoxide
+zoxide: $(BREW_PATH)/bin/zoxide
 
-/usr/local/bin/zoxide:
+$(BREW_PATH)/bin/zoxide:
 	brew install zoxide
 
-nvm: /usr/local/opt/nvm/nvm.sh
+nvm: $(BREW_PATH)/opt/nvm/nvm.sh
 
-/usr/local/opt/nvm/nvm.sh:
+$(BREW_PATH)/opt/nvm/nvm.sh:
 	brew install nvm
 
 node: nvm ~/.nvm/versions/node/v16.*
 
 ~/.nvm/versions/node/v16.*:
-	zsh -c 'export NVM_DIR="$$HOME/.nvm" && source "/usr/local/opt/nvm/nvm.sh" && nvm install 16'
+	zsh -c 'export NVM_DIR="$$HOME/.nvm" && source "$(BREW_PATH)/opt/nvm/nvm.sh" && nvm install 16'
 
 hasklug: ~/Library/Fonts/$(HASKLUG_FONT_NAME)
 ~/Library/Fonts/Hasklug Nerd Font Complete.otf:
@@ -120,7 +122,7 @@ $(EMACS_DIR):
 clean_emacs:
 	rm -rf $(EMACS_DIR)
 
-brew: /usr/local/bin/brew
+brew: /opt/homebrew/bin/brew
 
 bash: /bin/bash $(BASH_ALIASES) $(BASH_RC)
 
@@ -149,12 +151,12 @@ git: /usr/bin/git $(GIT_CONF)
 
 screen: /usr/bin/screen $(SCREEN_RC)
 
-/usr/local/bin/tmux:
+$(BREW_PATH)/bin/tmux:
 	brew install tmux
 
-/usr/local/bin/brew:
-	curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install > /tmp/brew_installer
-	/usr/bin/ruby /tmp/brew_installer
+# $(BREW_PATH)/bin/brew:
+	# curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install > /tmp/brew_installer
+	# /usr/bin/ruby /tmp/brew_installer
 
 vim: ~/.vim/tmp ~/.vim/backup ~/.vim/undo $(VIM_RC) $(NEOBUNDLE)
 
