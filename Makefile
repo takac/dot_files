@@ -31,6 +31,7 @@ VIRTUAL_ENV_WRAPPER=$(BREW_PATH)/lib/python2.7/dist-packages/virtualenvwrapper
 XDEFAULTS=~/.Xdefaults
 I3_CONFIG=$(HOME)/.i3/config
 I3_STATUS_CONFIG=$(HOME)/.i3status.conf
+CARGO_CONF=~/.cargo/config.toml
 
 UNAME_S := $(shell uname -s)
 
@@ -47,7 +48,7 @@ SED=$(BREW_PATH)/opt/gnu-sed/libexec/gnubin/sed
 # PIP_BIN=$(HOME)/Library/Python/3.8/bin
 TMUX=$(BREW_PATH)/bin/tmux
 # PYTHON3=$(BREW_PATH)/bin/python3
-all: brew bash zsh git tmux screen vim $(SED) find rg coreutils kitty hasklug emacs zoxide nvim node
+all: brew bash zsh git tmux screen vim $(SED) find rg coreutils kitty hasklug emacs zoxide nvim node $(CARGO_CONF)
 zsh: /bin/zsh
 find: $(BREW_PATH)/bin/gfind
 $(BREW_PATH)/bin/gfind:
@@ -284,3 +285,5 @@ $(SED):
 # $(PYTHON3):
 # 	brew install python
 
+$(CARGO_CONF):
+	cp $(DOT_DIR)/cargo/config.toml $(CARGO_CONF)
